@@ -439,6 +439,8 @@
 </head>
 <body>
     @php
+        use Illuminate\Support\Facades\Storage;
+
         $totalLogs = $logs->count();
         $openCount = $logs->where('status', 'open')->count();
         $progressCount = $logs->where('status', 'in_progress')->count();
@@ -596,7 +598,7 @@
 
                             <td>
                                 @if($log->photo)
-                                    <img src="{{ asset('storage/' . $log->photo) }}" class="thumb">
+                                    <img src="{{ Storage::url($log->photo) }}" class="thumb" alt="Problem Photo">
                                 @else
                                     <div class="thumb-placeholder">No Img</div>
                                 @endif
