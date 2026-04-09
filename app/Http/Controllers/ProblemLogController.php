@@ -37,7 +37,7 @@ class ProblemLogController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('problem-photos', 'public');
+            $validated['photo'] = $request->file('photo')->store('problem-photos');
         }
 
         $validated['opened_at'] = now();
@@ -69,10 +69,10 @@ class ProblemLogController extends Controller
 
         if ($request->hasFile('photo')) {
             if ($problemLog->photo) {
-                Storage::disk('public')->delete($problemLog->photo);
+                Storage::delete($problemLog->photo);
             }
 
-            $validated['photo'] = $request->file('photo')->store('problem-photos', 'public');
+            $validated['photo'] = $request->file('photo')->store('problem-photos');
         }
 
         $problemLog->update($validated);
@@ -83,11 +83,11 @@ class ProblemLogController extends Controller
     public function destroy(ProblemLog $problemLog)
     {
         if ($problemLog->photo) {
-            Storage::disk('public')->delete($problemLog->photo);
+            Storage::delete($problemLog->photo);
         }
 
         if ($problemLog->closed_photo) {
-            Storage::disk('public')->delete($problemLog->closed_photo);
+            Storage::delete($problemLog->closed_photo);
         }
 
         $problemLog->delete();
@@ -120,7 +120,7 @@ class ProblemLogController extends Controller
         ]);
 
         if ($request->hasFile('closed_photo')) {
-            $validated['closed_photo'] = $request->file('closed_photo')->store('problem-photos', 'public');
+            $validated['closed_photo'] = $request->file('closed_photo')->store('problem-photos');
         }
 
         $validated['closed_at'] = now();
