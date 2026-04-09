@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProblemLogsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ProblemLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProblemLogController extends Controller
 {
+public function export()
+{
+    return Excel::download(new ProblemLogsExport, 'problem_logs.xlsx');
+}
+
     public function index(Request $request)
     {
         $query = ProblemLog::query();

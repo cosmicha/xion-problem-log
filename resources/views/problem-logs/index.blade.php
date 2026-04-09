@@ -466,10 +466,11 @@
                     </p>
                 </div>
 
-                <div class="hero-actions">
-                    <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
-                    <a href="/problem-logs" class="btn btn-secondary">Refresh List</a>
-                </div>
+              <div class="hero-actions">
+    <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
+    <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
+    <a href="/problem-logs" class="btn btn-secondary">Refresh List</a>
+</div>
             </div>
 
             <div class="stats">
