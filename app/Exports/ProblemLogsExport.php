@@ -12,6 +12,7 @@ class ProblemLogsExport implements FromCollection, WithHeadings
     {
         return ProblemLog::orderBy('id', 'desc')->get([
             'id',
+            'ticket_number',
             'title',
             'description',
             'status',
@@ -30,6 +31,7 @@ class ProblemLogsExport implements FromCollection, WithHeadings
     {
         return [
             'ID',
+            'Ticket Number',
             'Title',
             'Description',
             'Status',

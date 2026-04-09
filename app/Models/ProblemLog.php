@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProblemLog extends Model
 {
     protected $fillable = [
+        'ticket_number',
         'title',
         'description',
         'status',

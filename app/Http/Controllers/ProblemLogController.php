@@ -18,6 +18,15 @@ class ProblemLogController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->search) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('ticket_number', 'like', '%' . $search . '%')
+                  ->orWhere('title', 'like', '%' . $search . '%');
+            });
+        }
+
         $logs = $query->latest()->get();
 
         return view('problem-logs.index', compact('logs'));
@@ -56,6 +65,11 @@ class ProblemLogController extends Controller
         if ($validated['status'] === 'closed') {
             $validated['closed_at'] = now();
         }
+
+        $priorityCode = strtoupper(substr($validated['priority'], 0, 1));
+        $dateCode = now()->format('ymd');
+        $random = strtoupper(substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 4));
+        $validated['ticket_number'] = 'CS-' . $dateCode . '-' . $priorityCode . '-' . $random;
 
         ProblemLog::create($validated);
 

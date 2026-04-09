@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xion1 Problem Logs</title>
+
     <style>
         * { box-sizing: border-box; }
 
@@ -172,44 +173,6 @@
             font-size: 13px;
         }
 
-        .summary-bar-wrap {
-            margin-top: 14px;
-        }
-
-        .summary-bar {
-            width: 100%;
-            height: 12px;
-            overflow: hidden;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.12);
-            display: flex;
-        }
-
-        .seg-open { background: #ef4444; }
-        .seg-progress { background: #f59e0b; }
-        .seg-closed { background: #22c55e; }
-
-        .summary-legend {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-            font-size: 12px;
-            color: rgba(255,255,255,0.8);
-        }
-
-        .legend-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 999px;
-        }
-
         .content-card {
             background: rgba(255,255,255,0.88);
             backdrop-filter: blur(10px);
@@ -246,7 +209,7 @@
             flex-wrap: wrap;
         }
 
-        .select {
+        .input, .select {
             padding: 11px 14px;
             min-width: 180px;
             border-radius: 14px;
@@ -255,6 +218,11 @@
             font-size: 14px;
             color: #0f172a;
             outline: none;
+        }
+
+        .search-btn {
+            background: #2563eb;
+            color: white;
         }
 
         .success {
@@ -277,7 +245,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1100px;
+            min-width: 1250px;
         }
 
         th {
@@ -311,6 +279,18 @@
         .log-sub {
             color: #64748b;
             font-size: 12px;
+        }
+
+        .ticket-chip {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
         }
 
         .badge {
@@ -415,12 +395,6 @@
             }
         }
 
-        @media (max-width: 900px) {
-            .hero h1 {
-                font-size: 28px;
-            }
-        }
-
         @media (max-width: 640px) {
             .page {
                 padding: 18px 14px 40px;
@@ -445,11 +419,6 @@
         $openCount = $logs->where('status', 'open')->count();
         $progressCount = $logs->where('status', 'in_progress')->count();
         $closedCount = $logs->where('status', 'closed')->count();
-
-        $barTotal = max($totalLogs, 1);
-        $openWidth = ($openCount / $barTotal) * 100;
-        $progressWidth = ($progressCount / $barTotal) * 100;
-        $closedWidth = ($closedCount / $barTotal) * 100;
     @endphp
 
     <div class="page">
@@ -466,32 +435,18 @@
                     </p>
                 </div>
 
-              <div class="hero-actions">
-    <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
-    <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
-    <a href="/problem-logs" class="btn btn-secondary">Refresh List</a>
-</div>
+                <div class="hero-actions">
+                    <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
+                    <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
+                    <a href="/problem-logs" class="btn btn-secondary">Refresh List</a>
+                </div>
             </div>
 
             <div class="stats">
                 <div class="stat-card featured">
-                    <div class="stat-label">Operational Snapshot</div>
+                    <div class="stat-label">Total Logs</div>
                     <div class="stat-value">{{ $totalLogs }}</div>
-                    <div class="stat-sub">Total incidents tracked in this view</div>
-
-                    <div class="summary-bar-wrap">
-                        <div class="summary-bar">
-                            <div class="seg-open" style="width: {{ $openWidth }}%;"></div>
-                            <div class="seg-progress" style="width: {{ $progressWidth }}%;"></div>
-                            <div class="seg-closed" style="width: {{ $closedWidth }}%;"></div>
-                        </div>
-
-                        <div class="summary-legend">
-                            <span class="legend-item"><span class="legend-dot seg-open"></span> Open</span>
-                            <span class="legend-item"><span class="legend-dot seg-progress"></span> In Progress</span>
-                            <span class="legend-item"><span class="legend-dot seg-closed"></span> Closed</span>
-                        </div>
-                    </div>
+                    <div class="stat-sub">Current result set</div>
                 </div>
 
                 <div class="stat-card">
@@ -503,7 +458,7 @@
                 <div class="stat-card">
                     <div class="stat-label">In Progress</div>
                     <div class="stat-value">{{ $progressCount }}</div>
-                    <div class="stat-sub">Engineer assigned</div>
+                    <div class="stat-sub">Being handled</div>
                 </div>
 
                 <div class="stat-card">
@@ -517,7 +472,7 @@
                     <div class="stat-value">
                         {{ $totalLogs > 0 ? round(($closedCount / $totalLogs) * 100) : 0 }}%
                     </div>
-                    <div class="stat-sub">Based on current logs</div>
+                    <div class="stat-sub">Current result set</div>
                 </div>
             </div>
         </div>
@@ -530,20 +485,26 @@
             <div class="toolbar">
                 <div>
                     <div class="toolbar-title">Incident List</div>
-                    <div class="muted">Track issue lifecycle from open to close.</div>
+                    <div class="muted">Search by ticket number or title, and filter by status.</div>
                 </div>
 
                 <form method="GET" action="/problem-logs" class="filter-form">
-                    <select name="status" class="select" onchange="this.form.submit()">
+                    <input
+                        type="text"
+                        name="search"
+                        class="input"
+                        placeholder="Search ticket or title"
+                        value="{{ request('search') }}"
+                    >
+
+                    <select name="status" class="select">
                         <option value="">All Status</option>
                         <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
                         <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
                         <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
                     </select>
 
-                    <noscript>
-                        <button type="submit" class="btn btn-primary">Apply</button>
-                    </noscript>
+                    <button type="submit" class="btn search-btn">Search</button>
                 </form>
             </div>
 
@@ -551,6 +512,7 @@
                 <table>
                     <tr>
                         <th>ID</th>
+                        <th>Ticket</th>
                         <th>Incident</th>
                         <th>Created</th>
                         <th>Status</th>
@@ -564,6 +526,10 @@
                     @foreach($logs as $log)
                         <tr>
                             <td>#{{ $log->id }}</td>
+
+                            <td>
+                                <span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span>
+                            </td>
 
                             <td>
                                 <div class="log-title">{{ $log->title }}</div>
