@@ -3,18 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ProblemLogsExport;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ProblemLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProblemLogController extends Controller
 {
-public function export()
-{
-    return Excel::download(new ProblemLogsExport, 'problem_logs.xlsx');
-}
-
     public function index(Request $request)
     {
         $query = ProblemLog::query();
@@ -26,6 +21,11 @@ public function export()
         $logs = $query->latest()->get();
 
         return view('problem-logs.index', compact('logs'));
+    }
+
+    public function export()
+    {
+        return Excel::download(new ProblemLogsExport, 'problem_logs.xlsx');
     }
 
     public function create()
@@ -48,6 +48,14 @@ public function export()
         }
 
         $validated['opened_at'] = now();
+
+        if ($validated['status'] === 'in_progress') {
+            $validated['in_progress_at'] = now();
+        }
+
+        if ($validated['status'] === 'closed') {
+            $validated['closed_at'] = now();
+        }
 
         ProblemLog::create($validated);
 
@@ -80,6 +88,23 @@ public function export()
             }
 
             $validated['photo'] = $request->file('photo')->store('problem-photos');
+        }
+
+        if ($validated['status'] === 'in_progress' && !$problemLog->in_progress_at) {
+            $validated['in_progress_at'] = now();
+        }
+
+        if ($validated['status'] === 'closed' && !$problemLog->closed_at) {
+            $validated['closed_at'] = now();
+        }
+
+        if ($validated['status'] === 'open') {
+            $validated['in_progress_at'] = null;
+            $validated['closed_at'] = null;
+        }
+
+        if ($validated['status'] === 'in_progress') {
+            $validated['closed_at'] = null;
         }
 
         $problemLog->update($validated);
