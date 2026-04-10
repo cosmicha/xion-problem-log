@@ -9,7 +9,7 @@ class ProblemLogController extends Controller
 {
     public function index()
     {
-        $logs = ProblemLog::with('company')->latest()->get();
+        $logs = ProblemLog::with(['company', 'assignedEngineer'])->latest()->get();
         return view('problem-logs.index', compact('logs'));
     }
 
@@ -20,7 +20,11 @@ class ProblemLogController extends Controller
 
     public function store(Request $request)
     {
-        $path = $request->file('photo')?->store('photos', 'public');
+        $path = null;
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('photos', 'public');
+        }
 
         ProblemLog::create([
             'title' => $request->title,
@@ -37,17 +41,26 @@ class ProblemLogController extends Controller
 
     public function show(ProblemLog $problemLog)
     {
+        $problemLog->load(['company', 'assignedEngineer']);
         return view('problem-logs.show', compact('problemLog'));
     }
 
     public function edit(ProblemLog $problemLog)
     {
+        $problemLog->load(['company', 'assignedEngineer']);
         return view('problem-logs.edit', compact('problemLog'));
     }
 
     public function update(Request $request, ProblemLog $problemLog)
     {
-        $problemLog->update($request->all());
+        $data = $request->only(['title', 'description', 'status', 'priority']);
+
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')->store('photos', 'public');
+        }
+
+        $problemLog->update($data);
+
         return redirect('/problem-logs');
     }
 
@@ -60,7 +73,9 @@ class ProblemLogController extends Controller
     public function acknowledge(ProblemLog $problemLog)
     {
         $problemLog->update([
-            'acknowledged_at' => now()
+            'acknowledged_at' => now(),
+            'status' => 'in_progress',
+            'in_progress_at' => now(),
         ]);
 
         return back();
@@ -97,7 +112,11 @@ class ProblemLogController extends Controller
 
     public function close(Request $request, ProblemLog $problemLog)
     {
-        $path = $request->file('closed_photo')?->store('photos', 'public');
+        $path = null;
+
+        if ($request->hasFile('closed_photo')) {
+            $path = $request->file('closed_photo')->store('photos', 'public');
+        }
 
         $problemLog->update([
             'status' => 'closed',
@@ -129,7 +148,7 @@ class ProblemLogController extends Controller
             fputcsv($handle, [
                 $log->ticket_number,
                 $log->title,
-                $log->company->name ?? '-',
+                optional($log->company)->name ?? '-',
                 $log->status,
                 $log->priority,
                 $log->created_at
