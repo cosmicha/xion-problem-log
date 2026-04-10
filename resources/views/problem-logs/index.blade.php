@@ -239,29 +239,6 @@
             font-size: 14px;
         }
 
-        .filter-form {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .input, .select {
-            padding: 12px 16px;
-            min-width: 180px;
-            border-radius: 16px;
-            border: 1px solid #cbd5e1;
-            background: white;
-            font-size: 14px;
-            color: #0f172a;
-            outline: none;
-        }
-
-        .search-btn {
-            background: #2563eb;
-            color: white;
-        }
-
         .success {
             margin-bottom: 18px;
             padding: 14px 16px;
@@ -485,6 +462,9 @@
                 </div>
 
                 <div class="hero-actions">
+                    @if(auth()->user()->role === 'admin')
+                        <a href="/admin/users" class="btn btn-secondary">Users</a>
+                    @endif
                     <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
                     <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
                     <a href="/problem-logs" class="btn btn-secondary">Refresh List</a>
