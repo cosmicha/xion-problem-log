@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProblemLog;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProblemLogController extends Controller
 {
@@ -42,7 +44,9 @@ class ProblemLogController extends Controller
     public function show(ProblemLog $problemLog)
     {
         $problemLog->load(['company', 'assignedEngineer']);
-        return view('problem-logs.show', compact('problemLog'));
+        $engineers = User::where('role', 'engineer')->orderBy('name')->get();
+
+        return view('problem-logs.show', compact('problemLog', 'engineers'));
     }
 
     public function edit(ProblemLog $problemLog)
@@ -70,24 +74,34 @@ class ProblemLogController extends Controller
         return back();
     }
 
-    public function acknowledge(ProblemLog $problemLog)
+    public function acknowledge(Request $request, ProblemLog $problemLog)
     {
+        $engineerName = $request->input('engineer_name') ?: auth()->user()->name;
+
         $problemLog->update([
+            'engineer_name' => $engineerName,
             'acknowledged_at' => now(),
             'status' => 'in_progress',
             'in_progress_at' => now(),
         ]);
 
-        return back();
+        return back()->with('success', 'Ticket acknowledged.');
     }
 
     public function assignEngineer(Request $request, ProblemLog $problemLog)
     {
-        $problemLog->update([
-            'assigned_engineer_id' => $request->engineer_id
+        $request->validate([
+            'assigned_engineer_id' => 'required|exists:users,id',
         ]);
 
-        return back();
+        $engineer = User::findOrFail($request->assigned_engineer_id);
+
+        $problemLog->update([
+            'assigned_engineer_id' => $engineer->id,
+            'engineer_name' => $engineer->name,
+        ]);
+
+        return back()->with('success', 'Engineer assigned.');
     }
 
     public function take(ProblemLog $problemLog)
@@ -101,6 +115,7 @@ class ProblemLogController extends Controller
         if (!$problemLog->assigned_engineer_id) {
             $problemLog->update([
                 'assigned_engineer_id' => $user->id,
+                'engineer_name' => $user->name,
                 'acknowledged_at' => now(),
                 'in_progress_at' => now(),
                 'status' => 'in_progress'
