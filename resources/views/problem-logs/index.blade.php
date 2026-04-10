@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Problem Log Dashboard</title>
-
     <style>
         * { box-sizing: border-box; }
 
@@ -114,7 +113,6 @@
             font-size: 14px;
             border: none;
             cursor: pointer;
-            transition: 0.2s ease;
         }
 
         .btn-primary {
@@ -145,7 +143,7 @@
             border-radius: 24px;
             padding: 22px 24px;
             backdrop-filter: blur(8px);
-            min-height: 160px;
+            min-height: 150px;
         }
 
         .stat-card.featured {
@@ -259,7 +257,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1280px;
+            min-width: 1180px;
         }
 
         th {
@@ -321,35 +319,12 @@
             white-space: nowrap;
         }
 
-        .badge-open {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .badge-progress {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .badge-closed {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .badge-low {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .badge-medium {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
-        .badge-high {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
+        .badge-open { background: #fee2e2; color: #b91c1c; }
+        .badge-progress { background: #fef3c7; color: #b45309; }
+        .badge-closed { background: #dcfce7; color: #15803d; }
+        .badge-low { background: #e5e7eb; color: #374151; }
+        .badge-medium { background: #dbeafe; color: #1d4ed8; }
+        .badge-high { background: #fee2e2; color: #b91c1c; }
 
         .thumb {
             width: 76px;
@@ -453,16 +428,14 @@
                         OPERATIONS CONSOLE
                     </div>
                     <h1>Problem Log Dashboard</h1>
-                    <p>
-                        Incident tracking for operational teams, engineer ownership, visual evidence, and closure accountability.
-                    </p>
+                    <p>Incident tracking for operational teams, engineer ownership, visual evidence, and closure accountability.</p>
                     <p style="margin-top:10px;">
-                        <strong>{{ auth()->user()->company->name ?? 'No Company' }}</strong> • {{ ucfirst(auth()->user()->role) }}
+                        <strong>{{ auth()->user()->company->name ?? 'No Company' }}</strong> • {{ ucfirst(auth()->user()->role ?? 'user') }}
                     </p>
                 </div>
 
                 <div class="hero-actions">
-                    @if(auth()->user()->role === 'admin')
+                    @if((auth()->user()->role ?? '') === 'admin')
                         <a href="/admin/users" class="btn btn-secondary">Users</a>
                     @endif
                     <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
@@ -552,21 +525,15 @@
                     @foreach($logs as $log)
                         <tr>
                             <td>#{{ $log->id }}</td>
-
-                            <td>
-                                <span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span>
-                            </td>
-
+                            <td><span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span></td>
                             <td>
                                 <div class="log-title">{{ $log->title }}</div>
                                 <div class="log-sub">
-                                    {{ $log->company->name ?? '-' }}<br>
+                                    {{ optional($log->company)->name ?? '-' }}<br>
                                     {{ \Illuminate\Support\Str::limit($log->description, 55) ?: 'No description' }}
                                 </div>
                             </td>
-
                             <td>{{ $log->created_at ? $log->created_at->format('d M Y H:i') : '-' }}</td>
-
                             <td>
                                 @if($log->status === 'open')
                                     <span class="badge badge-open">Open</span>
@@ -576,7 +543,6 @@
                                     <span class="badge badge-closed">Closed</span>
                                 @endif
                             </td>
-
                             <td>
                                 @if($log->priority === 'high')
                                     <span class="badge badge-high">High</span>
@@ -586,11 +552,8 @@
                                     <span class="badge badge-low">Low</span>
                                 @endif
                             </td>
-
-                            <td>{{ $log->engineer_name ?: ($log->assignedEngineer->name ?? '-') }}</td>
-
+                            <td>{{ $log->engineer_name ?: '-' }}</td>
                             <td>{{ $log->closed_at ? $log->closed_at->format('d M Y H:i') : '-' }}</td>
-
                             <td>
                                 @if($log->photo)
                                     <img src="{{ Storage::url($log->photo) }}" class="thumb" alt="Problem Photo">
@@ -598,18 +561,14 @@
                                     <div class="thumb-placeholder">No Img</div>
                                 @endif
                             </td>
-
                             <td>
                                 <div class="actions">
                                     <a href="/problem-logs/{{ $log->id }}" class="btn-small">View</a>
                                     <a href="/problem-logs/{{ $log->id }}/edit" class="btn-small">Edit</a>
-
                                     <form action="/problem-logs/{{ $log->id }}" method="POST" class="inline-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-delete" onclick="return confirm('Delete this log?')">
-                                            Delete
-                                        </button>
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Delete this log?')">Delete</button>
                                     </form>
                                 </div>
                             </td>
