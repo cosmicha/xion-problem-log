@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xion1 Edit Problem Log</title>
+    <title>Edit Ticket</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -257,14 +255,17 @@
         <div class="hero">
             <div class="brand">
                 <span class="brand-dot"></span>
-                Xion1 Operations Console
+                TICKETING SYSTEM
             </div>
 
             <div class="hero-top">
                 <div>
-                    <h1>Edit Problem Log</h1>
+                    <h1>Edit Ticket</h1>
                     <p>
-                        Update issue details, adjust priority or status, and replace the supporting problem photo when needed.
+                        Update issue details, adjust priority or status, and replace the supporting photo when needed.
+                    </p>
+                    <p style="margin-top:10px;">
+                        <strong>{{ $problemLog->company->name ?? 'No Company' }}</strong>
                     </p>
                 </div>
 
@@ -276,8 +277,8 @@
         </div>
 
         <div class="card">
-            <h2 class="section-title">Update Incident Form</h2>
-            <div class="muted">Edit the main incident information below.</div>
+            <h2 class="section-title">Update Ticket Form</h2>
+            <div class="muted">Edit the ticket information below.</div>
 
             <form method="POST" action="/problem-logs/{{ $problemLog->id }}" enctype="multipart/form-data">
                 @csrf
@@ -285,7 +286,7 @@
 
                 <div class="grid">
                     <div class="form-group full">
-                        <label class="label">Problem Title</label>
+                        <label class="label">Title</label>
                         <input type="text" name="title" class="input" value="{{ $problemLog->title }}">
                     </div>
 
@@ -313,25 +314,25 @@
                     </div>
 
                     <div class="form-group full">
-                        <label class="label">Replace Problem Photo</label>
+                        <label class="label">Replace Photo</label>
                         <input type="file" name="photo" class="file">
 
                         @if($problemLog->photo)
-                            <img src="{{ asset('storage/' . $problemLog->photo) }}" alt="Current Photo" class="preview-img">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::url($problemLog->photo) }}" alt="Current Photo" class="preview-img">
                         @endif
                     </div>
                 </div>
 
                 <div class="actions">
-                    <button type="submit" class="btn btn-primary">Update Problem Log</button>
+                    <button type="submit" class="btn btn-primary">Update Ticket</button>
                     <a href="/problem-logs/{{ $problemLog->id }}" class="btn btn-outline">Cancel</a>
                 </div>
             </form>
 
             <div class="helper-box">
-                <div class="helper-title">Xion1 Workflow</div>
+                <div class="helper-title">Workflow</div>
                 <div class="helper-text">
-                    Editing here updates only the core issue record. Acknowledge and Close actions remain available on the detail page for cleaner operational flow.
+                    Editing here updates the core ticket record. Acknowledge and close actions remain available on the detail page.
                 </div>
             </div>
         </div>

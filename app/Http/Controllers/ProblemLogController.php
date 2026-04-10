@@ -2,39 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ProblemLogsExport;
 use App\Models\ProblemLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ProblemLogController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = ProblemLog::query();
-
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->search) {
-            $search = $request->search;
-
-            $query->where(function ($q) use ($search) {
-                $q->where('ticket_number', 'like', '%' . $search . '%')
-                  ->orWhere('title', 'like', '%' . $search . '%');
-            });
-        }
-
-        $logs = $query->latest()->get();
-
+        $logs = ProblemLog::with('company')->latest()->get();
         return view('problem-logs.index', compact('logs'));
-    }
-
-    public function export()
-    {
-        return Excel::download(new ProblemLogsExport, 'problem_logs.xlsx');
     }
 
     public function create()
@@ -44,36 +20,19 @@ class ProblemLogController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|string',
-            'priority' => 'required|string',
-            'photo' => 'nullable|image|max:2048',
+        $path = $request->file('photo')?->store('photos', 'public');
+
+        ProblemLog::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'photo' => $path,
+            'status' => 'open',
+            'priority' => $request->priority,
+            'company_id' => auth()->user()->company_id,
+            'ticket_number' => strtoupper(uniqid('TKT'))
         ]);
 
-        if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('problem-photos');
-        }
-
-        $validated['opened_at'] = now();
-
-        if ($validated['status'] === 'in_progress') {
-            $validated['in_progress_at'] = now();
-        }
-
-        if ($validated['status'] === 'closed') {
-            $validated['closed_at'] = now();
-        }
-
-        $priorityCode = strtoupper(substr($validated['priority'], 0, 1));
-        $dateCode = now()->format('ymd');
-        $random = strtoupper(substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 4));
-        $validated['ticket_number'] = 'CS-' . $dateCode . '-' . $priorityCode . '-' . $random;
-
-        ProblemLog::create($validated);
-
-        return redirect('/problem-logs')->with('success', 'Problem log created.');
+        return redirect('/problem-logs');
     }
 
     public function show(ProblemLog $problemLog)
@@ -88,93 +47,118 @@ class ProblemLogController extends Controller
 
     public function update(Request $request, ProblemLog $problemLog)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|string',
-            'priority' => 'required|string',
-            'photo' => 'nullable|image|max:2048',
-        ]);
-
-        if ($request->hasFile('photo')) {
-            if ($problemLog->photo) {
-                Storage::delete($problemLog->photo);
-            }
-
-            $validated['photo'] = $request->file('photo')->store('problem-photos');
-        }
-
-        if ($validated['status'] === 'in_progress' && !$problemLog->in_progress_at) {
-            $validated['in_progress_at'] = now();
-        }
-
-        if ($validated['status'] === 'closed' && !$problemLog->closed_at) {
-            $validated['closed_at'] = now();
-        }
-
-        if ($validated['status'] === 'open') {
-            $validated['in_progress_at'] = null;
-            $validated['closed_at'] = null;
-        }
-
-        if ($validated['status'] === 'in_progress') {
-            $validated['closed_at'] = null;
-        }
-
-        $problemLog->update($validated);
-
-        return redirect('/problem-logs')->with('success', 'Problem log updated.');
+        $problemLog->update($request->all());
+        return redirect('/problem-logs');
     }
 
     public function destroy(ProblemLog $problemLog)
     {
-        if ($problemLog->photo) {
-            Storage::delete($problemLog->photo);
-        }
-
-        if ($problemLog->closed_photo) {
-            Storage::delete($problemLog->closed_photo);
-        }
-
         $problemLog->delete();
-
-        return redirect('/problem-logs')->with('success', 'Problem log deleted.');
+        return back();
     }
 
-    public function acknowledge(Request $request, ProblemLog $problemLog)
+    public function acknowledge(ProblemLog $problemLog)
     {
-        $request->validate([
-            'engineer_name' => 'required|string|max:255',
-        ]);
-
         $problemLog->update([
-            'engineer_name' => $request->engineer_name,
-            'acknowledged_at' => now(),
-            'in_progress_at' => now(),
-            'status' => 'in_progress',
+            'acknowledged_at' => now()
         ]);
 
-        return redirect('/problem-logs/' . $problemLog->id)
-            ->with('success', 'Acknowledged by ' . $request->engineer_name);
+        return back();
+    }
+
+    public function assignEngineer(Request $request, ProblemLog $problemLog)
+    {
+        $problemLog->update([
+            'assigned_engineer_id' => $request->engineer_id
+        ]);
+
+        return back();
+    }
+
+    public function take(ProblemLog $problemLog)
+    {
+        $user = auth()->user();
+
+        if ($user->role !== 'engineer') {
+            abort(403);
+        }
+
+        if (!$problemLog->assigned_engineer_id) {
+            $problemLog->update([
+                'assigned_engineer_id' => $user->id,
+                'acknowledged_at' => now(),
+                'in_progress_at' => now(),
+                'status' => 'in_progress'
+            ]);
+        }
+
+        return back();
     }
 
     public function close(Request $request, ProblemLog $problemLog)
     {
-        $validated = $request->validate([
-            'close_note' => 'nullable|string',
-            'closed_photo' => 'nullable|image|max:2048',
+        $path = $request->file('closed_photo')?->store('photos', 'public');
+
+        $problemLog->update([
+            'status' => 'closed',
+            'closed_at' => now(),
+            'close_note' => $request->close_note,
+            'closed_photo' => $path
         ]);
 
-        if ($request->hasFile('closed_photo')) {
-            $validated['closed_photo'] = $request->file('closed_photo')->store('problem-photos');
+        return back();
+    }
+
+    public function export()
+    {
+        $logs = ProblemLog::with('company')->get();
+
+        $filename = "report.csv";
+        $handle = fopen($filename, 'w+');
+
+        fputcsv($handle, [
+            'Ticket',
+            'Title',
+            'Company',
+            'Status',
+            'Priority',
+            'Created'
+        ]);
+
+        foreach ($logs as $log) {
+            fputcsv($handle, [
+                $log->ticket_number,
+                $log->title,
+                $log->company->name ?? '-',
+                $log->status,
+                $log->priority,
+                $log->created_at
+            ]);
         }
 
-        $validated['closed_at'] = now();
-        $validated['status'] = 'closed';
+        fclose($handle);
 
-        $problemLog->update($validated);
+        return response()->download($filename)->deleteFileAfterSend(true);
+    }
 
-        return redirect('/problem-logs/' . $problemLog->id)
-            ->with('success', 'Problem closed');
+    public function engineerDashboard()
+    {
+        $user = auth()->user();
+
+        if ($user->role !== 'engineer') {
+            abort(403);
+        }
+
+        $assigned = ProblemLog::with('company')
+            ->where('assigned_engineer_id', $user->id)
+            ->latest()
+            ->get();
+
+        $unassigned = ProblemLog::with('company')
+            ->whereNull('assigned_engineer_id')
+            ->latest()
+            ->get();
+
+        return view('engineer.dashboard', compact('assigned', 'unassigned'));
     }
 }

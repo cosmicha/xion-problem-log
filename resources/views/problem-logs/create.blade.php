@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xion1 Create Problem Log</title>
+    <title>Create Ticket</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -247,14 +245,17 @@
         <div class="hero">
             <div class="brand">
                 <span class="brand-dot"></span>
-                Xion1 Operations Console
+                TICKETING SYSTEM
             </div>
 
             <div class="hero-top">
                 <div>
-                    <h1>Create Problem Log</h1>
+                    <h1>Create Ticket</h1>
                     <p>
-                        Record a new operational issue with title, description, priority, current status, and supporting evidence photo.
+                        Record a new issue with title, description, priority, current status, and supporting evidence photo.
+                    </p>
+                    <p style="margin-top:10px;">
+                        <strong>{{ auth()->user()->company->name ?? 'No Company' }}</strong>
                     </p>
                 </div>
 
@@ -265,16 +266,16 @@
         </div>
 
         <div class="card">
-            <h2 class="section-title">New Incident Form</h2>
-            <div class="muted">Fill in the core issue details before assigning and closing it later.</div>
+            <h2 class="section-title">New Ticket Form</h2>
+            <div class="muted">Fill in the issue details below.</div>
 
             <form method="POST" action="/problem-logs" enctype="multipart/form-data">
                 @csrf
 
                 <div class="grid">
                     <div class="form-group full">
-                        <label class="label">Problem Title</label>
-                        <input type="text" name="title" class="input" placeholder="Example: Screen offline at store entrance">
+                        <label class="label">Title</label>
+                        <input type="text" name="title" class="input" placeholder="Example: Screen offline at store entrance" required>
                     </div>
 
                     <div class="form-group">
@@ -297,25 +298,25 @@
 
                     <div class="form-group full">
                         <label class="label">Description</label>
-                        <textarea name="description" class="textarea" placeholder="Describe the issue, impact, location, symptoms, or actions needed"></textarea>
+                        <textarea name="description" class="textarea" placeholder="Describe the issue, impact, location, symptoms, or actions needed" required></textarea>
                     </div>
 
                     <div class="form-group full">
-                        <label class="label">Problem Photo</label>
+                        <label class="label">Photo</label>
                         <input type="file" name="photo" class="file">
                     </div>
                 </div>
 
                 <div class="actions">
-                    <button type="submit" class="btn btn-primary">Save Problem Log</button>
+                    <button type="submit" class="btn btn-primary">Save Ticket</button>
                     <a href="/problem-logs" class="btn btn-outline">Cancel</a>
                 </div>
             </form>
 
             <div class="helper-box">
-                <div class="helper-title">Xion1 Workflow</div>
+                <div class="helper-title">Workflow</div>
                 <div class="helper-text">
-                    After this log is created, your engineer can acknowledge it, update ownership, and close the issue with final note and proof photo.
+                    After a ticket is created, it can be acknowledged, updated, and closed with final note and proof photo.
                 </div>
             </div>
         </div>

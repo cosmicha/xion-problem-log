@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xion1 Problem Logs</title>
+    <title>Problem Log Dashboard</title>
 
     <style>
         * { box-sizing: border-box; }
@@ -21,16 +21,16 @@
         .page {
             max-width: 1380px;
             margin: 0 auto;
-            padding: 36px 24px 60px;
+            padding: 16px 16px 60px;
         }
 
         .hero {
             color: white;
-            padding: 28px 30px;
-            border-radius: 24px;
+            padding: 28px 30px 36px;
+            border-radius: 28px;
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(29, 78, 216, 0.88));
             box-shadow: 0 18px 50px rgba(2, 6, 23, 0.28);
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             border: 1px solid rgba(255,255,255,0.08);
             overflow: hidden;
             position: relative;
@@ -51,7 +51,7 @@
             display: flex;
             justify-content: space-between;
             gap: 20px;
-            align-items: center;
+            align-items: flex-start;
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
@@ -65,7 +65,7 @@
             font-weight: 700;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.82);
             margin-bottom: 14px;
         }
 
@@ -84,7 +84,7 @@
         }
 
         .hero h1 {
-            margin: 0 0 10px;
+            margin: 0 0 8px;
             font-size: 34px;
             line-height: 1.1;
         }
@@ -108,9 +108,9 @@
             justify-content: center;
             gap: 8px;
             padding: 12px 18px;
-            border-radius: 14px;
+            border-radius: 16px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
             border: none;
             cursor: pointer;
@@ -123,10 +123,8 @@
             box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
         }
 
-        .btn-primary:hover { transform: translateY(-1px); }
-
         .btn-secondary {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.10);
             color: white;
             border: 1px solid rgba(255,255,255,0.16);
             backdrop-filter: blur(8px);
@@ -144,9 +142,10 @@
         .stat-card {
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 18px;
+            border-radius: 24px;
+            padding: 22px 24px;
             backdrop-filter: blur(8px);
+            min-height: 160px;
         }
 
         .stat-card.featured {
@@ -157,29 +156,29 @@
             font-size: 12px;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 8px;
+            color: rgba(255,255,255,0.74);
+            margin-bottom: 10px;
         }
 
         .stat-value {
-            font-size: 30px;
+            font-size: 32px;
             font-weight: 800;
             color: white;
+            margin-bottom: 6px;
         }
 
         .stat-sub {
-            margin-top: 6px;
-            color: rgba(255,255,255,0.72);
+            color: rgba(255,255,255,0.76);
             font-size: 13px;
         }
 
         .summary-bar-wrap {
-            margin-top: 14px;
+            margin-top: 18px;
         }
 
         .summary-bar {
             width: 100%;
-            height: 12px;
+            height: 16px;
             overflow: hidden;
             border-radius: 999px;
             background: rgba(255,255,255,0.12);
@@ -192,11 +191,11 @@
 
         .summary-legend {
             display: flex;
-            gap: 14px;
+            gap: 16px;
             flex-wrap: wrap;
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 12px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.86);
         }
 
         .legend-item {
@@ -212,10 +211,10 @@
         }
 
         .content-card {
-            background: rgba(255,255,255,0.88);
+            background: rgba(255,255,255,0.90);
             backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 22px;
+            border-radius: 28px;
+            padding: 28px;
             box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
             border: 1px solid rgba(148, 163, 184, 0.18);
         }
@@ -226,7 +225,7 @@
             gap: 16px;
             flex-wrap: wrap;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
         .toolbar-title {
@@ -248,9 +247,9 @@
         }
 
         .input, .select {
-            padding: 11px 14px;
+            padding: 12px 16px;
             min-width: 180px;
-            border-radius: 14px;
+            border-radius: 16px;
             border: 1px solid #cbd5e1;
             background: white;
             font-size: 14px;
@@ -275,33 +274,34 @@
 
         .table-wrap {
             overflow-x: auto;
-            border-radius: 18px;
-            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            border: 1px solid #dbe3ef;
             background: white;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1250px;
+            min-width: 1280px;
         }
 
         th {
-            background: #eff6ff;
-            color: #1e3a8a;
+            background: #edf3fb;
+            color: #24408e;
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.07em;
             text-align: left;
-            padding: 16px 14px;
-            border-bottom: 1px solid #dbeafe;
+            padding: 18px 18px;
+            border-bottom: 1px solid #d9e4f3;
         }
 
         td {
-            padding: 16px 14px;
-            border-bottom: 1px solid #eef2f7;
+            padding: 20px 18px;
+            border-bottom: 1px solid #edf2f7;
             vertical-align: middle;
             font-size: 14px;
+            color: #0f172a;
         }
 
         tr:hover td {
@@ -309,21 +309,24 @@
         }
 
         .log-title {
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 14px;
             color: #0f172a;
             margin-bottom: 4px;
+            line-height: 1.35;
         }
 
         .log-sub {
             color: #64748b;
             font-size: 12px;
+            line-height: 1.4;
         }
 
         .ticket-chip {
             display: inline-block;
-            padding: 6px 10px;
-            border-radius: 10px;
-            background: #dbeafe;
+            padding: 8px 12px;
+            border-radius: 14px;
+            background: #dbe7fb;
             color: #1d4ed8;
             font-size: 12px;
             font-weight: 800;
@@ -334,11 +337,10 @@
         .badge {
             display: inline-flex;
             align-items: center;
-            padding: 7px 11px;
+            padding: 8px 12px;
             border-radius: 999px;
             font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            font-weight: 800;
             white-space: nowrap;
         }
 
@@ -373,18 +375,19 @@
         }
 
         .thumb {
-            width: 62px;
-            height: 62px;
+            width: 76px;
+            height: 76px;
             object-fit: cover;
-            border-radius: 14px;
+            border-radius: 16px;
             box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
             border: 1px solid #e2e8f0;
+            display: block;
         }
 
         .thumb-placeholder {
-            width: 62px;
-            height: 62px;
-            border-radius: 14px;
+            width: 76px;
+            height: 76px;
+            border-radius: 16px;
             background: #f1f5f9;
             color: #94a3b8;
             display: flex;
@@ -398,25 +401,25 @@
         .actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
         }
 
         .btn-small {
-            padding: 9px 12px;
-            border-radius: 12px;
+            padding: 10px 14px;
+            border-radius: 14px;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             text-decoration: none;
             border: 1px solid #dbeafe;
             background: #eff6ff;
-            color: #1d4ed8;
+            color: #2563eb;
         }
 
         .btn-delete {
-            padding: 9px 12px;
-            border-radius: 12px;
+            padding: 10px 14px;
+            border-radius: 14px;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             border: 1px solid #fecaca;
             background: #fef2f2;
             color: #dc2626;
@@ -435,7 +438,7 @@
 
         @media (max-width: 640px) {
             .page {
-                padding: 18px 14px 40px;
+                padding: 14px 14px 40px;
             }
 
             .stats {
@@ -444,7 +447,7 @@
 
             .content-card,
             .hero {
-                border-radius: 18px;
+                border-radius: 20px;
             }
         }
     </style>
@@ -469,12 +472,15 @@
             <div class="hero-top">
                 <div>
                     <div class="brand">
-                        <span class="brand-mark">X1</span>
-                        Xion1 Operations Console
+                        <span class="brand-mark">TS</span>
+                        OPERATIONS CONSOLE
                     </div>
                     <h1>Problem Log Dashboard</h1>
                     <p>
-                        Modern incident tracking for operational teams, engineer ownership, visual evidence, and closure accountability.
+                        Incident tracking for operational teams, engineer ownership, visual evidence, and closure accountability.
+                    </p>
+                    <p style="margin-top:10px;">
+                        <strong>{{ auth()->user()->company->name ?? 'No Company' }}</strong> • {{ ucfirst(auth()->user()->role) }}
                     </p>
                 </div>
 
@@ -482,6 +488,10 @@
                     <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
                     <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
                     <a href="/problem-logs" class="btn btn-secondary">Refresh List</a>
+                    <form method="POST" action="/logout" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="btn btn-secondary">Logout</button>
+                    </form>
                 </div>
             </div>
 
@@ -526,43 +536,22 @@
 
                 <div class="stat-card">
                     <div class="stat-label">Closure Rate</div>
-                    <div class="stat-value">
-                        {{ $totalLogs > 0 ? round(($closedCount / $totalLogs) * 100) : 0 }}%
-                    </div>
+                    <div class="stat-value">{{ $totalLogs > 0 ? round(($closedCount / $totalLogs) * 100) : 0 }}%</div>
                     <div class="stat-sub">Current result set</div>
                 </div>
             </div>
         </div>
 
-        <div class="content-card">
-            @if(session('success'))
-                <div class="success">{{ session('success') }}</div>
-            @endif
+        @if(session('success'))
+            <div class="success">{{ session('success') }}</div>
+        @endif
 
+        <div class="content-card">
             <div class="toolbar">
                 <div>
                     <div class="toolbar-title">Incident List</div>
-                    <div class="muted">Search by ticket number or title, and filter by status.</div>
+                    <div class="muted">Ticket overview and current operational status.</div>
                 </div>
-
-                <form method="GET" action="/problem-logs" class="filter-form">
-                    <input
-                        type="text"
-                        name="search"
-                        class="input"
-                        placeholder="Search ticket or title"
-                        value="{{ request('search') }}"
-                    >
-
-                    <select name="status" class="select">
-                        <option value="">All Status</option>
-                        <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
-                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
-                    </select>
-
-                    <button type="submit" class="btn search-btn">Search</button>
-                </form>
             </div>
 
             <div class="table-wrap">
@@ -591,6 +580,7 @@
                             <td>
                                 <div class="log-title">{{ $log->title }}</div>
                                 <div class="log-sub">
+                                    {{ $log->company->name ?? '-' }}<br>
                                     {{ \Illuminate\Support\Str::limit($log->description, 55) ?: 'No description' }}
                                 </div>
                             </td>
@@ -617,7 +607,8 @@
                                 @endif
                             </td>
 
-                            <td>{{ $log->engineer_name ?: '-' }}</td>
+                            <td>{{ $log->engineer_name ?: ($log->assignedEngineer->name ?? '-') }}</td>
+
                             <td>{{ $log->closed_at ? $log->closed_at->format('d M Y H:i') : '-' }}</td>
 
                             <td>
@@ -644,6 +635,7 @@
                             </td>
                         </tr>
                     @endforeach
+
                 </table>
             </div>
         </div>

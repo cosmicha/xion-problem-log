@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class ProblemLog extends Model
 {
     protected $fillable = [
+        'company_id',
+        'assigned_engineer_id',
         'ticket_number',
         'title',
         'description',
@@ -28,4 +30,14 @@ class ProblemLog extends Model
         'in_progress_at' => 'datetime',
         'closed_at' => 'datetime',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function assignedEngineer()
+    {
+        return $this->belongsTo(User::class, 'assigned_engineer_id');
+    }
 }
