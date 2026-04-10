@@ -18,7 +18,7 @@
         }
 
         .page {
-            max-width: 1220px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 36px 24px 60px;
         }
@@ -31,6 +31,14 @@
             box-shadow: 0 18px 50px rgba(2, 6, 23, 0.28);
             margin-bottom: 24px;
             border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .hero-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-start;
+            flex-wrap: wrap;
         }
 
         .brand {
@@ -53,24 +61,16 @@
             box-shadow: 0 0 16px rgba(96,165,250,0.8);
         }
 
-        .hero-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 18px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
-
         .hero h1 {
             margin: 0 0 10px;
-            font-size: 34px;
+            font-size: 32px;
             line-height: 1.1;
         }
 
         .hero p {
             margin: 0;
             color: rgba(255,255,255,0.82);
-            max-width: 760px;
+            max-width: 680px;
             font-size: 15px;
         }
 
@@ -92,7 +92,6 @@
             font-size: 14px;
             border: none;
             cursor: pointer;
-            transition: 0.2s ease;
         }
 
         .btn-primary {
@@ -105,7 +104,6 @@
             background: rgba(255,255,255,0.1);
             color: white;
             border: 1px solid rgba(255,255,255,0.16);
-            backdrop-filter: blur(8px);
         }
 
         .grid {
@@ -116,8 +114,7 @@
         }
 
         .card {
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.92);
             border-radius: 24px;
             padding: 24px;
             box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
@@ -130,11 +127,6 @@
             font-size: 20px;
             font-weight: 800;
             color: #0f172a;
-        }
-
-        .muted {
-            color: #64748b;
-            font-size: 14px;
         }
 
         .meta-grid {
@@ -167,18 +159,6 @@
             word-break: break-word;
         }
 
-        .ticket-chip {
-            display: inline-block;
-            padding: 10px 14px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.15);
-            color: #fff;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 0.06em;
-        }
-
         .badge {
             display: inline-flex;
             align-items: center;
@@ -186,7 +166,6 @@
             border-radius: 999px;
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.02em;
         }
 
         .badge-open { background: #fee2e2; color: #b91c1c; }
@@ -196,52 +175,6 @@
         .badge-medium { background: #dbeafe; color: #1d4ed8; }
         .badge-high { background: #fee2e2; color: #b91c1c; }
 
-        .timeline {
-            display: grid;
-            gap: 14px;
-        }
-
-        .timeline-item {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-            padding: 16px;
-            border-radius: 18px;
-            background: #f8fbff;
-            border: 1px solid #e2e8f0;
-        }
-
-        .timeline-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 999px;
-            margin-top: 4px;
-            flex-shrink: 0;
-        }
-
-        .dot-open { background: #ef4444; }
-        .dot-progress { background: #f59e0b; }
-        .dot-closed { background: #22c55e; }
-
-        .timeline-title {
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 4px;
-        }
-
-        .timeline-time {
-            color: #475569;
-            font-size: 14px;
-        }
-
-        .image-box img {
-            width: 100%;
-            max-width: 100%;
-            border-radius: 18px;
-            border: 1px solid #dbeafe;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
-        }
-
         .info-block {
             margin-top: 14px;
             padding: 18px;
@@ -250,64 +183,32 @@
             border: 1px solid #e2e8f0;
         }
 
-        .label {
-            display: block;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #334155;
-        }
-
-        .input, .textarea, .file, .select {
+        .img {
             width: 100%;
-            padding: 12px 14px;
-            border-radius: 14px;
-            border: 1px solid #cbd5e1;
-            background: white;
-            font-size: 14px;
-            color: #0f172a;
-            outline: none;
-        }
-
-        .textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .success {
-            margin-bottom: 18px;
-            padding: 14px 16px;
-            border-radius: 16px;
-            background: #ecfdf5;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-            font-weight: 600;
-        }
-
-        .actions-bottom {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .btn-outline {
-            background: #eff6ff;
-            color: #1d4ed8;
+            max-width: 100%;
+            border-radius: 18px;
             border: 1px solid #dbeafe;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
+        }
+
+        .placeholder {
+            padding: 30px;
+            border-radius: 18px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            color: #94a3b8;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .muted {
+            color: #64748b;
+            font-size: 14px;
         }
 
         @media (max-width: 980px) {
             .grid {
                 grid-template-columns: 1fr;
-            }
-
-            .hero h1 {
-                font-size: 28px;
             }
         }
 
@@ -328,8 +229,6 @@
     </style>
 </head>
 <body>
-    @php use Illuminate\Support\Facades\Storage; @endphp
-
     <div class="page">
         <div class="hero">
             <div class="brand">
@@ -339,26 +238,19 @@
 
             <div class="hero-top">
                 <div>
-                    <div class="ticket-chip">{{ $problemLog->ticket_number ?: 'NO-TICKET' }}</div>
-                    <h1 style="margin-top: 14px;">{{ $problemLog->title }}</h1>
-                    <p>
-                        Track ticket details, ownership, evidence, and closure updates.
-                    </p>
+                    <h1>{{ $problemLog->title ?? 'Ticket Detail' }}</h1>
+                    <p>View full ticket information, image evidence, and status details.</p>
                     <p style="margin-top:10px;">
-                        <strong>{{ $problemLog->company->name ?? 'No Company' }}</strong>
+                        <strong>{{ optional($problemLog->company)->name ?? 'No Company' }}</strong>
                     </p>
                 </div>
 
                 <div class="hero-actions">
                     <a href="/problem-logs" class="btn btn-secondary">Back to List</a>
-                    <a href="/problem-logs/create" class="btn btn-primary">+ New Ticket</a>
+                    <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-primary">Edit Ticket</a>
                 </div>
             </div>
         </div>
-
-        @if(session('success'))
-            <div class="success">{{ session('success') }}</div>
-        @endif
 
         <div class="grid">
             <div>
@@ -374,9 +266,9 @@
                         <div class="meta-box">
                             <div class="meta-label">Status</div>
                             <div class="meta-value">
-                                @if($problemLog->status === 'open')
+                                @if(($problemLog->status ?? '') === 'open')
                                     <span class="badge badge-open">Open</span>
-                                @elseif($problemLog->status === 'in_progress')
+                                @elseif(($problemLog->status ?? '') === 'in_progress')
                                     <span class="badge badge-progress">In Progress</span>
                                 @else
                                     <span class="badge badge-closed">Closed</span>
@@ -387,9 +279,9 @@
                         <div class="meta-box">
                             <div class="meta-label">Priority</div>
                             <div class="meta-value">
-                                @if($problemLog->priority === 'high')
+                                @if(($problemLog->priority ?? '') === 'high')
                                     <span class="badge badge-high">High</span>
-                                @elseif($problemLog->priority === 'medium')
+                                @elseif(($problemLog->priority ?? '') === 'medium')
                                     <span class="badge badge-medium">Medium</span>
                                 @else
                                     <span class="badge badge-low">Low</span>
@@ -398,196 +290,58 @@
                         </div>
 
                         <div class="meta-box">
-                            <div class="meta-label">Assigned Engineer</div>
-                            <div class="meta-value">{{ $problemLog->assignedEngineer->name ?? $problemLog->engineer_name ?? '-' }}</div>
-                        </div>
-
-                        <div class="meta-box">
-                            <div class="meta-label">Company</div>
-                            <div class="meta-value">{{ $problemLog->company->name ?? '-' }}</div>
+                            <div class="meta-label">Engineer</div>
+                            <div class="meta-value">
+                                {{ optional($problemLog->assignedEngineer)->name ?? $problemLog->engineer_name ?? '-' }}
+                            </div>
                         </div>
 
                         <div class="meta-box">
                             <div class="meta-label">Created</div>
-                            <div class="meta-value">
-                                {{ $problemLog->created_at ? $problemLog->created_at->format('d M Y H:i') : '-' }}
-                            </div>
+                            <div class="meta-value">{{ $problemLog->created_at ? $problemLog->created_at->format('d M Y H:i') : '-' }}</div>
+                        </div>
+
+                        <div class="meta-box">
+                            <div class="meta-label">Closed At</div>
+                            <div class="meta-value">{{ $problemLog->closed_at ? $problemLog->closed_at->format('d M Y H:i') : '-' }}</div>
                         </div>
                     </div>
 
                     <div class="info-block">
                         <div class="meta-label">Description</div>
-                        <div class="meta-value" style="font-weight: 500; line-height: 1.7;">
+                        <div class="meta-value" style="font-weight:500; line-height:1.7;">
                             {{ $problemLog->description ?: 'No description provided.' }}
                         </div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <h2 class="section-title">Timeline</h2>
-
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-dot dot-open"></div>
-                            <div>
-                                <div class="timeline-title">Opened</div>
-                                <div class="timeline-time">
-                                    {{ $problemLog->opened_at ? $problemLog->opened_at->format('d M Y H:i') : '-' }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-dot dot-progress"></div>
-                            <div>
-                                <div class="timeline-title">In Progress</div>
-                                <div class="timeline-time">
-                                    {{ $problemLog->in_progress_at ? $problemLog->in_progress_at->format('d M Y H:i') : '-' }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-dot dot-closed"></div>
-                            <div>
-                                <div class="timeline-title">Closed</div>
-                                <div class="timeline-time">
-                                    {{ $problemLog->closed_at ? $problemLog->closed_at->format('d M Y H:i') : '-' }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                @if($problemLog->photo)
-                    <div class="card">
-                        <h2 class="section-title">Problem Photo</h2>
-                        <div class="image-box">
-                            <img src="{{ Storage::url($problemLog->photo) }}" alt="Problem Photo">
-                        </div>
-                    </div>
-                @endif
-
-                @if($problemLog->status === 'closed')
-                    <div class="card">
-                        <h2 class="section-title">Closed Information</h2>
-
-                        <div class="info-block" style="margin-top: 0;">
+                    @if($problemLog->close_note)
+                        <div class="info-block">
                             <div class="meta-label">Close Note</div>
-                            <div class="meta-value" style="font-weight: 500; line-height: 1.7;">
-                                {{ $problemLog->close_note ?: '-' }}
+                            <div class="meta-value" style="font-weight:500; line-height:1.7;">
+                                {{ $problemLog->close_note }}
                             </div>
                         </div>
-
-                        @if($problemLog->closed_photo)
-                            <div class="image-box" style="margin-top: 18px;">
-                                <img src="{{ Storage::url($problemLog->closed_photo) }}" alt="Closed Photo">
-                            </div>
-                        @endif
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
 
             <div>
-                @if(auth()->user()->role === 'admin')
-                    <div class="card">
-                        <h2 class="section-title">Assign Engineer</h2>
-                        <p class="muted" style="margin-top: -6px; margin-bottom: 18px;">
-                            Assign this ticket to an engineer.
-                        </p>
-
-                        <form method="POST" action="/problem-logs/{{ $problemLog->id }}/assign-engineer">
-                            @csrf
-
-                            <div class="form-group">
-                                <label class="label">Engineer</label>
-                                <select name="assigned_engineer_id" class="select" required>
-                                    <option value="">Select engineer</option>
-                                    @foreach($engineers as $engineer)
-                                        <option value="{{ $engineer->id }}" {{ $problemLog->assigned_engineer_id == $engineer->id ? 'selected' : '' }}>
-                                            {{ $engineer->name }} ({{ $engineer->email }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">Assign Engineer</button>
-                        </form>
-                    </div>
-                @endif
-
-                @if(auth()->user()->role !== 'customer')
-                    @if(!$problemLog->acknowledged_at)
-                        <div class="card">
-                            <h2 class="section-title">Acknowledge Ticket</h2>
-                            <p class="muted" style="margin-top: -6px; margin-bottom: 18px;">
-                                Start handling this ticket.
-                            </p>
-
-                            <form method="POST" action="/problem-logs/{{ $problemLog->id }}/acknowledge">
-                                @csrf
-
-                                <div class="form-group">
-                                    <label class="label">Engineer Name</label>
-                                    <input type="text" name="engineer_name" class="input" value="{{ auth()->user()->name }}" placeholder="Enter engineer name">
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">Acknowledge Now</button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="card">
-                            <h2 class="section-title">Acknowledged</h2>
-                            <div class="meta-grid">
-                                <div class="meta-box">
-                                    <div class="meta-label">Engineer</div>
-                                    <div class="meta-value">{{ $problemLog->engineer_name ?: '-' }}</div>
-                                </div>
-
-                                <div class="meta-box">
-                                    <div class="meta-label">Acknowledged At</div>
-                                    <div class="meta-value">
-                                        {{ $problemLog->acknowledged_at ? $problemLog->acknowledged_at->format('d M Y H:i') : '-' }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if($problemLog->status !== 'closed')
-                        <div class="card">
-                            <h2 class="section-title">Close Ticket</h2>
-                            <p class="muted" style="margin-top: -6px; margin-bottom: 18px;">
-                                Complete the ticket, add closure note, and upload final evidence.
-                            </p>
-
-                            <form method="POST" action="/problem-logs/{{ $problemLog->id }}/close" enctype="multipart/form-data">
-                                @csrf
-
-                                <div class="form-group">
-                                    <label class="label">Close Note</label>
-                                    <textarea name="close_note" class="textarea" placeholder="Explain how the issue was resolved"></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="label">Closed Photo</label>
-                                    <input type="file" name="closed_photo" class="file">
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">Close Ticket</button>
-                            </form>
-                        </div>
-                    @endif
-                @endif
-
                 <div class="card">
-                    <h2 class="section-title">Quick Actions</h2>
-                    <div class="actions-bottom">
-                        <a href="/problem-logs/create" class="btn btn-primary">+ New Ticket</a>
-                        <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-outline">Edit Ticket</a>
-                        <a href="/problem-logs" class="btn btn-outline">Back to List</a>
-                    </div>
+                    <h2 class="section-title">Problem Photo</h2>
+
+                    @if($problemLog->photo)
+                        <img src="{{ asset('storage/' . $problemLog->photo) }}" alt="Problem Photo" class="img">
+                    @else
+                        <div class="placeholder">No Photo</div>
+                    @endif
                 </div>
+
+                @if($problemLog->closed_photo)
+                    <div class="card">
+                        <h2 class="section-title">Closed Photo</h2>
+                        <img src="{{ asset('storage/' . $problemLog->closed_photo) }}" alt="Closed Photo" class="img">
+                    </div>
+                @endif
             </div>
         </div>
     </div>
