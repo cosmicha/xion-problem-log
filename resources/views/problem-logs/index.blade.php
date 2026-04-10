@@ -173,6 +173,44 @@
             font-size: 13px;
         }
 
+        .summary-bar-wrap {
+            margin-top: 14px;
+        }
+
+        .summary-bar {
+            width: 100%;
+            height: 12px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            display: flex;
+        }
+
+        .seg-open { background: #ef4444; }
+        .seg-progress { background: #f59e0b; }
+        .seg-closed { background: #22c55e; }
+
+        .summary-legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+        }
+
         .content-card {
             background: rgba(255,255,255,0.88);
             backdrop-filter: blur(10px);
@@ -419,6 +457,11 @@
         $openCount = $logs->where('status', 'open')->count();
         $progressCount = $logs->where('status', 'in_progress')->count();
         $closedCount = $logs->where('status', 'closed')->count();
+
+        $barTotal = max($totalLogs, 1);
+        $openWidth = ($openCount / $barTotal) * 100;
+        $progressWidth = ($progressCount / $barTotal) * 100;
+        $closedWidth = ($closedCount / $barTotal) * 100;
     @endphp
 
     <div class="page">
@@ -444,9 +487,23 @@
 
             <div class="stats">
                 <div class="stat-card featured">
-                    <div class="stat-label">Total Logs</div>
+                    <div class="stat-label">Operational Snapshot</div>
                     <div class="stat-value">{{ $totalLogs }}</div>
-                    <div class="stat-sub">Current result set</div>
+                    <div class="stat-sub">Total incidents tracked in this view</div>
+
+                    <div class="summary-bar-wrap">
+                        <div class="summary-bar">
+                            <div class="seg-open" style="width: {{ $openWidth }}%;"></div>
+                            <div class="seg-progress" style="width: {{ $progressWidth }}%;"></div>
+                            <div class="seg-closed" style="width: {{ $closedWidth }}%;"></div>
+                        </div>
+
+                        <div class="summary-legend">
+                            <span class="legend-item"><span class="legend-dot seg-open"></span> Open</span>
+                            <span class="legend-item"><span class="legend-dot seg-progress"></span> In Progress</span>
+                            <span class="legend-item"><span class="legend-dot seg-closed"></span> Closed</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="stat-card">
