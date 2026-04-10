@@ -23,15 +23,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'approved'])->group(function () {
-
     Route::get('/engineer/dashboard', [ProblemLogController::class, 'engineerDashboard']);
-
     Route::get('/problem-logs/export', [ProblemLogController::class, 'export']);
     Route::post('/problem-logs/{problemLog}/acknowledge', [ProblemLogController::class, 'acknowledge']);
     Route::post('/problem-logs/{problemLog}/assign-engineer', [ProblemLogController::class, 'assignEngineer']);
+    Route::post('/problem-logs/{problemLog}/take', [ProblemLogController::class, 'take']);
     Route::post('/problem-logs/{problemLog}/close', [ProblemLogController::class, 'close']);
-
     Route::resource('problem-logs', ProblemLogController::class);
 });
-
-Route::post('/problem-logs/{problemLog}/take', [App\Http\Controllers\ProblemLogController::class, 'take']);
