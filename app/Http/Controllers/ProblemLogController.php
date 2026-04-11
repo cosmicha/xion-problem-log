@@ -34,7 +34,8 @@ class ProblemLogController extends Controller
             'status' => 'open',
             'priority' => $request->priority,
             'company_id' => auth()->user()->company_id,
-            'ticket_number' => strtoupper(uniqid('TKT'))
+            'ticket_number' => strtoupper(uniqid('TKT')),
+            'opened_at' => now(),
         ]);
 
         return redirect('/problem-logs');
@@ -65,6 +66,14 @@ class ProblemLogController extends Controller
             $data['photo'] = $request->file('photo')->store('photos', 'public');
         }
 
+        if (($request->status === 'in_progress') && !$problemLog->in_progress_at) {
+            $data['in_progress_at'] = now();
+        }
+
+        if (($request->status === 'closed') && !$problemLog->closed_at) {
+            $data['closed_at'] = now();
+        }
+
         $problemLog->update($data);
 
         return redirect('/problem-logs');
@@ -89,7 +98,7 @@ class ProblemLogController extends Controller
             'engineer_name' => $engineer->name,
             'acknowledged_at' => now(),
             'status' => 'in_progress',
-            'in_progress_at' => now(),
+            'in_progress_at' => $problemLog->in_progress_at ?: now(),
         ]);
 
         return back()->with('success', 'Ticket acknowledged.');
@@ -124,7 +133,7 @@ class ProblemLogController extends Controller
             'engineer_name' => $user->name,
             'acknowledged_at' => now(),
             'status' => 'in_progress',
-            'in_progress_at' => now(),
+            'in_progress_at' => $problemLog->in_progress_at ?: now(),
         ]);
 
         return back()->with('success', 'Ticket taken and acknowledged.');
@@ -161,7 +170,11 @@ class ProblemLogController extends Controller
             'Company',
             'Status',
             'Priority',
-            'Created'
+            'Created',
+            'Opened At',
+            'Acknowledged At',
+            'In Progress At',
+            'Closed At'
         ]);
 
         foreach ($logs as $log) {
@@ -171,7 +184,11 @@ class ProblemLogController extends Controller
                 optional($log->company)->name ?? '-',
                 $log->status,
                 $log->priority,
-                $log->created_at
+                $log->created_at,
+                $log->opened_at,
+                $log->acknowledged_at,
+                $log->in_progress_at,
+                $log->closed_at,
             ]);
         }
 

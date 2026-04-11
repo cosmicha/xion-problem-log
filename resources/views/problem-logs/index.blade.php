@@ -6,7 +6,6 @@
     <title>Problem Log Dashboard</title>
     <style>
         * { box-sizing: border-box; }
-
         body {
             margin: 0;
             font-family: Inter, Arial, sans-serif;
@@ -16,13 +15,7 @@
                 linear-gradient(180deg, #081120 0%, #0d1728 45%, #f4f7fb 45%, #f4f7fb 100%);
             color: #0f172a;
         }
-
-        .page {
-            max-width: 1380px;
-            margin: 0 auto;
-            padding: 16px 16px 60px;
-        }
-
+        .page { max-width: 1480px; margin: 0 auto; padding: 16px 16px 60px; }
         .hero {
             color: white;
             padding: 28px 30px 36px;
@@ -34,18 +27,6 @@
             overflow: hidden;
             position: relative;
         }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            right: -60px;
-            top: -60px;
-            width: 220px;
-            height: 220px;
-            border-radius: 999px;
-            background: radial-gradient(circle, rgba(34, 211, 238, 0.22), transparent 65%);
-        }
-
         .hero-top {
             display: flex;
             justify-content: space-between;
@@ -55,7 +36,6 @@
             position: relative;
             z-index: 1;
         }
-
         .brand {
             display: inline-flex;
             align-items: center;
@@ -67,7 +47,6 @@
             color: rgba(255,255,255,0.82);
             margin-bottom: 14px;
         }
-
         .brand-mark {
             width: 38px;
             height: 38px;
@@ -81,26 +60,9 @@
             box-shadow: 0 0 20px rgba(96,165,250,0.45);
             font-size: 15px;
         }
-
-        .hero h1 {
-            margin: 0 0 8px;
-            font-size: 34px;
-            line-height: 1.1;
-        }
-
-        .hero p {
-            margin: 0;
-            color: rgba(255,255,255,0.8);
-            max-width: 760px;
-            font-size: 15px;
-        }
-
-        .hero-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
+        .hero h1 { margin: 0 0 8px; font-size: 34px; line-height: 1.1; }
+        .hero p { margin: 0; color: rgba(255,255,255,0.8); max-width: 760px; font-size: 15px; }
+        .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
         .btn {
             display: inline-flex;
             align-items: center;
@@ -114,29 +76,22 @@
             border: none;
             cursor: pointer;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
             box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
         }
-
         .btn-secondary {
             background: rgba(255,255,255,0.10);
             color: white;
             border: 1px solid rgba(255,255,255,0.16);
-            backdrop-filter: blur(8px);
         }
-
         .stats {
             margin-top: 22px;
             display: grid;
             grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr;
             gap: 16px;
-            position: relative;
-            z-index: 1;
         }
-
         .stat-card {
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.08);
@@ -145,11 +100,9 @@
             backdrop-filter: blur(8px);
             min-height: 150px;
         }
-
         .stat-card.featured {
             background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.07));
         }
-
         .stat-label {
             font-size: 12px;
             letter-spacing: 0.08em;
@@ -157,23 +110,14 @@
             color: rgba(255,255,255,0.74);
             margin-bottom: 10px;
         }
-
         .stat-value {
             font-size: 32px;
             font-weight: 800;
             color: white;
             margin-bottom: 6px;
         }
-
-        .stat-sub {
-            color: rgba(255,255,255,0.76);
-            font-size: 13px;
-        }
-
-        .summary-bar-wrap {
-            margin-top: 18px;
-        }
-
+        .stat-sub { color: rgba(255,255,255,0.76); font-size: 13px; }
+        .summary-bar-wrap { margin-top: 18px; }
         .summary-bar {
             width: 100%;
             height: 16px;
@@ -182,11 +126,9 @@
             background: rgba(255,255,255,0.12);
             display: flex;
         }
-
         .seg-open { background: #ef4444; }
         .seg-progress { background: #f59e0b; }
         .seg-closed { background: #22c55e; }
-
         .summary-legend {
             display: flex;
             gap: 16px;
@@ -195,19 +137,8 @@
             font-size: 12px;
             color: rgba(255,255,255,0.86);
         }
-
-        .legend-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 999px;
-        }
-
+        .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 999px; }
         .content-card {
             background: rgba(255,255,255,0.90);
             backdrop-filter: blur(10px);
@@ -216,27 +147,8 @@
             box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
             border: 1px solid rgba(148, 163, 184, 0.18);
         }
-
-        .toolbar {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 22px;
-        }
-
-        .toolbar-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .muted {
-            color: #64748b;
-            font-size: 14px;
-        }
-
+        .toolbar-title { font-size: 20px; font-weight: 800; color: #0f172a; }
+        .muted { color: #64748b; font-size: 14px; }
         .success {
             margin-bottom: 18px;
             padding: 14px 16px;
@@ -246,20 +158,18 @@
             border: 1px solid #bbf7d0;
             font-weight: 600;
         }
-
         .table-wrap {
             overflow-x: auto;
             border-radius: 24px;
             border: 1px solid #dbe3ef;
             background: white;
+            margin-top: 20px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1180px;
+            min-width: 1450px;
         }
-
         th {
             background: #edf3fb;
             color: #24408e;
@@ -267,36 +177,18 @@
             text-transform: uppercase;
             letter-spacing: 0.07em;
             text-align: left;
-            padding: 18px 18px;
+            padding: 18px;
             border-bottom: 1px solid #d9e4f3;
         }
-
         td {
-            padding: 20px 18px;
+            padding: 18px;
             border-bottom: 1px solid #edf2f7;
             vertical-align: middle;
             font-size: 14px;
             color: #0f172a;
         }
-
-        tr:hover td {
-            background: #f8fbff;
-        }
-
-        .log-title {
-            font-weight: 800;
-            font-size: 14px;
-            color: #0f172a;
-            margin-bottom: 4px;
-            line-height: 1.35;
-        }
-
-        .log-sub {
-            color: #64748b;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
+        .log-title { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
+        .log-sub { color: #64748b; font-size: 12px; }
         .ticket-chip {
             display: inline-block;
             padding: 8px 12px;
@@ -305,10 +197,7 @@
             color: #1d4ed8;
             font-size: 12px;
             font-weight: 800;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
         }
-
         .badge {
             display: inline-flex;
             align-items: center;
@@ -316,16 +205,13 @@
             border-radius: 999px;
             font-size: 12px;
             font-weight: 800;
-            white-space: nowrap;
         }
-
         .badge-open { background: #fee2e2; color: #b91c1c; }
         .badge-progress { background: #fef3c7; color: #b45309; }
         .badge-closed { background: #dcfce7; color: #15803d; }
         .badge-low { background: #e5e7eb; color: #374151; }
         .badge-medium { background: #dbeafe; color: #1d4ed8; }
         .badge-high { background: #fee2e2; color: #b91c1c; }
-
         .thumb {
             width: 76px;
             height: 76px;
@@ -335,7 +221,6 @@
             border: 1px solid #e2e8f0;
             display: block;
         }
-
         .thumb-placeholder {
             width: 76px;
             height: 76px;
@@ -349,13 +234,7 @@
             font-weight: 700;
             border: 1px dashed #cbd5e1;
         }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; }
         .btn-small {
             padding: 10px 14px;
             border-radius: 14px;
@@ -366,7 +245,6 @@
             background: #eff6ff;
             color: #2563eb;
         }
-
         .btn-delete {
             padding: 10px 14px;
             border-radius: 14px;
@@ -377,36 +255,35 @@
             color: #dc2626;
             cursor: pointer;
         }
-
-        .inline-form {
-            display: inline;
-        }
-
         @media (max-width: 1100px) {
-            .stats {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
+            .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
-
         @media (max-width: 640px) {
-            .page {
-                padding: 14px 14px 40px;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .content-card,
-            .hero {
-                border-radius: 20px;
-            }
+            .page { padding: 14px 14px 40px; }
+            .stats { grid-template-columns: 1fr; }
+            .content-card, .hero { border-radius: 20px; }
         }
     </style>
 </head>
 <body>
     @php
         use Illuminate\Support\Facades\Storage;
+
+        function formatDuration($start, $end) {
+            if (!$start || !$end) {
+                return '-';
+            }
+
+            $seconds = $start->diffInSeconds($end);
+
+            $days = floor($seconds / 86400);
+            $hours = floor(($seconds % 86400) / 3600);
+            $minutes = floor(($seconds % 3600) / 60);
+
+            if ($days > 0) return $days . 'd ' . $hours . 'h';
+            if ($hours > 0) return $hours . 'h ' . $minutes . 'm';
+            return $minutes . 'm';
+        }
 
         $totalLogs = $logs->count();
         $openCount = $logs->where('status', 'open')->count();
@@ -500,12 +377,8 @@
         @endif
 
         <div class="content-card">
-            <div class="toolbar">
-                <div>
-                    <div class="toolbar-title">Incident List</div>
-                    <div class="muted">Ticket overview and current operational status.</div>
-                </div>
-            </div>
+            <div class="toolbar-title">Incident List</div>
+            <div class="muted">Ticket overview, timestamps, and lifecycle timing.</div>
 
             <div class="table-wrap">
                 <table>
@@ -513,11 +386,15 @@
                         <th>ID</th>
                         <th>Ticket</th>
                         <th>Incident</th>
-                        <th>Created</th>
                         <th>Status</th>
                         <th>Priority</th>
                         <th>Engineer</th>
-                        <th>Closed At</th>
+                        <th>Created</th>
+                        <th>Acknowledged</th>
+                        <th>In Progress</th>
+                        <th>Closed</th>
+                        <th>Response Time</th>
+                        <th>Resolution Time</th>
                         <th>Photo</th>
                         <th>Action</th>
                     </tr>
@@ -533,7 +410,6 @@
                                     {{ \Illuminate\Support\Str::limit($log->description, 55) ?: 'No description' }}
                                 </div>
                             </td>
-                            <td>{{ $log->created_at ? $log->created_at->format('d M Y H:i') : '-' }}</td>
                             <td>
                                 @if($log->status === 'open')
                                     <span class="badge badge-open">Open</span>
@@ -552,11 +428,16 @@
                                     <span class="badge badge-low">Low</span>
                                 @endif
                             </td>
-                            <td>{{ $log->engineer_name ?: '-' }}</td>
+                            <td>{{ optional($log->assignedEngineer)->name ?? $log->engineer_name ?? '-' }}</td>
+                            <td>{{ $log->created_at ? $log->created_at->format('d M Y H:i') : '-' }}</td>
+                            <td>{{ $log->acknowledged_at ? $log->acknowledged_at->format('d M Y H:i') : '-' }}</td>
+                            <td>{{ $log->in_progress_at ? $log->in_progress_at->format('d M Y H:i') : '-' }}</td>
                             <td>{{ $log->closed_at ? $log->closed_at->format('d M Y H:i') : '-' }}</td>
+                            <td>{{ formatDuration($log->opened_at ?? $log->created_at, $log->acknowledged_at ?? $log->in_progress_at) }}</td>
+                            <td>{{ formatDuration($log->in_progress_at, $log->closed_at) }}</td>
                             <td>
                                 @if($log->photo)
-                                    <img src="{{ Storage::url($log->photo) }}" class="thumb" alt="Problem Photo">
+                                    <img src="{{ Storage::disk('public')->url($log->photo) }}" class="thumb" alt="Problem Photo">
                                 @else
                                     <div class="thumb-placeholder">No Img</div>
                                 @endif
@@ -565,7 +446,7 @@
                                 <div class="actions">
                                     <a href="/problem-logs/{{ $log->id }}" class="btn-small">View</a>
                                     <a href="/problem-logs/{{ $log->id }}/edit" class="btn-small">Edit</a>
-                                    <form action="/problem-logs/{{ $log->id }}" method="POST" class="inline-form">
+                                    <form action="/problem-logs/{{ $log->id }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-delete" onclick="return confirm('Delete this log?')">Delete</button>
