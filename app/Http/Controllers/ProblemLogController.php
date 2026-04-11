@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\ProblemLog;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProblemLogController extends Controller
 {
@@ -44,7 +43,10 @@ class ProblemLogController extends Controller
     public function show(ProblemLog $problemLog)
     {
         $problemLog->load(['company', 'assignedEngineer']);
-        $engineers = User::where('role', 'engineer')->orderBy('name')->get();
+
+        $engineers = User::where('role', 'engineer')
+            ->orderBy('name')
+            ->get();
 
         return view('problem-logs.show', compact('problemLog', 'engineers'));
     }
@@ -76,10 +78,15 @@ class ProblemLogController extends Controller
 
     public function acknowledge(Request $request, ProblemLog $problemLog)
     {
-        $engineerName = $request->input('engineer_name') ?: auth()->user()->name;
+        $request->validate([
+            'assigned_engineer_id' => 'required|exists:users,id',
+        ]);
+
+        $engineer = User::findOrFail($request->assigned_engineer_id);
 
         $problemLog->update([
-            'engineer_name' => $engineerName,
+            'assigned_engineer_id' => $engineer->id,
+            'engineer_name' => $engineer->name,
             'acknowledged_at' => now(),
             'status' => 'in_progress',
             'in_progress_at' => now(),
@@ -112,17 +119,12 @@ class ProblemLogController extends Controller
             abort(403);
         }
 
-        if (!$problemLog->assigned_engineer_id) {
-            $problemLog->update([
-                'assigned_engineer_id' => $user->id,
-                'engineer_name' => $user->name,
-                'acknowledged_at' => now(),
-                'in_progress_at' => now(),
-                'status' => 'in_progress'
-            ]);
-        }
+        $problemLog->update([
+            'assigned_engineer_id' => $user->id,
+            'engineer_name' => $user->name,
+        ]);
 
-        return back();
+        return back()->with('success', 'Ticket assigned to you. Please acknowledge to start.');
     }
 
     public function close(Request $request, ProblemLog $problemLog)
@@ -140,7 +142,7 @@ class ProblemLogController extends Controller
             'closed_photo' => $path
         ]);
 
-        return back();
+        return back()->with('success', 'Ticket closed.');
     }
 
     public function export()
@@ -183,16 +185,17 @@ class ProblemLogController extends Controller
             abort(403);
         }
 
-        $assigned = ProblemLog::with('company')
+        $assigned = ProblemLog::with(['company', 'assignedEngineer'])
             ->where('assigned_engineer_id', $user->id)
             ->latest()
             ->get();
 
-        $unassigned = ProblemLog::with('company')
-            ->whereNull('assigned_engineer_id')
+        $available = ProblemLog::with(['company', 'assignedEngineer'])
+            ->where('status', 'open')
+            ->whereNull('acknowledged_at')
             ->latest()
             ->get();
 
-        return view('engineer.dashboard', compact('assigned', 'unassigned'));
+        return view('engineer.dashboard', compact('assigned', 'available'));
     }
 }

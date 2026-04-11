@@ -389,8 +389,15 @@
                         <form method="POST" action="/problem-logs/{{ $problemLog->id }}/acknowledge">
                             @csrf
                             <div class="form-group">
-                                <label class="label">Engineer Name</label>
-                                <input type="text" name="engineer_name" class="input" value="{{ auth()->user()->name }}">
+                                <label class="label">Engineer</label>
+                                <select name="assigned_engineer_id" class="select" required>
+                                    <option value="">Select engineer</option>
+                                    @foreach($engineers as $engineer)
+                                        <option value="{{ $engineer->id }}" {{ auth()->id() == $engineer->id ? 'selected' : '' }}>
+                                            {{ $engineer->name }} ({{ $engineer->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Acknowledge</button>

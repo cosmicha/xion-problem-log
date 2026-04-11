@@ -32,19 +32,6 @@
             box-shadow: 0 18px 50px rgba(2, 6, 23, 0.28);
             margin-bottom: 28px;
             border: 1px solid rgba(255,255,255,0.08);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            right: -60px;
-            top: -60px;
-            width: 220px;
-            height: 220px;
-            border-radius: 999px;
-            background: radial-gradient(circle, rgba(34, 211, 238, 0.22), transparent 65%);
         }
 
         .hero-top {
@@ -53,8 +40,6 @@
             gap: 20px;
             align-items: flex-start;
             flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
         }
 
         .brand {
@@ -114,20 +99,12 @@
             font-size: 14px;
             border: none;
             cursor: pointer;
-            transition: 0.2s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
         }
 
         .btn-secondary {
             background: rgba(255,255,255,0.10);
             color: white;
             border: 1px solid rgba(255,255,255,0.16);
-            backdrop-filter: blur(8px);
         }
 
         .btn-danger {
@@ -140,8 +117,6 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 16px;
-            position: relative;
-            z-index: 1;
         }
 
         .stat-card {
@@ -175,7 +150,6 @@
 
         .content-card {
             background: rgba(255,255,255,0.90);
-            backdrop-filter: blur(10px);
             border-radius: 28px;
             padding: 28px;
             box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
@@ -228,10 +202,6 @@
             color: #0f172a;
         }
 
-        tr:hover td {
-            background: #f8fbff;
-        }
-
         .ticket-chip {
             display: inline-block;
             padding: 8px 12px;
@@ -240,22 +210,17 @@
             color: #1d4ed8;
             font-size: 12px;
             font-weight: 800;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
         }
 
         .log-title {
             font-weight: 800;
             font-size: 14px;
-            color: #0f172a;
             margin-bottom: 4px;
-            line-height: 1.35;
         }
 
         .log-sub {
             color: #64748b;
             font-size: 12px;
-            line-height: 1.4;
         }
 
         .badge {
@@ -265,23 +230,11 @@
             border-radius: 999px;
             font-size: 12px;
             font-weight: 800;
-            white-space: nowrap;
         }
 
-        .badge-open {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .badge-progress {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .badge-closed {
-            background: #dcfce7;
-            color: #15803d;
-        }
+        .badge-open { background: #fee2e2; color: #b91c1c; }
+        .badge-progress { background: #fef3c7; color: #b45309; }
+        .badge-closed { background: #dcfce7; color: #15803d; }
 
         .actions {
             display: flex;
@@ -307,16 +260,6 @@
 
         .btn-take {
             background: #2563eb;
-            color: white;
-        }
-
-        .btn-ack {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .btn-close {
-            background: #16a34a;
             color: white;
         }
 
@@ -355,9 +298,9 @@
 <body>
     @php
         $assignedCount = $assigned->count();
-        $unassignedCount = $unassigned->count();
-        $openCount = $assigned->where('status', 'open')->count() + $unassigned->where('status', 'open')->count();
-        $progressCount = $assigned->where('status', 'in_progress')->count();
+        $availableCount = $available->count();
+        $myOpenCount = $assigned->where('status', 'open')->count();
+        $myProgressCount = $assigned->where('status', 'in_progress')->count();
     @endphp
 
     <div class="page">
@@ -369,9 +312,7 @@
                         ENGINEER WORKSPACE
                     </div>
                     <h1>Engineer Dashboard</h1>
-                    <p>
-                        Manage assigned tickets, pick up unassigned work, and keep issue handling moving.
-                    </p>
+                    <p>See tickets assigned to you and open tickets that have not been acknowledged yet.</p>
                     <p style="margin-top:10px;">
                         <strong>{{ auth()->user()->name }}</strong>
                     </p>
@@ -390,32 +331,32 @@
                 <div class="stat-card">
                     <div class="stat-label">Assigned to You</div>
                     <div class="stat-value">{{ $assignedCount }}</div>
-                    <div class="stat-sub">Current tickets under your name</div>
+                    <div class="stat-sub">Current workload</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-label">Available</div>
-                    <div class="stat-value">{{ $unassignedCount }}</div>
-                    <div class="stat-sub">Unassigned tickets you can take</div>
+                    <div class="stat-label">Available Open</div>
+                    <div class="stat-value">{{ $availableCount }}</div>
+                    <div class="stat-sub">Open and not acknowledged</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-label">Open</div>
-                    <div class="stat-value">{{ $openCount }}</div>
-                    <div class="stat-sub">Waiting to be worked on</div>
+                    <div class="stat-label">My Open</div>
+                    <div class="stat-value">{{ $myOpenCount }}</div>
+                    <div class="stat-sub">Assigned but not started</div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-label">In Progress</div>
-                    <div class="stat-value">{{ $progressCount }}</div>
-                    <div class="stat-sub">Currently being handled</div>
+                    <div class="stat-label">My In Progress</div>
+                    <div class="stat-value">{{ $myProgressCount }}</div>
+                    <div class="stat-sub">Already acknowledged</div>
                 </div>
             </div>
         </div>
 
         <div class="content-card">
             <div class="toolbar-title">Assigned To You</div>
-            <div class="muted">Tickets already assigned to your workload.</div>
+            <div class="muted">Tickets currently assigned under your name.</div>
 
             @if($assignedCount > 0)
                 <div class="table-wrap">
@@ -431,17 +372,12 @@
 
                         @foreach($assigned as $log)
                             <tr>
-                                <td>
-                                    <span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span>
-                                </td>
-
+                                <td><span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span></td>
                                 <td>
                                     <div class="log-title">{{ $log->title }}</div>
                                     <div class="log-sub">{{ \Illuminate\Support\Str::limit($log->description, 60) }}</div>
                                 </td>
-
-                                <td>{{ $log->company->name ?? '-' }}</td>
-
+                                <td>{{ optional($log->company)->name ?? '-' }}</td>
                                 <td>
                                     @if($log->status === 'open')
                                         <span class="badge badge-open">Open</span>
@@ -451,24 +387,10 @@
                                         <span class="badge badge-closed">Closed</span>
                                     @endif
                                 </td>
-
                                 <td>{{ $log->created_at ? $log->created_at->format('d M Y H:i') : '-' }}</td>
-
                                 <td>
                                     <div class="actions">
                                         <a href="/problem-logs/{{ $log->id }}" class="btn-small btn-view">View</a>
-
-                                        @if($log->status === 'open')
-                                            <form method="POST" action="/problem-logs/{{ $log->id }}/acknowledge" style="display:inline;">
-                                                @csrf
-                                                <input type="hidden" name="engineer_name" value="{{ auth()->user()->name }}">
-                                                <button type="submit" class="btn-small btn-ack">Acknowledge</button>
-                                            </form>
-                                        @endif
-
-                                        @if($log->status !== 'closed')
-                                            <a href="/problem-logs/{{ $log->id }}" class="btn-small btn-close">Close from Detail</a>
-                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -481,46 +403,33 @@
         </div>
 
         <div class="content-card">
-            <div class="toolbar-title">Unassigned Tickets</div>
-            <div class="muted">Available tickets you can take over immediately.</div>
+            <div class="toolbar-title">Open Tickets Not Yet Acknowledged</div>
+            <div class="muted">These can still be taken and acknowledged by an engineer.</div>
 
-            @if($unassignedCount > 0)
+            @if($availableCount > 0)
                 <div class="table-wrap">
                     <table>
                         <tr>
                             <th>Ticket</th>
                             <th>Incident</th>
                             <th>Company</th>
+                            <th>Assigned</th>
                             <th>Status</th>
                             <th>Created</th>
                             <th>Action</th>
                         </tr>
 
-                        @foreach($unassigned as $log)
+                        @foreach($available as $log)
                             <tr>
-                                <td>
-                                    <span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span>
-                                </td>
-
+                                <td><span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span></td>
                                 <td>
                                     <div class="log-title">{{ $log->title }}</div>
                                     <div class="log-sub">{{ \Illuminate\Support\Str::limit($log->description, 60) }}</div>
                                 </td>
-
-                                <td>{{ $log->company->name ?? '-' }}</td>
-
-                                <td>
-                                    @if($log->status === 'open')
-                                        <span class="badge badge-open">Open</span>
-                                    @elseif($log->status === 'in_progress')
-                                        <span class="badge badge-progress">In Progress</span>
-                                    @else
-                                        <span class="badge badge-closed">Closed</span>
-                                    @endif
-                                </td>
-
+                                <td>{{ optional($log->company)->name ?? '-' }}</td>
+                                <td>{{ optional($log->assignedEngineer)->name ?? '-' }}</td>
+                                <td><span class="badge badge-open">Open</span></td>
                                 <td>{{ $log->created_at ? $log->created_at->format('d M Y H:i') : '-' }}</td>
-
                                 <td>
                                     <div class="actions">
                                         <form method="POST" action="/problem-logs/{{ $log->id }}/take" style="display:inline;">
@@ -536,7 +445,7 @@
                     </table>
                 </div>
             @else
-                <div class="empty-box">No available tickets.</div>
+                <div class="empty-box">No open unacknowledged tickets.</div>
             @endif
         </div>
     </div>
