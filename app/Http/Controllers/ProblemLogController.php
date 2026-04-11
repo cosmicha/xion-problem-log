@@ -122,9 +122,12 @@ class ProblemLogController extends Controller
         $problemLog->update([
             'assigned_engineer_id' => $user->id,
             'engineer_name' => $user->name,
+            'acknowledged_at' => now(),
+            'status' => 'in_progress',
+            'in_progress_at' => now(),
         ]);
 
-        return back()->with('success', 'Ticket assigned to you. Please acknowledge to start.');
+        return back()->with('success', 'Ticket taken and acknowledged.');
     }
 
     public function close(Request $request, ProblemLog $problemLog)
