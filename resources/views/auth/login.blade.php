@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Ticketing System</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body {
             margin: 0;
@@ -214,9 +213,9 @@
                 Ticketing System
             </div>
 
-            <h1>Access Portal</h1>
+            <h1>Incident Portal Ticketing System</h1>
             <p>
-                Secure access for customer dashboards, incident reporting, operational tracking, engineer acknowledgement, and closure reporting.
+                A centralized portal to report, track, and manage incidents efficiently.
             </p>
 
             <div class="feature-box">

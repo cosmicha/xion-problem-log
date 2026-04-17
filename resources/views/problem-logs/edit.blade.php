@@ -299,7 +299,25 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    
+                            <div class="form-group">
+                                <label class="label">Company</label>
+                                @if((auth()->user()->role ?? '') === 'customer')
+                                    <input type="text" class="input" value="{{ optional(auth()->user()->company)->name ?? 'No Company' }}" disabled>
+                                    <input type="hidden" name="company_id" value="{{ auth()->user()->company_id }}">
+                                @else
+                                    <select name="company_id" class="select" required>
+                                        <option value="">Select Company</option>
+                                        @foreach(($companies ?? collect()) as $company)
+                                            <option value="{{ $company->id }}" {{ old('company_id', $problemLog->company_id) == $company->id ? 'selected' : '' }}>
+                                                {{ $company->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
                         <label class="label">Priority</label>
                         <select name="priority" class="select">
                             <option value="low" @selected($problemLog->priority === 'low')>Low</option>

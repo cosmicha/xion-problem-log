@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ProblemLog;
+
+class SlaDashboardController extends Controller
+{
+    public function index()
+    {
+        $logs = ProblemLog::with(['company', 'assignedEngineer'])
+            ->latest()
+            ->get();
+
+        $now = now();
+
+        foreach ($logs as $log) {
+            $company = $log->company;
+
+            $responseMinutes = $company->sla_response_minutes ?? 0;
+
+            if (!$log->created_at || !$responseMinutes) {
+                $log->sla_status = 'na';
+                $log->sla_remaining = null;
+                continue;
+            }
+
+            $elapsed = $log->created_at->diffInMinutes($now);
+            $remaining = $responseMinutes - $elapsed;
+
+            if ($remaining <= 0) {
+                $log->sla_status = 'breach';
+            } elseif ($remaining <= max(5, (int) floor($responseMinutes * 0.2))) {
+                $log->sla_status = 'warning';
+            } else {
+                $log->sla_status = 'safe';
+            }
+
+            $log->sla_remaining = $remaining;
+        }
+
+        $summary = [
+            'safe' => $logs->where('sla_status', 'safe')->count(),
+            'warning' => $logs->where('sla_status', 'warning')->count(),
+            'breach' => $logs->where('sla_status', 'breach')->count(),
+            'na' => $logs->where('sla_status', 'na')->count(),
+            'total' => $logs->count(),
+        ];
+
+        return view('sla-dashboard.index', compact('logs', 'summary'));
+    }
+}

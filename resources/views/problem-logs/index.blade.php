@@ -1,3 +1,6 @@
+
+<div style="margin-bottom: 15px;">
+</div>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,36 +9,41 @@
     <title>Problem Log Dashboard</title>
     <style>
         * { box-sizing: border-box; }
+
         body {
             margin: 0;
             font-family: Inter, Arial, sans-serif;
             background:
                 radial-gradient(circle at top left, rgba(37, 99, 235, 0.25), transparent 30%),
                 radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 30%),
-                linear-gradient(180deg, #081120 0%, #0d1728 45%, #f4f7fb 45%, #f4f7fb 100%);
+                linear-gradient(180deg, #081120 0%, #0d1728 42%, #f4f7fb 42%, #f4f7fb 100%);
             color: #0f172a;
         }
-        .page { max-width: 1480px; margin: 0 auto; padding: 16px 16px 60px; }
+
+        .page {
+            max-width: 1450px;
+            margin: 0 auto;
+            padding: 16px 16px 60px;
+        }
+
         .hero {
             color: white;
-            padding: 28px 30px 36px;
+            padding: 22px 24px 24px;
             border-radius: 28px;
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(29, 78, 216, 0.88));
             box-shadow: 0 18px 50px rgba(2, 6, 23, 0.28);
-            margin-bottom: 28px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.08);
-            overflow: hidden;
-            position: relative;
         }
+
         .hero-top {
             display: flex;
             justify-content: space-between;
             gap: 20px;
             align-items: flex-start;
             flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
         }
+
         .brand {
             display: inline-flex;
             align-items: center;
@@ -45,11 +53,12 @@
             letter-spacing: 0.12em;
             text-transform: uppercase;
             color: rgba(255,255,255,0.82);
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
+
         .brand-mark {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             background: linear-gradient(135deg, #60a5fa, #22d3ee);
             display: inline-flex;
@@ -60,144 +69,323 @@
             box-shadow: 0 0 20px rgba(96,165,250,0.45);
             font-size: 15px;
         }
-        .hero h1 { margin: 0 0 8px; font-size: 34px; line-height: 1.1; }
-        .hero p { margin: 0; color: rgba(255,255,255,0.8); max-width: 760px; font-size: 15px; }
-        .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            margin: 0;
+            color: rgba(255,255,255,0.82);
+            max-width: 760px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .company-line {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,.22);
+            background: rgba(255,255,255,.12);
+        }
+
+        .company-fallback {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #081120;
+            background: linear-gradient(135deg, #60a5fa, #22d3ee);
+        }
+
+        .company-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: rgba(255,255,255,0.92);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 22px;
+            align-items: center;
+        }
+
+        .actions .btn,
+        .actions .logout-form,
+        .actions .logout-btn {
+            height: 56px;
+        }
+
+        .actions .btn,
+        .actions .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-form {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .logout-btn {
+            appearance: none;
+            -webkit-appearance: none;
+            border: none;
+            font: inherit;
+            line-height: 1;
+            cursor: pointer;
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 12px 18px;
-            border-radius: 16px;
+            padding: 10px 14px;
+            border-radius: 14px;
             text-decoration: none;
             font-weight: 700;
             font-size: 14px;
             border: none;
             cursor: pointer;
         }
+
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
             box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
         }
+
         .btn-secondary {
             background: rgba(255,255,255,0.10);
             color: white;
             border: 1px solid rgba(255,255,255,0.16);
         }
-        .stats {
-            margin-top: 22px;
+
+        .btn-ghost {
+            background: #eef2ff;
+            color: #1e40af;
+        }
+
+        .summary-grid {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr;
-            gap: 16px;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 18px;
         }
-        .stat-card {
+
+        .summary-card {
             background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 22px 24px;
-            backdrop-filter: blur(8px);
-            min-height: 150px;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 20px;
+            padding: 16px;
+            min-height: 120px;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
-        .stat-card.featured {
-            background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.07));
+
+        .summary-card.is-link {
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
         }
-        .stat-label {
+
+        .summary-card.is-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(2, 6, 23, 0.18);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .summary-card.is-active {
+            border-color: rgba(255,255,255,0.36);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+        }
+
+        .summary-label {
             font-size: 12px;
-            letter-spacing: 0.08em;
             text-transform: uppercase;
+            letter-spacing: 0.08em;
             color: rgba(255,255,255,0.74);
-            margin-bottom: 10px;
-        }
-        .stat-value {
-            font-size: 32px;
+            margin-bottom: 8px;
             font-weight: 800;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            font-weight: 900;
             color: white;
-            margin-bottom: 6px;
+            line-height: 1.1;
+            margin-bottom: 8px;
         }
-        .stat-sub { color: rgba(255,255,255,0.76); font-size: 13px; }
-        .summary-bar-wrap { margin-top: 18px; }
-        .summary-bar {
-            width: 100%;
-            height: 16px;
-            overflow: hidden;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.12);
-            display: flex;
+
+        .summary-sub {
+            font-size: 13px;
+            color: rgba(255,255,255,0.78);
+            line-height: 1.5;
         }
-        .seg-open { background: #ef4444; }
-        .seg-progress { background: #f59e0b; }
-        .seg-closed { background: #22c55e; }
-        .summary-legend {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-            font-size: 12px;
-            color: rgba(255,255,255,0.86);
-        }
-        .legend-item { display: inline-flex; align-items: center; gap: 6px; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 999px; }
-        .content-card {
-            background: rgba(255,255,255,0.90);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
-            padding: 28px;
+
+        .card {
+            background: rgba(255,255,255,0.94);
+            border-radius: 24px;
+            padding: 20px;
             box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
             border: 1px solid rgba(148, 163, 184, 0.18);
-        }
-        .toolbar-title { font-size: 20px; font-weight: 800; color: #0f172a; }
-        .muted { color: #64748b; font-size: 14px; }
-        .success {
             margin-bottom: 18px;
-            padding: 14px 16px;
-            border-radius: 16px;
-            background: #ecfdf5;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-            font-weight: 600;
         }
-        .table-wrap {
-            overflow-x: auto;
-            border-radius: 24px;
-            border: 1px solid #dbe3ef;
-            background: white;
-            margin-top: 20px;
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0 0 6px;
         }
-        table {
+
+        .muted {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+
+        .filter-toggle-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .filter-panel {
+            display: none;
+        }
+
+        .filter-panel.open {
+            display: block;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .input, .select {
             width: 100%;
-            border-collapse: collapse;
-            min-width: 1450px;
-        }
-        th {
-            background: #edf3fb;
-            color: #24408e;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            text-align: left;
-            padding: 18px;
-            border-bottom: 1px solid #d9e4f3;
-        }
-        td {
-            padding: 18px;
-            border-bottom: 1px solid #edf2f7;
-            vertical-align: middle;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #cbd5e1;
+            background: white;
             font-size: 14px;
             color: #0f172a;
+            outline: none;
         }
-        .log-title { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
-        .log-sub { color: #64748b; font-size: 12px; }
-        .ticket-chip {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 14px;
-            background: #dbe7fb;
-            color: #1d4ed8;
-            font-size: 12px;
+
+        .toolbar-chip-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 999px;
+            background: #f8fbff;
+            border: 1px solid #dbeafe;
+            color: #1e3a8a;
+            font-size: 13px;
             font-weight: 800;
         }
+
+        .tickets-wrap {
+            display: grid;
+            gap: 14px;
+        }
+
+        .ticket-card {
+            background: #f8fbff;
+            border: 1px solid #dbeafe;
+            border-radius: 22px;
+            padding: 18px;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+        }
+
+        .ticket-top {
+            display: grid;
+            grid-template-columns: 110px 1.2fr 1fr 160px;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .ticket-id {
+            font-size: 26px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+
+        .ticket-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-weight: 800;
+            font-size: 13px;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
+        .incident-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+            line-height: 1.35;
+        }
+
+        .incident-desc {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .meta-inline {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -206,94 +394,209 @@
             font-size: 12px;
             font-weight: 800;
         }
+
         .badge-open { background: #fee2e2; color: #b91c1c; }
         .badge-progress { background: #fef3c7; color: #b45309; }
         .badge-closed { background: #dcfce7; color: #15803d; }
-        .badge-low { background: #e5e7eb; color: #374151; }
-        .badge-medium { background: #dbeafe; color: #1d4ed8; }
+
         .badge-high { background: #fee2e2; color: #b91c1c; }
-        .thumb {
-            width: 76px;
-            height: 76px;
-            object-fit: cover;
+        .badge-medium { background: #dbeafe; color: #1d4ed8; }
+        .badge-low { background: #e5e7eb; color: #374151; }
+
+        .badge-sla-ok { background: #dcfce7; color: #15803d; }
+        .badge-sla-breach { background: #fee2e2; color: #b91c1c; }
+        .badge-sla-none { background: #e5e7eb; color: #374151; }
+        .sla-timer-wrap {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .sla-timer {
+            padding: 12px 14px;
             border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+            background: white;
             border: 1px solid #e2e8f0;
+        }
+
+        .sla-timer-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .sla-timer-value {
+            font-size: 14px;
+            font-weight: 900;
+            line-height: 1.45;
+        }
+
+        .sla-safe .sla-timer-value {
+            color: #15803d;
+        }
+
+        .sla-warning .sla-timer-value {
+            color: #b45309;
+        }
+
+        .sla-breached .sla-timer-value {
+            color: #b91c1c;
+        }
+
+
+        .ticket-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .meta-box {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .ticket-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .ticket-details {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #dbeafe;
+        }
+
+        .ticket-details.open {
             display: block;
         }
-        .thumb-placeholder {
-            width: 76px;
-            height: 76px;
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .detail-box {
+            padding: 14px;
             border-radius: 16px;
-            background: #f1f5f9;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .detail-title {
             font-size: 11px;
-            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .detail-body {
+            font-size: 14px;
+            line-height: 1.65;
+            color: #0f172a;
+            word-break: break-word;
+        }
+
+        .detail-photo {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .empty-state {
+            padding: 28px;
+            text-align: center;
+            color: #64748b;
             border: 1px dashed #cbd5e1;
+            border-radius: 20px;
+            background: white;
         }
-        .actions { display: flex; flex-wrap: wrap; gap: 10px; }
-        .btn-small {
-            padding: 10px 14px;
-            border-radius: 14px;
-            font-size: 12px;
-            font-weight: 800;
-            text-decoration: none;
-            border: 1px solid #dbeafe;
-            background: #eff6ff;
-            color: #2563eb;
+
+        @media (max-width: 1250px) {
+            .summary-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .filter-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .ticket-top {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        .btn-delete {
-            padding: 10px 14px;
-            border-radius: 14px;
-            font-size: 12px;
-            font-weight: 800;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #dc2626;
-            cursor: pointer;
-        }
-        @media (max-width: 1100px) {
-            .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        @media (max-width: 640px) {
-            .page { padding: 14px 14px 40px; }
-            .stats { grid-template-columns: 1fr; }
-            .content-card, .hero { border-radius: 20px; }
+
+        @media (max-width: 760px) {
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card {
+                min-height: 0;
+            }
+
+            .ticket-meta-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     @php
-        use Illuminate\Support\Facades\Storage;
-
-        function formatDuration($start, $end) {
-            if (!$start || !$end) {
-                return '-';
-            }
-
-            $seconds = $start->diffInSeconds($end);
-
-            $days = floor($seconds / 86400);
-            $hours = floor(($seconds % 86400) / 3600);
-            $minutes = floor(($seconds % 3600) / 60);
-
-            if ($days > 0) return $days . 'd ' . $hours . 'h';
-            if ($hours > 0) return $hours . 'h ' . $minutes . 'm';
-            return $minutes . 'm';
-        }
-
-        $totalLogs = $logs->count();
-        $openCount = $logs->where('status', 'open')->count();
-        $progressCount = $logs->where('status', 'in_progress')->count();
-        $closedCount = $logs->where('status', 'closed')->count();
-
-        $barTotal = max($totalLogs, 1);
-        $openWidth = ($openCount / $barTotal) * 100;
-        $progressWidth = ($progressCount / $barTotal) * 100;
-        $closedWidth = ($closedCount / $barTotal) * 100;
+        $problemLogs = $problemLogs ?? $logs ?? $tickets ?? collect();
+        $summaryLogs = $summaryLogs ?? $problemLogs;
+        $user = auth()->user();
+        $company = optional($user)->company;
+        $snapshotTotal = $summaryLogs->count();
+        $snapshotOpen = $summaryLogs->where('status', 'open')->count();
+        $snapshotProgress = $summaryLogs->where('status', 'in_progress')->count();
+        $snapshotClosed = $summaryLogs->where('status', 'closed')->count();
+        $closureRate = $snapshotTotal > 0 ? round(($snapshotClosed / $snapshotTotal) * 100) : 0;
+        $baseFilterQuery = request()->except('status', 'page');
+        $allUrl = url('/problem-logs') . (count($baseFilterQuery) ? ('?' . http_build_query($baseFilterQuery)) : '');
+        $openUrl = url('/problem-logs') . '?' . http_build_query(array_merge($baseFilterQuery, ['status' => 'open']));
+        $progressUrl = url('/problem-logs') . '?' . http_build_query(array_merge($baseFilterQuery, ['status' => 'in_progress']));
+        $closedUrl = url('/problem-logs') . '?' . http_build_query(array_merge($baseFilterQuery, ['status' => 'closed']));
+        $exportUrl = url('/problem-logs/export') . (count(request()->query()) ? ('?' . http_build_query(request()->query())) : '');
     @endphp
 
     <div class="page">
@@ -305,160 +608,360 @@
                         OPERATIONS CONSOLE
                     </div>
                     <h1>Problem Log Dashboard</h1>
-                    <p>Incident tracking for operational teams, engineer ownership, visual evidence, and closure accountability.</p>
-                    <p style="margin-top:10px;">
-                        <strong>{{ auth()->user()->company->name ?? 'No Company' }}</strong> • {{ ucfirst(auth()->user()->role ?? 'user') }}
-                    </p>
-                </div>
+                    <p>Incident tracking, lifecycle metrics, SLA filters, and operational visibility.</p>
 
-                <div class="hero-actions">
-                    @if((auth()->user()->role ?? '') === 'admin')
-                        <a href="/admin/users" class="btn btn-secondary">Users</a>
+                    @if($company)
+                        <div class="company-line">
+                            @if($company->logo_path)
+                                <img src="{{ url('/storage/' . $company->logo_path) }}" alt="{{ $company->name }}" class="company-logo">
+                            @else
+                                <div class="company-fallback">{{ strtoupper(substr($company->name, 0, 2)) }}</div>
+                            @endif
+                            <div class="company-name">{{ $company->name }} • {{ ucfirst($user->role ?? 'user') }}</div>
+                        </div>
+                    @else
+                        <div class="company-line">
+                            <div class="company-name">No Company • {{ ucfirst($user->role ?? 'user') }}</div>
+                        </div>
                     @endif
-                    <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
-                    <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
-                    <a href="/problem-logs" class="btn btn-secondary">Refresh List</a>
-                    <form method="POST" action="/logout" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="btn btn-secondary">Logout</button>
-                    </form>
+
+                    <div class="actions">
+                    <a href="/resolution-library" class="btn btn-secondary">📚 Knowledge Base</a>
+                        @if(($user->role ?? '') === 'admin')
+                            <a href="/admin/users" class="btn btn-secondary">Users</a>
+                        @endif
+
+                        <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
+
+                        @if(in_array(($user->role ?? ''), ['admin', 'engineer']))
+                            <a href="/sla-dashboard" class="btn btn-secondary">SLA Dashboard</a>
+                        @endif
+
+                        <a href="/analytics" class="btn btn-secondary">Analytics</a>
+                        <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
+                        <a href="/problem-logs" class="btn btn-secondary">Refresh</a>
+                        <a href="/help" class="btn btn-secondary">Help</a>
+
+                        <form method="POST" action="/logout" class="logout-form">
+                            @csrf
+                            <button type="submit" class="btn btn-secondary logout-btn">Logout</button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <div class="stats">
-                <div class="stat-card featured">
-                    <div class="stat-label">Operational Snapshot</div>
-                    <div class="stat-value">{{ $totalLogs }}</div>
-                    <div class="stat-sub">Total incidents tracked in this view</div>
+            <div class="summary-grid">
+                <a href="{{ $allUrl }}" class="summary-card is-link {{ request('status') ? '' : 'is-active' }}">
+                    <div class="summary-label">Operational Snapshot</div>
+                    <div class="summary-value">{{ $snapshotTotal }}</div>
+                    <div class="summary-sub">Total incidents in current filtered view</div>
+                </a>
 
-                    <div class="summary-bar-wrap">
-                        <div class="summary-bar">
-                            <div class="seg-open" style="width: {{ $openWidth }}%;"></div>
-                            <div class="seg-progress" style="width: {{ $progressWidth }}%;"></div>
-                            <div class="seg-closed" style="width: {{ $closedWidth }}%;"></div>
-                        </div>
+                <a href="{{ $openUrl }}" class="summary-card is-link {{ request('status') === 'open' ? 'is-active' : '' }}">
+                    <div class="summary-label">Open</div>
+                    <div class="summary-value">{{ $snapshotOpen }}</div>
+                    <div class="summary-sub">Need attention</div>
+                </a>
 
-                        <div class="summary-legend">
-                            <span class="legend-item"><span class="legend-dot seg-open"></span> Open</span>
-                            <span class="legend-item"><span class="legend-dot seg-progress"></span> In Progress</span>
-                            <span class="legend-item"><span class="legend-dot seg-closed"></span> Closed</span>
-                        </div>
-                    </div>
-                </div>
+                <a href="{{ $progressUrl }}" class="summary-card is-link {{ request('status') === 'in_progress' ? 'is-active' : '' }}">
+                    <div class="summary-label">In Progress</div>
+                    <div class="summary-value">{{ $snapshotProgress }}</div>
+                    <div class="summary-sub">Currently being handled</div>
+                </a>
 
-                <div class="stat-card">
-                    <div class="stat-label">Open</div>
-                    <div class="stat-value">{{ $openCount }}</div>
-                    <div class="stat-sub">Need attention</div>
-                </div>
+                <a href="{{ $closedUrl }}" class="summary-card is-link {{ request('status') === 'closed' ? 'is-active' : '' }}">
+                    <div class="summary-label">Closed</div>
+                    <div class="summary-value">{{ $snapshotClosed }}</div>
+                    <div class="summary-sub">Resolved incidents</div>
+                </a>
 
-                <div class="stat-card">
-                    <div class="stat-label">In Progress</div>
-                    <div class="stat-value">{{ $progressCount }}</div>
-                    <div class="stat-sub">Being handled</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Closed</div>
-                    <div class="stat-value">{{ $closedCount }}</div>
-                    <div class="stat-sub">Resolved issues</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Closure Rate</div>
-                    <div class="stat-value">{{ $totalLogs > 0 ? round(($closedCount / $totalLogs) * 100) : 0 }}%</div>
-                    <div class="stat-sub">Current result set</div>
-                </div>
+                <a href="{{ $allUrl }}" class="summary-card is-link {{ request('status') ? '' : 'is-active' }}">
+                    <div class="summary-label">Closure Rate</div>
+                    <div class="summary-value">{{ $closureRate }}%</div>
+                    <div class="summary-sub">Current filtered result</div>
+                </a>
             </div>
         </div>
 
         @if(session('success'))
-            <div class="success">{{ session('success') }}</div>
+            <div class="card" style="background:#ecfdf5;color:#166534;border-color:#bbf7d0;">
+                {{ session('success') }}
+            </div>
         @endif
 
-        <div class="content-card">
-            <div class="toolbar-title">Incident List</div>
-            <div class="muted">Ticket overview, timestamps, and lifecycle timing.</div>
+        <div class="card">
+            <div class="filter-toggle-row">
+                <div>
+                    <div class="card-title">Filter & Search</div>
+                    <div class="muted" style="margin-bottom:0;"></div>
+                </div>
 
-            <div class="table-wrap">
-                <table>
-                    <tr>
-                        <th>ID</th>
-                        <th>Ticket</th>
-                        <th>Incident</th>
-                        <th>Status</th>
-                        <th>Priority</th>
-                        <th>Engineer</th>
-                        <th>Created</th>
-                        <th>Acknowledged</th>
-                        <th>In Progress</th>
-                        <th>Closed</th>
-                        <th>Response Time</th>
-                        <th>Resolution Time</th>
-                        <th>Photo</th>
-                        <th>Action</th>
-                    </tr>
+                <div class="toolbar-chip-row">
+                    <span class="chip">Results: {{ $problemLogs->count() }}</span>
+                    <button type="button" class="btn btn-ghost" id="toggleFiltersBtn">Show Filters</button>
+                </div>
+            </div>
 
-                    @foreach($logs as $log)
-                        <tr>
-                            <td>#{{ $log->id }}</td>
-                            <td><span class="ticket-chip">{{ $log->ticket_number ?: '-' }}</span></td>
-                            <td>
-                                <div class="log-title">{{ $log->title }}</div>
-                                <div class="log-sub">
-                                    {{ optional($log->company)->name ?? '-' }}<br>
-                                    {{ \Illuminate\Support\Str::limit($log->description, 55) ?: 'No description' }}
-                                </div>
-                            </td>
-                            <td>
-                                @if($log->status === 'open')
-                                    <span class="badge badge-open">Open</span>
-                                @elseif($log->status === 'in_progress')
-                                    <span class="badge badge-progress">In Progress</span>
-                                @else
-                                    <span class="badge badge-closed">Closed</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($log->priority === 'high')
-                                    <span class="badge badge-high">High</span>
-                                @elseif($log->priority === 'medium')
-                                    <span class="badge badge-medium">Medium</span>
-                                @else
-                                    <span class="badge badge-low">Low</span>
-                                @endif
-                            </td>
-                            <td>{{ optional($log->assignedEngineer)->name ?? $log->engineer_name ?? '-' }}</td>
-                            <td>{{ $log->created_at ? $log->created_at->format('d M Y H:i') : '-' }}</td>
-                            <td>{{ $log->acknowledged_at ? $log->acknowledged_at->format('d M Y H:i') : '-' }}</td>
-                            <td>{{ $log->in_progress_at ? $log->in_progress_at->format('d M Y H:i') : '-' }}</td>
-                            <td>{{ $log->closed_at ? $log->closed_at->format('d M Y H:i') : '-' }}</td>
-                            <td>{{ formatDuration($log->opened_at ?? $log->created_at, $log->acknowledged_at ?? $log->in_progress_at) }}</td>
-                            <td>{{ formatDuration($log->in_progress_at, $log->closed_at) }}</td>
-                            <td>
-                                @if($log->photo)
-                                    <img src="{{ Storage::disk('public')->url($log->photo) }}" class="thumb" alt="Problem Photo">
-                                @else
-                                    <div class="thumb-placeholder">No Img</div>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="actions">
-                                    <a href="/problem-logs/{{ $log->id }}" class="btn-small">View</a>
-                                    <a href="/problem-logs/{{ $log->id }}/edit" class="btn-small">Edit</a>
-                                    <form action="/problem-logs/{{ $log->id }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-delete" onclick="return confirm('Delete this log?')">Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
+            <div class="filter-panel" id="filterPanel">
+                <form method="GET" action="/problem-logs">
+                    <div class="filter-grid">
+                        <input class="input" type="text" name="search" value="{{ request('search') }}" placeholder="Search title, description, ticket, engineer">
 
-                </table>
+                        <select class="select" name="status">
+                            <option value="">All Status</option>
+                            <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>Open</option>
+                            <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
+                        </select>
+
+                        <select class="select" name="priority">
+                            <option value="">All Priority</option>
+                            <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>High</option>
+                            <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>Medium</option>
+                            <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Low</option>
+                        </select>
+
+                        <select class="select" name="company_id">
+                            <option value="">All Companies</option>
+                            @foreach(($companies ?? collect()) as $c)
+                                <option value="{{ $c->id }}" {{ (string)request('company_id') === (string)$c->id ? 'selected' : '' }}>
+                                    {{ $c->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <select class="select" name="assigned_engineer_id">
+                            <option value="">All Engineers</option>
+                            @foreach(($engineers ?? collect()) as $eng)
+                                <option value="{{ $eng->id }}" {{ (string)request('assigned_engineer_id') === (string)$eng->id ? 'selected' : '' }}>
+                                    {{ $eng->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <select class="select" name="response_sla">
+                            <option value="">All Response SLA</option>
+                            <option value="ok" {{ request('response_sla') === 'ok' ? 'selected' : '' }}>On Time</option>
+                            <option value="breached" {{ request('response_sla') === 'breached' ? 'selected' : '' }}>Breached</option>
+                        </select>
+
+                        <select class="select" name="resolution_sla">
+                            <option value="">All Resolution SLA</option>
+                            <option value="ok" {{ request('resolution_sla') === 'ok' ? 'selected' : '' }}>On Time</option>
+                            <option value="breached" {{ request('resolution_sla') === 'breached' ? 'selected' : '' }}>Breached</option>
+                        </select>
+
+                        <input class="input" type="date" name="date_from" value="{{ request('date_from') }}">
+                        <input class="input" type="date" name="date_to" value="{{ request('date_to') }}">
+                    </div>
+
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button type="submit" class="btn btn-primary">Apply Filter</button>
+                        <a href="{{ $allUrl }}" class="btn btn-ghost">Reset</a>
+                    </div>
+                </form>
             </div>
         </div>
+
+        
+        
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+                <div class="card-title">Incident Tickets</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <a href="/resolution-library" class="btn btn-ghost">Knowledge Base</a>
+                </div>
+            </div>
+            <div class="muted">Compact one-line list. Click a row to open full detail.</div>
+
+            <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+                
+            </div>
+            
+            <form method="POST" action="{{ route('problem-logs.bulk-action') }}" style="margin-bottom:16px;">
+                @csrf
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <select name="action" class="select" style="max-width:220px;">
+                        <option value="">Bulk Action</option>
+                        <option value="assign">Assign Engineer</option>
+                        <option value="acknowledge">Acknowledge</option>
+                        <option value="delete">Delete</option>
+                    </select>
+
+                    <select name="assigned_engineer_id" class="select" style="max-width:240px;">
+                        <option value="">Select engineer (for assign)</option>
+                        @foreach($engineers ?? [] as $engineer)
+                            <option value="{{ $engineer->id }}">{{ $engineer->name }}</option>
+                        @endforeach
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </div>
+
+                <div style="overflow-x:auto; margin-top:16px;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left; padding:10px;"><input type="checkbox" id="selectAllTickets"></th>
+                                <th style="text-align:left; padding:10px;">Ticket</th>
+                                <th style="text-align:left; padding:10px;">Problem</th>
+                                <th style="text-align:left; padding:10px;">Current Process</th>
+                                <th style="text-align:left; padding:10px;">Resolution</th>
+                                <th style="text-align:left; padding:10px;">Response SLA</th>
+                                <th style="text-align:left; padding:10px;">Resolution SLA</th>
+                                <th style="text-align:left; padding:10px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($problemLogs as $log)
+                                @php
+                                    $status = $log->status ?? 'open';
+                                    $responseSla = method_exists($log, 'responseSlaStatus') ? $log->responseSlaStatus() : null;
+                                    $resolutionSla = method_exists($log, 'resolutionSlaStatus') ? $log->resolutionSlaStatus() : null;
+                                @endphp
+                                <tr class="ticketRowClickable" data-href="/problem-logs/{{ $log->id }}" style="border-top:1px solid #e5e7eb; cursor:pointer;">
+                                    <td style="padding:10px;">
+                                        <input type="checkbox" name="ids[]" value="{{ $log->id }}" class="ticketCheckbox" onclick="event.stopPropagation();">
+                                    </td>
+                                    <td style="padding:10px; font-weight:700;">
+                                        {{ $log->ticket_number ?: ('TICKET-' . $log->id) }}
+                                    </td>
+                                    <td style="padding:10px;">
+                                        <div style="font-weight:700;">{{ $log->dashboardProblemSummary() }}</div>
+                                        @if($status === 'closed')
+                                            <div style="font-size:12px; color:#64748b; margin-top:4px;">
+                                                Closed summary: {{ $log->dashboardProblemSummary() }} → {{ $log->dashboardResolutionSummary() }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td style="padding:10px;">{{ $log->dashboardCurrentProcess() }}</td>
+                                    <td style="padding:10px;">{{ $log->dashboardResolutionSummary() }}</td>
+                                    <td style="padding:10px;">
+                                        @if($responseSla === 'breached')
+                                            <span class="badge badge-sla-breach">Breach</span>
+                                        @elseif($responseSla === 'ok')
+                                            <span class="badge badge-sla-ok">OK</span>
+                                        @else
+                                            <span class="badge badge-sla-none">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td style="padding:10px;">
+                                        @if($resolutionSla === 'breached')
+                                            <span class="badge badge-sla-breach">Breach</span>
+                                        @elseif($resolutionSla === 'ok')
+                                            <span class="badge badge-sla-ok">OK</span>
+                                        @else
+                                            <span class="badge badge-sla-none">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td style="padding:10px;">
+                                        @if($status === 'open')
+                                            <span class="badge badge-open">Open</span>
+                                        @elseif($status === 'in_progress')
+                                            <span class="badge badge-progress">In Progress</span>
+                                        @else
+                                            <span class="badge badge-closed">Closed</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="8" style="padding:16px;">No tickets found.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+
+
     </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleFiltersBtn');
+        const panel = document.getElementById('filterPanel');
+
+        toggleBtn.addEventListener('click', () => {
+            const isOpen = panel.classList.contains('open');
+            panel.classList.toggle('open');
+            toggleBtn.textContent = isOpen ? 'Show Filters' : 'Hide Filters';
+        });
+
+        function formatMinutes(totalMinutes) {
+            const abs = Math.abs(totalMinutes);
+            const h = Math.floor(abs / 60);
+            const m = abs % 60;
+            return h > 0 ? `${h}h ${m}m` : `${m}m`;
+        }
+
+        function applySlaCountdown() {
+            const nowTs = Math.floor(Date.now() / 1000);
+
+            document.querySelectorAll('.sla-timer').forEach(el => {
+                const createdAt = parseInt(el.dataset.createdAt || '0', 10);
+                const endedAt = parseInt(el.dataset.endedAt || '0', 10);
+                const limitMinutes = parseInt(el.dataset.limitMinutes || '0', 10);
+                const valueEl = el.querySelector('.sla-timer-value');
+
+                el.classList.remove('sla-safe', 'sla-warning', 'sla-breached');
+
+                if (!createdAt || !limitMinutes) {
+                    valueEl.textContent = 'N/A';
+                    return;
+                }
+
+                const effectiveEnd = endedAt || nowTs;
+                const elapsedMinutes = Math.max(0, Math.floor((effectiveEnd - createdAt) / 60));
+                const remaining = limitMinutes - elapsedMinutes;
+
+                if (remaining < 0) {
+                    el.classList.add('sla-breached');
+                    valueEl.textContent = `Breached by ${formatMinutes(remaining)}`;
+                } else if (remaining <= Math.max(30, Math.floor(limitMinutes * 0.2))) {
+                    el.classList.add('sla-warning');
+                    valueEl.textContent = `${formatMinutes(remaining)} remaining`;
+                } else {
+                    el.classList.add('sla-safe');
+                    valueEl.textContent = `${formatMinutes(remaining)} remaining`;
+                }
+
+                if (endedAt) {
+                    if (remaining < 0) {
+                        valueEl.textContent += ' at stop time';
+                    } else {
+                        valueEl.textContent += ' when stopped';
+                    }
+                }
+            });
+        }
+
+        applySlaCountdown();
+        setInterval(applySlaCountdown, 60000);
+
+        document.querySelectorAll('.detailToggleBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const details = btn.closest('.ticket-card').querySelector('.ticket-details');
+                const isOpen = details.classList.contains('open');
+                details.classList.toggle('open');
+                btn.textContent = isOpen ? 'Details' : 'Hide Details';
+            });
+        });
+
+        document.querySelectorAll('.ticketRowClickable').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if (e.target.closest('input, button, select, a, label')) return;
+                window.location = row.dataset.href;
+            });
+        });
+
+        const selectAll = document.getElementById('selectAllTickets');
+        if (selectAll) {
+            selectAll.addEventListener('change', () => {
+                document.querySelectorAll('.ticketCheckbox').forEach(cb => {
+                    cb.checked = selectAll.checked;
+                });
+            });
+        }
+
+    </script>
 </body>
 </html>

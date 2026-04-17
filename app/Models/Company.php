@@ -8,8 +8,16 @@ class Company extends Model
 {
     protected $fillable = [
         'name',
-        'email',
+        'sla_response_minutes',
+        'sla_resolution_minutes',
+        'sla_active',
+        'notification_emails',
+        'logo',
         'code',
+        'logo_path',];
+
+    protected $casts = [
+        'sla_active' => 'boolean',
     ];
 
     public function users()
@@ -20,5 +28,27 @@ class Company extends Model
     public function problemLogs()
     {
         return $this->hasMany(ProblemLog::class);
+    }
+
+    public function logoUrl(): ?string
+    {
+        if (!$this->logo_path) {
+            return null;
+        }
+
+        return url('/storage/' . $this->logo_path);
+    }
+
+    public function notificationEmailList(): array
+    {
+        if (!$this->notification_emails) {
+            return [];
+        }
+
+        return collect(explode(',', $this->notification_emails))
+            ->map(fn ($email) => trim($email))
+            ->filter()
+            ->values()
+            ->all();
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,25 +25,37 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Create Company
-        $company = Company::create([
-            'name' => $request->name . "'s Company",
-            'email' => $request->email,
-            'code' => strtoupper(Str::random(6)),
-        ]);
+        $companyId = null;
 
-        // Create User
+        // Support either company_name or company field from the register form
+        $companyName = trim((string) ($request->input('company_name') ?? $request->input('company') ?? ''));
+
+        if ($companyName !== '') {
+            $company = Company::firstOrCreate(
+                ['name' => $companyName],
+                [
+                    'code' => strtoupper(Str::random(6)),
+                    'sla_response_minutes' => 2,
+                    'sla_resolution_minutes' => 8,
+                    'sla_active' => true,
+                    'notification_emails' => $request->email,
+                ]
+            );
+
+            $companyId = $company->id;
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'company_id' => $company->id,
             'role' => 'customer',
-            'is_approved' => false,
+            'company_id' => $companyId,
+            'is_approved' => 0,
         ]);
 
         event(new Registered($user));
