@@ -651,22 +651,42 @@ public function analytics()
             ]
         );
 
-        // Auto-save resolution to knowledge base
-        $template = \App\Models\ResolutionTemplate::whereRaw('LOWER(title) = ?', [strtolower($resolutionText)])
-            ->first();
+        $selectedResolutionTemplateId = $request->input('selected_resolution_template_id');
+        $template = null;
+        $resolutionType = 'auto';
+
+        if (!empty($selectedResolutionTemplateId)) {
+            $template = \App\Models\ResolutionTemplate::find($selectedResolutionTemplateId);
+            $resolutionType = 'selected';
+        }
+
+        if (!$template) {
+            $template = \App\Models\ResolutionTemplate::whereRaw('LOWER(title) = ?', [strtolower($resolutionText)])
+                ->first();
+        }
 
         if (!$template) {
             $template = \App\Models\ResolutionTemplate::create([
-                'title' => \Illuminate\Support\Str::limit($resolutionText, 255, ''),
-                'category' => null,
-                'symptom_keywords' => $problemLog->title,
+                'title' => !empty(trim((string) $problemLog->title))
+                    ? \Illuminate\Support\Str::limit(trim((string) $problemLog->title), 255, '')
+                    : \Illuminate\Support\Str::limit($resolutionText, 255, ''),
+                'category' => method_exists($this, 'inferKbCategory')
+                    ? $this->inferKbCategory(($problemLog->title ?? '') . ' ' . ($problemLog->description ?? '') . ' ' . $resolutionText)
+                    : null,
+                'symptom_keywords' => trim(collect([
+                    $problemLog->title,
+                    $problemLog->description,
+                ])->filter()->implode(', ')),
                 'resolution_steps' => $resolutionText,
                 'tools_needed' => null,
                 'parts_needed' => null,
                 'notes' => 'Auto-created from closed ticket #' . $problemLog->id,
                 'usage_count' => 0,
                 'is_active' => true,
+                'is_primary' => true,
             ]);
+
+            $resolutionType = 'auto';
         }
 
         $template->increment('usage_count');
@@ -674,7 +694,10 @@ public function analytics()
         $template->success_count = (int) $template->success_count + 1;
         $template->last_used_at = now();
         $template->save();
-        $template->refreshLearningScore();
+
+        if (method_exists($template, 'refreshLearningScore')) {
+            $template->refreshLearningScore();
+        }
 
         try {
             app(\App\Services\ResolutionTemplateGroupingService::class)->regroupAll();
@@ -696,7 +719,7 @@ public function analytics()
             [
                 'resolution_template_id' => $template->id,
                 'resolution_input' => $resolutionText,
-                'type' => 'auto',
+                'type' => $resolutionType,
             ]
         );
 
@@ -1001,4 +1024,28 @@ public function analytics()
     }
 
     
+
+    private function inferKbCategory(string $text): string
+    {
+        $text = \Illuminate\Support\Str::lower($text);
+
+        if (\Illuminate\Support\Str::contains($text, ['monitor', 'screen', 'display', 'tv', 'videotron'])) {
+            return 'Display';
+        }
+
+        if (\Illuminate\Support\Str::contains($text, ['power', 'listrik', 'saklar', 'adaptor', 'mati total'])) {
+            return 'Electrical';
+        }
+
+        if (\Illuminate\Support\Str::contains($text, ['network', 'internet', 'wifi', 'lan'])) {
+            return 'Network';
+        }
+
+        if (\Illuminate\Support\Str::contains($text, ['cms', 'software', 'system', 'login'])) {
+            return 'Software';
+        }
+
+        return 'Hardware';
+    }
+
 }
