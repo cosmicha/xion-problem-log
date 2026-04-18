@@ -64,3 +64,7 @@ Route::get('/resolution-library/{resolutionTemplate}', [\App\Http\Controllers\Re
 Route::delete('/resolution-library/{resolutionTemplate}', [\App\Http\Controllers\ResolutionTemplateController::class, 'destroy'])->middleware(['auth'])->name('resolution-library.destroy');
 
 Route::post('/problem-logs/{problemLog}/apply-resolution-template/{resolutionTemplate}', [\App\Http\Controllers\ProblemLogController::class, 'applyResolutionTemplate'])->middleware(['auth'])->name('problem-logs.apply-resolution-template');
+
+// ===== Vendor (ensure exists) =====
+Route::resource('vendors', \App\Http\Controllers\VendorController::class)->middleware(['auth']);
+
