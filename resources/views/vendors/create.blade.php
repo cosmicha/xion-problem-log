@@ -93,6 +93,15 @@
         </p>
     </div>
 
+    
+    <div style="margin-bottom:16px; display:flex; gap:12px; flex-wrap:wrap;">
+        <a href="/vendors" class="btn btn-secondary">Back to Vendors</a>
+        <a href="/devices" class="btn btn-secondary">Devices</a>
+        <a href="/problem-logs" class="btn btn-secondary">Tickets</a>
+        <a href="/" class="btn btn-secondary">Dashboard</a>
+    </div>
+
+
     <div class="card">
 
         <form method="POST" action="{{ route('vendors.store') }}">

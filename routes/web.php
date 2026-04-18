@@ -68,3 +68,5 @@ Route::post('/problem-logs/{problemLog}/apply-resolution-template/{resolutionTem
 // ===== Vendor (ensure exists) =====
 Route::resource('vendors', \App\Http\Controllers\VendorController::class)->middleware(['auth']);
 
+
+Route::resource('devices', \App\Http\Controllers\DeviceController::class)->middleware(['auth']);

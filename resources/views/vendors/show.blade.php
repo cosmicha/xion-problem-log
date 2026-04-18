@@ -140,6 +140,18 @@
         </div>
     </div>
 
+    
+        <div class="actions">
+            @if((auth()->user()->role ?? null) === 'admin')
+                <a href="{{ route('vendors.edit', $vendor) }}" class="btn btn-secondary">Edit Vendor</a>
+            @endif
+            <a href="/vendors" class="btn btn-secondary">Back to Vendors</a>
+            <a href="/devices" class="btn btn-secondary">Devices</a>
+            <a href="/problem-logs" class="btn btn-secondary">Tickets</a>
+            <a href="/" class="btn btn-secondary">Dashboard</a>
+        </div>
+
+
     <div class="card">
         <div class="grid">
             <div class="field">

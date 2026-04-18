@@ -32,5 +32,26 @@
                 {{ $slot }}
             </main>
         </div>
-    </body>
+    
+<div style="position:fixed;bottom:20px;right:20px;display:flex;gap:10px;z-index:999;">
+    <a href="/devices" style="background:#2563eb;color:white;padding:10px 14px;border-radius:12px;text-decoration:none;font-weight:700;box-shadow:0 8px 20px rgba(37,99,235,.25);">Devices</a>
+    <a href="/vendors" style="background:#0f172a;color:white;padding:10px 14px;border-radius:12px;text-decoration:none;font-weight:700;box-shadow:0 8px 20px rgba(15,23,42,.25);">Vendors</a>
+</div>
+
+
+<div style="position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:9999;">
+    <a href="/devices" style="background:#2563eb;color:white;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700;box-shadow:0 8px 20px rgba(37,99,235,.3);">
+        Devices
+    </a>
+
+    <a href="/vendors" style="background:#0f172a;color:white;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700;box-shadow:0 8px 20px rgba(15,23,42,.3);">
+        Vendors
+    </a>
+
+    <a href="/problem-logs" style="background:#16a34a;color:white;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700;box-shadow:0 8px 20px rgba(22,163,74,.3);">
+        Tickets
+    </a>
+</div>
+
+</body>
 </html>

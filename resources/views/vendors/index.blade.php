@@ -145,7 +145,18 @@
         </div>
     </div>
 
-    <div class="card">
+    
+        <div class="actions">
+            @if((auth()->user()->role ?? null) === 'admin')
+                <a href="{{ route('vendors.create') }}" class="btn btn-secondary">Add Vendor</a>
+            @endif
+            <a href="/devices" class="btn btn-secondary">Devices</a>
+            <a href="/problem-logs" class="btn btn-secondary">Tickets</a>
+            <a href="/" class="btn btn-secondary">Dashboard</a>
+        </div>
+
+
+        <div class="card">
 
         @if(session('success'))
             <div class="success">{{ session('success') }}</div>
