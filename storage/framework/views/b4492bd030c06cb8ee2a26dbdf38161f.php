@@ -921,7 +921,7 @@
                             <?php echo csrf_field(); ?>
                             <div class="form-group">
                                 <label class="label">Resolution</label>
-                                                        <input type="hidden" name="selected_resolution_template_id" id="selectedResolutionTemplateId" value="">
+                                                        <input type="hidden" name="selected_resolution_template_id" id="selectedResolutionTemplateId" value="<?php echo e(old('selected_resolution_template_id', session('prefill_template_id', ''))); ?>">
 <textarea name="close_note" class="textarea" placeholder="Describe the resolution taken."><?php echo e(old('close_note', session('prefill_close_note', ''))); ?></textarea>
                             </div>
                             <div class="form-group">
