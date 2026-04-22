@@ -27,107 +27,96 @@
         }
 
         .shell {
-            width: min(980px, 90%);
-            display: grid;
-            grid-template-columns: 1.2fr 0.72fr;
-            border-radius: 30px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.10);
-            box-shadow: 0 24px 60px rgba(0,0,0,0.34);
-            backdrop-filter: blur(6px);
-        }
+    width: min(960px, 88%);
+    display: grid;
+    grid-template-columns: 1.1fr 0.75fr;
+    border-radius: 28px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+    backdrop-filter: blur(8px);
+}
 
         .left {
-            min-height: 600px;
-            padding: 40px 40px 32px;
-            background: linear-gradient(135deg, rgba(6,22,74,0.92) 0%, rgba(19,42,109,0.88) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    min-height: 520px;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(6,22,74,0.92), rgba(19,42,109,0.88));
+}
 
         .left-inner {
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-        }
+    max-width: 320px;
+    text-align: center;
+}
 
         .logo-wrap {
             margin-bottom: 20px;
         }
 
         .logo-wrap img {
-            max-width: 240px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
+    max-width: 180px;
+    margin: 0 auto;
+    display: block;
+}
 
         .headline {
-            margin-top: 16px;
-            color: #ffffff;
-            font-size: clamp(28px, 4vw, 40px);
-            line-height: 1.1;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            text-align: center;
-        }
+    margin-top: 14px;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
 
         .right {
-            background: #f4f5f7;
-            min-height: 560px;
-            padding: 34px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        background: #f4f5f7;
+        min-height: 520px;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
         .auth-card {
-            width: 100%;
-            max-width: 340px;
-        }
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+    }
 
         .auth-card h1 {
-            margin: 0 0 8px;
-            font-size: 34px;
-            line-height: 1;
-            letter-spacing: -0.03em;
-            color: #0f172a;
-            font-weight: 800;
-        }
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 700;
+}
 
         .auth-card p {
-            margin: 0 0 24px;
-            color: #64748b;
-            font-size: 14px;
-            line-height: 1.45;
-        }
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: #64748b;
+}
 
         .field {
-            margin-bottom: 14px;
-        }
+    margin-bottom: 12px;
+}
 
         .field label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #1e293b;
-        }
+    font-size: 12px;
+    margin-bottom: 6px;
+}
 
         .field input[type="email"],
-        .field input[type="password"] {
-            width: 100%;
-            height: 46px;
-            border-radius: 16px;
-            border: 1px solid #d6dbe5;
-            background: #fff;
-            padding: 0 16px;
-            font-size: 14px;
-            outline: none;
-            transition: 0.2s ease;
-        }
+.field input[type="password"] {
+    width: 100%;
+    height: 42px;
+    border-radius: 14px;
+    border: 1px solid #d6dbe5;
+    background: #fff;
+    padding: 0 14px;
+    font-size: 13px;
+    display: block;
+}
 
         .field input[type="email"]:focus,
         .field input[type="password"]:focus {
@@ -136,12 +125,12 @@
         }
 
         .row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin: 6px 0 18px;
-        }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 8px 0 16px;
+}
 
         .remember {
             display: inline-flex;
@@ -164,18 +153,12 @@
         }
 
         .login-btn {
-            width: 100%;
-            height: 48px;
-            border: none;
-            border-radius: 16px;
-            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-            color: #fff;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
+    width: 100%;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 14px;
+    display: block;
+}
 
         .login-btn:hover {
             transform: translateY(-1px);
@@ -183,11 +166,9 @@
         }
 
         .bottom-link {
-            margin-top: 18px;
-            text-align: center;
-            color: #64748b;
-            font-size: 12px;
-        }
+    margin-top: 14px;
+    font-size: 12px;
+}
 
         .bottom-link a {
             color: #2563eb;
@@ -221,63 +202,57 @@
 
         @media (max-width: 980px) {
             .shell {
-            width: min(980px, 90%);
-            display: grid;
-            grid-template-columns: 1.2fr 0.72fr;
-            border-radius: 30px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.10);
-            box-shadow: 0 24px 60px rgba(0,0,0,0.34);
-            backdrop-filter: blur(6px);
-        }
+    width: min(960px, 88%);
+    display: grid;
+    grid-template-columns: 1.1fr 0.75fr;
+    border-radius: 28px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+    backdrop-filter: blur(8px);
+}
             .left, .right {
-            background: #f4f5f7;
-            min-height: 560px;
-            padding: 34px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        background: #f4f5f7;
+        min-height: 520px;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
             .left {
-            min-height: 600px;
-            padding: 40px 40px 32px;
-            background: linear-gradient(135deg, rgba(6,22,74,0.92) 0%, rgba(19,42,109,0.88) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    min-height: 520px;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(6,22,74,0.92), rgba(19,42,109,0.88));
+}
             .right {
-            background: #f4f5f7;
-            min-height: 560px;
-            padding: 34px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        background: #f4f5f7;
+        min-height: 520px;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
             .auth-card h1 {
-            margin: 0 0 8px;
-            font-size: 34px;
-            line-height: 1;
-            letter-spacing: -0.03em;
-            color: #0f172a;
-            font-weight: 800;
-        }
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 700;
+}
             .auth-card p {
-            margin: 0 0 24px;
-            color: #64748b;
-            font-size: 14px;
-            line-height: 1.45;
-        }
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: #64748b;
+}
             .headline {
-            margin-top: 16px;
-            color: #ffffff;
-            font-size: clamp(28px, 4vw, 40px);
-            line-height: 1.1;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            text-align: center;
-        }
+    margin-top: 14px;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
         }
     </style>
 </head>
