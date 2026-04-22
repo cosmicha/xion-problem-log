@@ -254,7 +254,146 @@
     letter-spacing: -0.01em;
 }
         }
-    </style>
+    
+        @media (max-width: 768px) {
+            body {
+                min-height: 100dvh;
+            }
+
+            .page {
+                min-height: 100dvh;
+                padding: 14px;
+                align-items: stretch;
+            }
+
+            .shell {
+                width: 100%;
+                min-height: calc(100dvh - 28px);
+                grid-template-columns: 1fr;
+                border-radius: 22px;
+            }
+
+            .left {
+                min-height: auto;
+                padding: 28px 20px 16px;
+            }
+
+            .left-inner {
+                max-width: 100%;
+            }
+
+            .logo-wrap {
+                margin-bottom: 14px;
+            }
+
+            .logo-wrap img {
+                max-width: 150px;
+            }
+
+            .headline {
+                margin-top: 8px;
+                font-size: 22px;
+                line-height: 1.15;
+            }
+
+            .right {
+                min-height: auto;
+                padding: 18px 20px 28px;
+                align-items: flex-start;
+            }
+
+            .auth-card {
+                max-width: 100%;
+            }
+
+            .auth-card h1 {
+                font-size: 24px;
+                margin-bottom: 6px;
+            }
+
+            .auth-card p {
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+
+            .field {
+                margin-bottom: 12px;
+            }
+
+            .field label {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .field input[type="email"],
+            .field input[type="password"] {
+                height: 44px;
+                font-size: 14px;
+                border-radius: 12px;
+                padding: 0 14px;
+            }
+
+            .row {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin: 8px 0 14px;
+            }
+
+            .remember,
+            .forgot,
+            .bottom-link {
+                font-size: 12px;
+            }
+
+            .login-btn {
+                height: 46px;
+                font-size: 15px;
+                border-radius: 12px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .page {
+                padding: 10px;
+            }
+
+            .shell {
+                min-height: calc(100dvh - 20px);
+                border-radius: 18px;
+            }
+
+            .left {
+                padding: 22px 16px 12px;
+            }
+
+            .right {
+                padding: 14px 16px 22px;
+            }
+
+            .logo-wrap img {
+                max-width: 132px;
+            }
+
+            .headline {
+                font-size: 20px;
+            }
+
+            .auth-card h1 {
+                font-size: 22px;
+            }
+
+            .field input[type="email"],
+            .field input[type="password"] {
+                height: 42px;
+            }
+
+            .login-btn {
+                height: 44px;
+            }
+        }
+
+</style>
 </head>
 <body>
     <div class="page">
