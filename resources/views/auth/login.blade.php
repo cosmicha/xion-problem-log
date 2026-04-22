@@ -1,268 +1,309 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Ticketing System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            font-family: Inter, Arial, sans-serif;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(30, 94, 255, 0.22), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.20), transparent 24%),
+                linear-gradient(115deg, #03133f 0%, #020c2c 45%, #173a88 100%);
+            color: #0f172a;
+        }
+
+        .page {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background:
-                radial-gradient(circle at top left, rgba(37, 99, 235, 0.25), transparent 35%),
-                radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.18), transparent 35%),
-                linear-gradient(135deg, #020617, #0f172a 45%, #1e3a8a 100%);
-            color: white;
+            padding: 32px;
         }
 
         .shell {
-            width: 100%;
-            max-width: 1100px;
+            width: min(1320px, 100%);
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 28px;
+            grid-template-columns: 1.35fr 0.9fr;
+            border-radius: 32px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.30);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.10);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.38);
+            backdrop-filter: blur(6px);
         }
 
         .left {
-            padding: 56px 48px;
-            background: linear-gradient(135deg, rgba(15,23,42,0.88), rgba(30,58,138,0.72));
-        }
-
-        .brand {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.82);
-            margin-bottom: 28px;
-        }
-
-        .brand-mark {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: inline-flex;
-            align-items: center;
+            min-height: 760px;
+            padding: 56px 56px 48px;
+            background: linear-gradient(135deg, rgba(6,22,74,0.92) 0%, rgba(19,42,109,0.88) 100%);
+            display: flex;
+            flex-direction: column;
             justify-content: center;
-            background: linear-gradient(135deg, #60a5fa, #22d3ee);
-            color: #020617;
-            font-weight: 900;
-            box-shadow: 0 0 24px rgba(96,165,250,0.35);
         }
 
-        .left h1 {
-            margin: 0 0 14px;
-            font-size: 40px;
-            line-height: 1.05;
+        .left-inner {
+            max-width: 560px;
         }
 
-        .left p {
+        .logo-wrap {
+            margin-bottom: 34px;
+        }
+
+        .logo-wrap img {
+            width: min(440px, 100%);
+            height: auto;
+            display: block;
+        }
+
+        .headline {
             margin: 0;
-            color: rgba(255,255,255,0.76);
-            line-height: 1.7;
-            max-width: 500px;
-            font-size: 15px;
-        }
-
-        .feature-box {
-            margin-top: 28px;
-            padding: 18px 20px;
-            border-radius: 18px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.82);
-            font-size: 14px;
-            line-height: 1.7;
+            color: #ffffff;
+            font-size: clamp(44px, 6vw, 72px);
+            line-height: 0.96;
+            font-weight: 800;
+            letter-spacing: -0.04em;
         }
 
         .right {
-            padding: 56px 42px;
-            background: rgba(255,255,255,0.96);
-            color: #0f172a;
+            background: #f4f5f7;
+            min-height: 760px;
+            padding: 72px 56px;
             display: flex;
             align-items: center;
+            justify-content: center;
         }
 
-        .form-wrap {
+        .auth-card {
             width: 100%;
+            max-width: 460px;
         }
 
-        .form-wrap h2 {
-            margin: 0 0 8px;
-            font-size: 28px;
+        .auth-card h1 {
+            margin: 0 0 10px;
+            font-size: 56px;
+            line-height: 1;
+            letter-spacing: -0.03em;
             color: #0f172a;
+            font-weight: 800;
         }
 
-        .sub {
-            margin-bottom: 24px;
+        .auth-card p {
+            margin: 0 0 34px;
             color: #64748b;
-            font-size: 14px;
+            font-size: 22px;
         }
 
-        .label {
+        .field {
+            margin-bottom: 22px;
+        }
+
+        .field label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
+            margin-bottom: 10px;
+            font-size: 18px;
             font-weight: 700;
-            color: #334155;
+            color: #1e293b;
         }
 
-        .input {
+        .field input[type="email"],
+        .field input[type="password"] {
             width: 100%;
-            padding: 13px 14px;
-            border-radius: 14px;
-            border: 1px solid #cbd5e1;
+            height: 68px;
+            border-radius: 18px;
+            border: 1px solid #d6dbe5;
+            background: #fff;
+            padding: 0 20px;
+            font-size: 18px;
             outline: none;
-            font-size: 14px;
-            margin-bottom: 16px;
-            background: white;
+            transition: 0.2s ease;
         }
 
-        .input:focus {
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 4px rgba(96,165,250,0.16);
+        .field input[type="email"]:focus,
+        .field input[type="password"]:focus {
+            border-color: #4f8cff;
+            box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.14);
         }
 
         .row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            margin: 6px 0 18px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 10px 0 26px;
         }
 
         .remember {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
+            gap: 10px;
             color: #475569;
+            font-size: 16px;
         }
 
-        .link {
+        .remember input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .forgot {
             color: #2563eb;
             text-decoration: none;
+            font-size: 16px;
             font-weight: 600;
-            font-size: 13px;
         }
 
-        .btn {
+        .login-btn {
             width: 100%;
-            padding: 14px 18px;
+            height: 68px;
             border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            font-weight: 700;
-            font-size: 14px;
+            border-radius: 18px;
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            font-size: 28px;
+            font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 12px 24px rgba(37,99,235,0.24);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .register-box {
-            margin-top: 18px;
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(37, 99, 235, 0.34);
+        }
+
+        .bottom-link {
+            margin-top: 28px;
             text-align: center;
             color: #64748b;
-            font-size: 14px;
+            font-size: 17px;
         }
 
-        .error {
-            margin-bottom: 16px;
-            padding: 12px 14px;
-            border-radius: 12px;
+        .bottom-link a {
+            color: #2563eb;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .status, .errors {
+            margin-bottom: 18px;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 15px;
+        }
+
+        .status {
+            background: #ecfdf3;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .errors {
             background: #fef2f2;
+            color: #991b1b;
             border: 1px solid #fecaca;
-            color: #b91c1c;
-            font-size: 14px;
         }
 
-        @media (max-width: 900px) {
+        .errors ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        @media (max-width: 980px) {
             .shell {
                 grid-template-columns: 1fr;
-                max-width: 560px;
             }
-
             .left, .right {
-                padding: 32px 24px;
+                min-height: auto;
             }
-
-            .left h1 {
-                font-size: 32px;
+            .left {
+                padding: 40px 28px 24px;
+            }
+            .right {
+                padding: 34px 28px 40px;
+            }
+            .auth-card h1 {
+                font-size: 44px;
+            }
+            .auth-card p {
+                font-size: 18px;
+            }
+            .headline {
+                font-size: 52px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="shell">
-        <div class="left">
-            <div class="brand">
-                <span class="brand-mark">TS</span>
-                Ticketing System
-            </div>
-
-            <h1>Incident Portal Ticketing System</h1>
-            <p>
-                A centralized portal to report, track, and manage incidents efficiently.
-            </p>
-
-            <div class="feature-box">
-                One portal for customer visibility and internal operational control.
-                Customers see their own tickets. Engineers and admins manage the full lifecycle.
-            </div>
-        </div>
-
-        <div class="right">
-            <div class="form-wrap">
-                <h2>Sign in</h2>
-                <div class="sub">Login to continue to the ticketing system.</div>
-
-                @if ($errors->any())
-                    <div class="error">
-                        {{ $errors->first() }}
+    <div class="page">
+        <div class="shell">
+            <section class="left">
+                <div class="left-inner">
+                    <div class="logo-wrap">
+                        <img src="{{ asset('images/xion1.png') }}" alt="Xion1">
                     </div>
-                @endif
-
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
-
-                    <label class="label">Email</label>
-                    <input class="input" type="email" name="email" value="{{ old('email') }}" required autofocus>
-
-                    <label class="label">Password</label>
-                    <input class="input" type="password" name="password" required>
-
-                    <div class="row">
-                        <label class="remember">
-                            <input type="checkbox" name="remember">
-                            Remember me
-                        </label>
-
-                        @if (Route::has('password.request'))
-                            <a class="link" href="{{ route('password.request') }}">Forgot password?</a>
-                        @endif
-                    </div>
-
-                    <button class="btn" type="submit">Login</button>
-                </form>
-
-                <div class="register-box">
-                    Don’t have an account?
-                    <a class="link" href="{{ route('register') }}">Register here</a>
+                    <h2 class="headline">Incident Portal</h2>
                 </div>
-            </div>
+            </section>
+
+            <section class="right">
+                <div class="auth-card">
+                    <h1>Sign in</h1>
+                    <p>Login to continue to the ticketing system.</p>
+
+                    @if (session('status'))
+                        <div class="status">{{ session('status') }}</div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="errors">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('login') }}">
+                        @csrf
+
+                        <div class="field">
+                            <label for="email">Email</label>
+                            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+                        </div>
+
+                        <div class="field">
+                            <label for="password">Password</label>
+                            <input id="password" type="password" name="password" required autocomplete="current-password">
+                        </div>
+
+                        <div class="row">
+                            <label class="remember" for="remember_me">
+                                <input id="remember_me" type="checkbox" name="remember">
+                                <span>Remember me</span>
+                            </label>
+
+                            @if (Route::has('password.request'))
+                                <a class="forgot" href="{{ route('password.request') }}">Forgot password?</a>
+                            @endif
+                        </div>
+
+                        <button type="submit" class="login-btn">Login</button>
+
+                        @if (Route::has('register'))
+                            <div class="bottom-link">
+                                Don’t have an account? <a href="{{ route('register') }}">Register here</a>
+                            </div>
+                        @endif
+                    </form>
+                </div>
+            </section>
         </div>
     </div>
 </body>
