@@ -38,6 +38,8 @@ class ResolutionTemplateController extends Controller
     public function show(ResolutionTemplate $resolutionTemplate)
     {
         $resolutionTemplate->load('images', 'alternatives');
+        $resolutionTemplate->load(['images']);
+
         return view('resolution.show', compact('resolutionTemplate'));
     }
 
@@ -46,6 +48,8 @@ class ResolutionTemplateController extends Controller
         abort_unless(in_array(auth()->user()->role ?? '', ['admin']), 403);
 
         $resolutionTemplate->load('images');
+        $resolutionTemplate->load(['images']);
+
         return view('resolution.edit', compact('resolutionTemplate'));
     }
 

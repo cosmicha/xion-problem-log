@@ -596,6 +596,41 @@
                     </div>
 
                     <div class="action-right">
+                        
+                <div class="form-group full">
+                    <label class="label">Admin Escalation Emails</label>
+                    <textarea name="alert_admin_emails" class="textarea" placeholder="admin1@company.com, admin2@company.com">{{ old('alert_admin_emails', $company->alert_admin_emails ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Used for create / update / close alerts.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">Admin Telegram Chat IDs</label>
+                    <textarea name="alert_admin_telegram_chat_ids" class="textarea" placeholder="123456789, -100987654321">{{ old('alert_admin_telegram_chat_ids', $company->alert_admin_telegram_chat_ids ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Telegram uses chat_id, not phone number directly.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">SPV Escalation Emails</label>
+                    <textarea name="alert_spv_emails" class="textarea" placeholder="spv@company.com">{{ old('alert_spv_emails', $company->alert_spv_emails ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Used for response SLA breach alerts.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">SPV Telegram Chat IDs</label>
+                    <textarea name="alert_spv_telegram_chat_ids" class="textarea" placeholder="123456789, -100987654321">{{ old('alert_spv_telegram_chat_ids', $company->alert_spv_telegram_chat_ids ?? '') }}</textarea>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">Manager Escalation Emails</label>
+                    <textarea name="alert_manager_emails" class="textarea" placeholder="manager@company.com">{{ old('alert_manager_emails', $company->alert_manager_emails ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Used for resolution SLA breach alerts.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">Manager Telegram Chat IDs</label>
+                    <textarea name="alert_manager_telegram_chat_ids" class="textarea" placeholder="123456789, -100987654321">{{ old('alert_manager_telegram_chat_ids', $company->alert_manager_telegram_chat_ids ?? '') }}</textarea>
+                </div>
+
                         <button type="submit" class="btn btn-primary">Create Company</button>
                     </div>
                 </div>
@@ -698,6 +733,41 @@
                             </div>
 
                             <div class="action-right">
+                                
+                <div class="form-group full">
+                    <label class="label">Admin Escalation Emails</label>
+                    <textarea name="alert_admin_emails" class="textarea" placeholder="admin1@company.com, admin2@company.com">{{ old('alert_admin_emails', $company->alert_admin_emails ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Used for create / update / close alerts.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">Admin Telegram Chat IDs</label>
+                    <textarea name="alert_admin_telegram_chat_ids" class="textarea" placeholder="123456789, -100987654321">{{ old('alert_admin_telegram_chat_ids', $company->alert_admin_telegram_chat_ids ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Telegram uses chat_id, not phone number directly.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">SPV Escalation Emails</label>
+                    <textarea name="alert_spv_emails" class="textarea" placeholder="spv@company.com">{{ old('alert_spv_emails', $company->alert_spv_emails ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Used for response SLA breach alerts.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">SPV Telegram Chat IDs</label>
+                    <textarea name="alert_spv_telegram_chat_ids" class="textarea" placeholder="123456789, -100987654321">{{ old('alert_spv_telegram_chat_ids', $company->alert_spv_telegram_chat_ids ?? '') }}</textarea>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">Manager Escalation Emails</label>
+                    <textarea name="alert_manager_emails" class="textarea" placeholder="manager@company.com">{{ old('alert_manager_emails', $company->alert_manager_emails ?? '') }}</textarea>
+                    <div class="muted" style="margin-top:6px;">Used for resolution SLA breach alerts.</div>
+                </div>
+
+                <div class="form-group full">
+                    <label class="label">Manager Telegram Chat IDs</label>
+                    <textarea name="alert_manager_telegram_chat_ids" class="textarea" placeholder="123456789, -100987654321">{{ old('alert_manager_telegram_chat_ids', $company->alert_manager_telegram_chat_ids ?? '') }}</textarea>
+                </div>
+
                                 <button type="submit" class="btn btn-success">Update Company</button>
                     </form>
 

@@ -84,6 +84,12 @@ class UserApprovalController extends Controller
             'sla_resolution_minutes' => $request->sla_resolution_minutes ?: 8,
             'sla_active' => $request->has('sla_active'),
             'notification_emails' => $request->notification_emails,
+            'alert_admin_emails' => $request->alert_admin_emails,
+            'alert_admin_telegram_chat_ids' => $request->alert_admin_telegram_chat_ids,
+            'alert_spv_emails' => $request->alert_spv_emails,
+            'alert_spv_telegram_chat_ids' => $request->alert_spv_telegram_chat_ids,
+            'alert_manager_emails' => $request->alert_manager_emails,
+            'alert_manager_telegram_chat_ids' => $request->alert_manager_telegram_chat_ids,
             'logo_path' => $logoPath,
         ]);
 
@@ -106,6 +112,12 @@ class UserApprovalController extends Controller
             'sla_resolution_minutes' => $request->sla_resolution_minutes ?: 8,
             'sla_active' => $request->has('sla_active'),
             'notification_emails' => $request->notification_emails,
+            'alert_admin_emails' => $request->alert_admin_emails,
+            'alert_admin_telegram_chat_ids' => $request->alert_admin_telegram_chat_ids,
+            'alert_spv_emails' => $request->alert_spv_emails,
+            'alert_spv_telegram_chat_ids' => $request->alert_spv_telegram_chat_ids,
+            'alert_manager_emails' => $request->alert_manager_emails,
+            'alert_manager_telegram_chat_ids' => $request->alert_manager_telegram_chat_ids,
         ];
 
         if (empty($company->code)) {

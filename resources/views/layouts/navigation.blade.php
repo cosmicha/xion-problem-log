@@ -4,7 +4,8 @@
     </div>
 
     <div style="display:flex; align-items:center; gap:12px;">
-        <a href="/problem-logs" style="text-decoration:none; color:#2563eb; font-weight:600;">Tickets</a>
+        <a href="/devices" class="btn btn-secondary">Devices</a>
+                        <a href="/problem-logs" style="text-decoration:none; color:#2563eb; font-weight:600;">Tickets</a>
 
         <form method="POST" action="/logout" style="margin:0;">
             @csrf

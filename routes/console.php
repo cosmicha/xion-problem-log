@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('kb:regroup')->dailyAt('02:30');
+
+
+Schedule::command('alerts:scan-sla')->everyMinute();

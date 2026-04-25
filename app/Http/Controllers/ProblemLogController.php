@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\UserTelegramNotificationService;
+
 use App\Models\Company;
+use App\Models\Device;
 use App\Models\ProblemLog;
 use App\Models\User;
 use App\Support\ProblemLogActivity;
@@ -16,6 +19,38 @@ use App\Mail\TicketUpdateMail;
 
 class ProblemLogController extends Controller
 {
+
+    private function sendDirectTelegramToTicketUsers(\App\Models\ProblemLog $problemLog, string $title, string $message, ?string $activity = null): void
+    {
+        try {
+            $problemLog->loadMissing(['createdByUser', 'assignedEngineer', 'company', 'device']);
+
+            $direct = app(UserTelegramNotificationService::class);
+            $telegramMessage = $direct->ticketMessage($problemLog, $title, $message, $activity);
+
+            $sentUserIds = [];
+
+            foreach ([$problemLog->createdByUser, $problemLog->assignedEngineer] as $recipient) {
+                if (!$recipient || empty($recipient->telegram_chat_id)) {
+                    continue;
+                }
+
+                if (in_array($recipient->id, $sentUserIds, true)) {
+                    continue;
+                }
+
+                $sentUserIds[] = $recipient->id;
+                $direct->sendToUser($recipient, $telegramMessage);
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Direct Telegram ticket alert failed', [
+                'problem_log_id' => $problemLog->id ?? null,
+                'title' => $title,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function index(\Illuminate\Http\Request $request)
     {
         $user = auth()->user();
@@ -221,6 +256,8 @@ public function analytics()
             return [$month => $count];
         });
 
+        $devices = Device::with('company')->orderBy('device_code')->get();
+
         $topIssueCategories = $logs->groupBy(function ($l) {
             $title = strtolower(trim((string) $l->title));
 
@@ -256,13 +293,49 @@ public function analytics()
             'monthlyTickets',
             'monthlyClosed',
             'monthlyBreaches',
-            'topIssueCategories'
+            'topIssueCategories',
+            'devices'
         ));
     }
 
     public function create()
     {
-        return view('problem-logs.create', ['companies' => Company::orderBy('name')->get()]);
+        $user = auth()->user();
+        $deviceQuery = Device::with('company')->orderBy('device_code');
+
+        if (($user->role ?? null) === 'customer' && $user->company_id) {
+            $deviceQuery->where('company_id', $user->company_id);
+        }
+
+        $selectedDevice = null;
+        $prefilledCompanyId = old('company_id');
+
+        if (request()->filled('device_id')) {
+            $selectedDevice = Device::with('company')->find(request('device_id'));
+            if ($selectedDevice) {
+                $prefilledCompanyId = $selectedDevice->company_id;
+            }
+        }
+
+        $prefilledIssueCategory = old('issue_category');
+
+        if (!$prefilledIssueCategory && $selectedDevice) {
+            $prefilledIssueCategory = $this->suggestedIssueCategoryFromDevice($selectedDevice);
+        }
+
+        $prefilledSla = $selectedDevice
+            ? $this->resolveSlaProfile($selectedDevice, $prefilledIssueCategory)
+            : null;
+
+        return view('problem-logs.create', [
+            'companies' => Company::orderBy('name')->get(),
+            'devices' => $deviceQuery->get(),
+            'selectedDevice' => $selectedDevice,
+            'prefilledCompanyId' => $prefilledCompanyId,
+            'prefilledIssueCategory' => $prefilledIssueCategory,
+            'prefilledSla' => $prefilledSla,
+            'issueCategories' => ['power','connectivity','display_output','hardware','software','physical_damage','other'],
+        ]);
     }
 
     public function store(\Illuminate\Http\Request $request)
@@ -275,12 +348,24 @@ public function analytics()
             'description' => ['nullable', 'string'],
             'priority' => ['required', 'in:low,medium,high'],
             'company_id' => [$isCustomer ? 'nullable' : 'required', 'exists:companies,id'],
+            'device_id' => ['nullable', 'exists:devices,id'],
+            'issue_category' => ['nullable', 'in:power,connectivity,display_output,hardware,software,physical_damage,other'],
             'photo' => ['nullable', 'image', 'max:8192'],
         ]);
 
-        $resolvedCompanyId = $isCustomer
-            ? ($user->company_id ?: $this->fallbackCompanyId())
-            : $request->company_id;
+        $selectedDevice = $request->filled('device_id') ? Device::find($request->device_id) : null;
+
+        if ($selectedDevice && !$isCustomer && $request->filled('company_id') && (int) $request->company_id !== (int) $selectedDevice->company_id) {
+            return back()
+                ->withErrors(['device_id' => 'Selected device belongs to a different company.'])
+                ->withInput();
+        }
+
+        $resolvedCompanyId = $selectedDevice
+            ? $selectedDevice->company_id
+            : ($isCustomer
+                ? ($user->company_id ?: $this->fallbackCompanyId())
+                : $request->company_id);
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
@@ -289,6 +374,9 @@ public function analytics()
 
         $cleanTitle = preg_replace('/^\s*title\s*:\s*/i', '', (string) $request->title);
         $cleanDescription = preg_replace('/^\s*description\s*:\s*/i', '', (string) $request->description);
+
+        $finalIssueCategory = $request->issue_category ?: $this->suggestedIssueCategoryFromDevice($selectedDevice);
+        $slaFields = $this->buildSlaFields($selectedDevice, $finalIssueCategory);
 
         $problemLog = ProblemLog::create([
             'title' => trim($cleanTitle),
@@ -299,6 +387,11 @@ public function analytics()
             'opened_at' => now(),
             'ticket_number' => 'TKT' . strtoupper(substr(md5(uniqid('', true)), 0, 12)),
             'company_id' => $resolvedCompanyId,
+            'device_id' => $request->device_id,
+            'issue_category' => $finalIssueCategory,
+            'sla_profile' => $slaFields['sla_profile'],
+            'response_due_at' => $slaFields['response_due_at'],
+            'resolution_due_at' => $slaFields['resolution_due_at'],
             'created_by_user_id' => $user->id,
         ]);
 
@@ -320,6 +413,29 @@ public function analytics()
         );
 
         try {
+            app(EscalationAlertService::class)->sendForEvent($problemLog, 'create');
+        } catch (\Throwable $e) {
+            \Log::error('Escalation alert failed on create', [
+                'problem_log_id' => $problemLog->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $problemLog->loadMissing(['createdByUser', 'company']);
+            $direct = app(UserTelegramNotificationService::class);
+            $direct->sendToUser(
+                $problemLog->createdByUser ?: $user,
+                $direct->ticketMessage($problemLog, 'Ticket Created', 'Your ticket has been created successfully.')
+            );
+        } catch (\Throwable $e) {
+            \Log::error('Direct Telegram alert failed on create', [
+                'problem_log_id' => $problemLog->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
             app(\App\Services\OpenAiResolutionSuggestionService::class)->process($problemLog);
         } catch (\Throwable $e) {
             \Log::error('AI suggestion processing failed', [
@@ -328,6 +444,37 @@ public function analytics()
             ]);
         }
 
+
+        // Direct Telegram alert to ticket creator, but avoid duplicate if creator is already in admin escalation list
+        try {
+            $telegramUser = auth()->user()?->fresh();
+            $problemLog->loadMissing(['company']);
+
+            if ($telegramUser && !empty($telegramUser->telegram_chat_id)) {
+                $adminChatIds = [];
+
+                if ($problemLog->company && !empty($problemLog->company->alert_admin_telegram_chat_ids)) {
+                    $adminChatIds = preg_split('/[,\n\r]+/', $problemLog->company->alert_admin_telegram_chat_ids) ?: [];
+                    $adminChatIds = array_values(array_filter(array_map('trim', $adminChatIds)));
+                }
+
+                if (!in_array((string) $telegramUser->telegram_chat_id, array_map('strval', $adminChatIds), true)) {
+                    $direct = app(UserTelegramNotificationService::class);
+                    $direct->sendToUser(
+                        $telegramUser,
+                        $direct->ticketMessage($problemLog, 'Ticket Created', 'Your ticket has been created successfully.')
+                    );
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Direct Telegram create final fallback failed', [
+                'problem_log_id' => $problemLog->id ?? null,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        $this->sendDirectTelegramToTicketUsers($problemLog, 'Ticket Created', 'Your ticket has been created successfully.');
+
         return redirect('/problem-logs/' . $problemLog->id)->with('success', 'Problem log created successfully.');
     }
 
@@ -335,6 +482,7 @@ public function analytics()
     {
         $problemLog->load([
             'company',
+            'device.images',
             'assignedEngineer',
             'createdByUser',
             'assignedByUser',
@@ -366,14 +514,34 @@ public function analytics()
             ->orderBy('name')
             ->get();
 
-        return view('problem-logs.show', compact('problemLog', 'engineers', 'groupedAiSuggestions'));
+        $companyDerivedFromDevice = $problemLog->device
+            && (int) $problemLog->company_id === (int) $problemLog->device->company_id;
+
+        return view('problem-logs.show', compact('problemLog', 'engineers', 'groupedAiSuggestions', 'companyDerivedFromDevice'));
     }
 
     
     public function edit(ProblemLog $problemLog)
     {
-        $problemLog->load(['company', 'assignedEngineer']);
-        return view('problem-logs.edit', compact('problemLog') + ['companies' => Company::orderBy('name')->get()]);
+        $user = auth()->user();
+        $problemLog->load(['company', 'device', 'assignedEngineer']);
+
+        $deviceQuery = Device::with('company')->orderBy('device_code');
+
+        if (($user->role ?? null) === 'customer' && $user->company_id) {
+            $deviceQuery->where('company_id', $user->company_id);
+        }
+
+        $prefilledSla = $problemLog->device
+            ? $this->resolveSlaProfile($problemLog->device, $problemLog->issue_category)
+            : null;
+
+        return view('problem-logs.edit', compact('problemLog') + [
+            'companies' => Company::orderBy('name')->get(),
+            'devices' => $deviceQuery->get(),
+            'issueCategories' => ['power','connectivity','display_output','hardware','software','physical_damage','other'],
+            'prefilledSla' => $prefilledSla,
+        ]);
     }
 
     public function update(\Illuminate\Http\Request $request, \App\Models\ProblemLog $problemLog)
@@ -386,12 +554,24 @@ public function analytics()
             'description' => ['nullable', 'string'],
             'priority' => ['required', 'in:low,medium,high'],
             'company_id' => [$isCustomer ? 'nullable' : 'required', 'exists:companies,id'],
+            'device_id' => ['nullable', 'exists:devices,id'],
+            'issue_category' => ['nullable', 'in:power,connectivity,display_output,hardware,software,physical_damage,other'],
             'photo' => ['nullable', 'image', 'max:8192'],
         ]);
 
-        $resolvedCompanyId = $isCustomer
-            ? ($user->company_id ?: $problemLog->company_id ?: $this->fallbackCompanyId())
-            : $request->company_id;
+        $selectedDevice = $request->filled('device_id') ? Device::find($request->device_id) : null;
+
+        if ($selectedDevice && !$isCustomer && $request->filled('company_id') && (int) $request->company_id !== (int) $selectedDevice->company_id) {
+            return back()
+                ->withErrors(['device_id' => 'Selected device belongs to a different company.'])
+                ->withInput();
+        }
+
+        $resolvedCompanyId = $selectedDevice
+            ? $selectedDevice->company_id
+            : ($isCustomer
+                ? ($user->company_id ?: $problemLog->company_id ?: $this->fallbackCompanyId())
+                : $request->company_id);
 
         $cleanTitle = preg_replace('/^\s*title\s*:\s*/i', '', (string) $request->title);
         $cleanDescription = preg_replace('/^\s*description\s*:\s*/i', '', (string) $request->description);
@@ -527,8 +707,24 @@ public function analytics()
         $this->sendTicketEmail(
             $problemLog,
             'Engineer Assigned',
+
+
             'An engineer has been assigned to your ticket.'
         );
+
+        try {
+            $problemLog->loadMissing(['createdByUser', 'assignedEngineer']);
+            $direct = app(UserTelegramNotificationService::class);
+            $direct->sendToUser(
+                $problemLog->assignedEngineer,
+                $direct->ticketMessage($problemLog, 'Ticket Assigned', 'A ticket has been assigned to you.')
+            );
+        } catch (\Throwable $e) {
+            \Log::error('Direct Telegram alert failed on assign', [
+                'problem_log_id' => $problemLog->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         
 
@@ -608,6 +804,28 @@ public function analytics()
             'Ticket Updated',
             'There is a new update on your ticket.'
         );
+
+        try {
+            app(EscalationAlertService::class)->sendForEvent($problemLog, 'update');
+        } catch (\Throwable $e) {
+            \Log::error('Escalation alert failed on update', [
+                'problem_log_id' => $problemLog->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $problemLog->loadMissing(['createdByUser', 'assignedEngineer']);
+            $direct = app(UserTelegramNotificationService::class);
+            $msg = $direct->ticketMessage($problemLog, 'Ticket Updated', 'There is a new progress update on this ticket.');
+            $direct->sendToUser($problemLog->createdByUser, $msg);
+            $direct->sendToUser($problemLog->assignedEngineer, $msg);
+        } catch (\Throwable $e) {
+            \Log::error('Direct Telegram alert failed on update', [
+                'problem_log_id' => $problemLog->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         
 
@@ -695,6 +913,27 @@ public function analytics()
         $template->last_used_at = now();
         $template->save();
 
+        if (!empty($path) && method_exists($template, 'images')) {
+            try {
+                $alreadyExists = $template->images()->where('path', $path)->exists();
+
+                if (!$alreadyExists) {
+                    $template->images()->create([
+                        'path' => $path,
+                        'source_type' => 'ticket_close',
+                        'sort_order' => (int) $template->images()->max('sort_order') + 1,
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed attaching closed photo to resolution template', [
+                    'template_id' => $template->id,
+                    'problem_log_id' => $problemLog->id,
+                    'path' => $path,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         if (method_exists($template, 'refreshLearningScore')) {
             $template->refreshLearningScore();
         }
@@ -745,6 +984,13 @@ public function analytics()
             $problemLog,
             'Ticket Closed',
             'Your ticket has been resolved and closed.'
+        );
+
+        $this->sendDirectTelegramToTicketUsers(
+            $problemLog,
+            'Ticket Closed',
+            'This ticket has been resolved and closed.',
+            $problemLog->close_note
         );
 
         return back()->with('success', 'Ticket closed.');
@@ -898,8 +1144,24 @@ public function analytics()
         $this->sendTicketEmail(
             $problemLog,
             'Ticket Taken',
+
+
             'An engineer has taken your ticket.'
         );
+
+        try {
+            $problemLog->loadMissing(['createdByUser', 'assignedEngineer']);
+            $direct = app(UserTelegramNotificationService::class);
+            $direct->sendToUser(
+                $problemLog->createdByUser,
+                $direct->ticketMessage($problemLog, 'Ticket Taken', 'An engineer has taken and acknowledged your ticket.')
+            );
+        } catch (\Throwable $e) {
+            \Log::error('Direct Telegram alert failed on take', [
+                'problem_log_id' => $problemLog->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         
 
@@ -907,6 +1169,101 @@ public function analytics()
         return back()->with('success', 'Ticket taken successfully.');
     }
 
+
+
+    private function suggestedIssueCategoryFromDevice(?\App\Models\Device $device): ?string
+    {
+        if (!$device) {
+            return null;
+        }
+
+        return match ($device->category) {
+            'display' => 'display_output',
+            'player' => 'software',
+            'kiosk' => 'hardware',
+            'cctv' => 'hardware',
+            'networking' => 'connectivity',
+            default => 'other',
+        };
+    }
+
+
+    private function resolveSlaProfile(?\App\Models\Device $device, ?string $issueCategory): array
+    {
+        $deviceCategory = $device?->category ?? 'other';
+        $issueCategory = $issueCategory ?: 'other';
+
+        $rules = [
+            'networking:connectivity' => [
+                'profile' => 'Networking + Connectivity',
+                'response_minutes' => 30,
+                'resolution_minutes' => 120,
+            ],
+            'kiosk:hardware' => [
+                'profile' => 'Kiosk + Hardware',
+                'response_minutes' => 60,
+                'resolution_minutes' => 240,
+            ],
+            'display:display_output' => [
+                'profile' => 'Display + Display Output',
+                'response_minutes' => 60,
+                'resolution_minutes' => 240,
+            ],
+            'player:software' => [
+                'profile' => 'Player + Software',
+                'response_minutes' => 60,
+                'resolution_minutes' => 180,
+            ],
+            'player:hardware' => [
+                'profile' => 'Player + Hardware',
+                'response_minutes' => 90,
+                'resolution_minutes' => 300,
+            ],
+            'cctv:hardware' => [
+                'profile' => 'CCTV + Hardware',
+                'response_minutes' => 120,
+                'resolution_minutes' => 480,
+            ],
+            'display:power' => [
+                'profile' => 'Display + Power',
+                'response_minutes' => 45,
+                'resolution_minutes' => 180,
+            ],
+            'other:other' => [
+                'profile' => 'Default SLA',
+                'response_minutes' => 240,
+                'resolution_minutes' => 1440,
+            ],
+        ];
+
+        $key = $deviceCategory . ':' . $issueCategory;
+
+        if (isset($rules[$key])) {
+            return $rules[$key];
+        }
+
+        $fallbackByDevice = [
+            'display' => ['profile' => 'Display Default', 'response_minutes' => 90, 'resolution_minutes' => 360],
+            'player' => ['profile' => 'Player Default', 'response_minutes' => 90, 'resolution_minutes' => 360],
+            'kiosk' => ['profile' => 'Kiosk Default', 'response_minutes' => 90, 'resolution_minutes' => 360],
+            'cctv' => ['profile' => 'CCTV Default', 'response_minutes' => 180, 'resolution_minutes' => 720],
+            'networking' => ['profile' => 'Networking Default', 'response_minutes' => 60, 'resolution_minutes' => 240],
+            'other' => ['profile' => 'Default SLA', 'response_minutes' => 240, 'resolution_minutes' => 1440],
+        ];
+
+        return $fallbackByDevice[$deviceCategory] ?? $fallbackByDevice['other'];
+    }
+
+    private function buildSlaFields(?\App\Models\Device $device, ?string $issueCategory): array
+    {
+        $profile = $this->resolveSlaProfile($device, $issueCategory);
+
+        return [
+            'sla_profile' => $profile['profile'],
+            'response_due_at' => now()->copy()->addMinutes((int) $profile['response_minutes']),
+            'resolution_due_at' => now()->copy()->addMinutes((int) $profile['resolution_minutes']),
+        ];
+    }
 
     protected function fallbackCompanyId(): ?int
     {

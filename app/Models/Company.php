@@ -8,17 +8,46 @@ class Company extends Model
 {
     protected $fillable = [
         'name',
-        'sla_response_minutes',
-        'sla_resolution_minutes',
-        'sla_active',
+        'email',
         'notification_emails',
-        'logo',
-        'code',
-        'logo_path',];
+        'sla_active',
+        'response_sla_minutes',
+        'resolution_sla_minutes',
+        'alert_admin_emails',
+        'alert_admin_telegram_chat_ids',
+        'alert_spv_emails',
+        'alert_spv_telegram_chat_ids',
+        'alert_manager_emails',
+        'alert_manager_telegram_chat_ids',
+    ];
 
     protected $casts = [
         'sla_active' => 'boolean',
+        'response_sla_minutes' => 'integer',
+        'resolution_sla_minutes' => 'integer',
     ];
+
+
+    public function notificationEmailList(): array
+    {
+        $emails = [];
+
+        if (!empty($this->email)) {
+            $emails[] = trim($this->email);
+        }
+
+        if (!empty($this->notification_emails)) {
+            $parts = preg_split('/[,\n\r]+/', $this->notification_emails) ?: [];
+            foreach ($parts as $email) {
+                $email = trim($email);
+                if ($email !== '') {
+                    $emails[] = $email;
+                }
+            }
+        }
+
+        return array_values(array_unique(array_filter($emails)));
+    }
 
     public function users()
     {
@@ -30,25 +59,8 @@ class Company extends Model
         return $this->hasMany(ProblemLog::class);
     }
 
-    public function logoUrl(): ?string
+    public function devices()
     {
-        if (!$this->logo_path) {
-            return null;
-        }
-
-        return url('/storage/' . $this->logo_path);
-    }
-
-    public function notificationEmailList(): array
-    {
-        if (!$this->notification_emails) {
-            return [];
-        }
-
-        return collect(explode(',', $this->notification_emails))
-            ->map(fn ($email) => trim($email))
-            ->filter()
-            ->values()
-            ->all();
+        return $this->hasMany(Device::class);
     }
 }
