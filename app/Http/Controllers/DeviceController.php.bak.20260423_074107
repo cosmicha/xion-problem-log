@@ -1,0 +1,229 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Company;
+use App\Models\Device;
+use App\Models\DeviceImage;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+
+class DeviceController extends Controller
+{
+
+    public function thermalLabel(\App\Models\Device $device)
+    {
+        return view('devices.thermal-label', compact('device'));
+    }
+    
+{
+    public function index(Request $request)
+    {
+        $query = Device::with(['company', 'images'])->latest();
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('device_code', 'like', '%' . $search . '%')
+                  ->orWhere('name', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%')
+                  ->orWhere('brand', 'like', '%' . $search . '%')
+                  ->orWhere('model', 'like', '%' . $search . '%')
+                  ->orWhere('serial_number', 'like', '%' . $search . '%')
+                  ->orWhere('site', 'like', '%' . $search . '%')
+                  ->orWhere('location', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($request->filled('company_id')) {
+            $query->where('company_id', $request->company_id);
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $devices = $query->paginate(15)->withQueryString();
+
+        $companies = Company::orderBy('name')->get();
+        $categories = ['display', 'kiosk', 'player', 'cctv', 'networking', 'other'];
+        $statuses = ['active', 'inactive', 'maintenance'];
+
+        return view('devices.index', compact('devices', 'companies', 'categories', 'statuses'));
+    }
+
+    public function create()
+    {
+        $companies = Company::orderBy('name')->get();
+        $categories = ['display', 'kiosk', 'player', 'cctv', 'networking', 'other'];
+        $statuses = ['active', 'inactive', 'maintenance'];
+
+        return view('devices.create', compact('companies', 'categories', 'statuses'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'company_id' => ['required', 'exists:companies,id'],
+            'device_code' => ['required', 'string', 'max:255', 'unique:devices,device_code'],
+            'name' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'in:display,kiosk,player,cctv,networking,other'],
+            'brand' => ['nullable', 'string', 'max:255'],
+            'model' => ['nullable', 'string', 'max:255'],
+            'serial_number' => ['nullable', 'string', 'max:255'],
+            'site' => ['nullable', 'string', 'max:255'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'status' => ['required', 'in:active,inactive,maintenance'],
+            'notes' => ['nullable', 'string'],
+            'photos' => ['nullable', 'array'],
+            'photos.*' => ['image', 'max:8192'],
+        ]);
+
+        $device = Device::create($validated);
+
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $device->images()->create([
+                    'path' => $photo->store('device-images', 'public'),
+                    'sort_order' => $index,
+                ]);
+            }
+        }
+
+        return redirect()->route('devices.show', $device)->with('success', 'Device created successfully.');
+    }
+
+    public function show(Device $device)
+    {
+        $device->load(['company', 'images', 'problemLogs.company']);
+
+        $relatedTickets = $device->problemLogs()
+            ->with('company')
+            ->latest()
+            ->paginate(10);
+
+        $ticketStats = [
+            'total' => $device->problemLogs()->count(),
+            'open' => $device->problemLogs()->where('status', 'open')->count(),
+            'in_progress' => $device->problemLogs()->where('status', 'in_progress')->count(),
+            'closed' => $device->problemLogs()->where('status', 'closed')->count(),
+        ];
+
+        return view('devices.show', compact('device', 'relatedTickets', 'ticketStats'));
+    }
+
+    public function edit(Device $device)
+    {
+        $companies = Company::orderBy('name')->get();
+        $categories = ['display', 'kiosk', 'player', 'cctv', 'networking', 'other'];
+        $statuses = ['active', 'inactive', 'maintenance'];
+
+        $device->load('images');
+
+        return view('devices.edit', compact('device', 'companies', 'categories', 'statuses'));
+    }
+
+    public function update(Request $request, Device $device)
+    {
+        $validated = $request->validate([
+            'company_id' => ['required', 'exists:companies,id'],
+            'device_code' => ['required', 'string', 'max:255', 'unique:devices,device_code,' . $device->id],
+            'name' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'in:display,kiosk,player,cctv,networking,other'],
+            'brand' => ['nullable', 'string', 'max:255'],
+            'model' => ['nullable', 'string', 'max:255'],
+            'serial_number' => ['nullable', 'string', 'max:255'],
+            'site' => ['nullable', 'string', 'max:255'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'status' => ['required', 'in:active,inactive,maintenance'],
+            'notes' => ['nullable', 'string'],
+            'photos' => ['nullable', 'array'],
+            'photos.*' => ['image', 'max:8192'],
+        ]);
+
+        $device->update($validated);
+
+        if ($request->hasFile('photos')) {
+            $currentCount = $device->images()->count();
+
+            foreach ($request->file('photos') as $index => $photo) {
+                $device->images()->create([
+                    'path' => $photo->store('device-images', 'public'),
+                    'sort_order' => $currentCount + $index,
+                ]);
+            }
+        }
+
+        return redirect()->route('devices.show', $device)->with('success', 'Device updated successfully.');
+    }
+
+
+
+    public function bulkLabel(Request $request)
+    {
+        $query = Device::with(['company', 'images'])->orderBy('device_code');
+
+        if ($request->filled('company_id')) {
+            $query->where('company_id', $request->company_id);
+        }
+
+        if ($request->filled('site')) {
+            $query->where('site', $request->site);
+        }
+
+        $devices = $query->get();
+        $companies = Company::orderBy('name')->get();
+        $sites = Device::query()
+            ->whereNotNull('site')
+            ->where('site', '!=', '')
+            ->distinct()
+            ->orderBy('site')
+            ->pluck('site');
+
+        return view('devices.bulk-label', compact('devices', 'companies', 'sites'));
+    }
+
+    public function qr(Device $device)
+    {
+        $device->load(['company', 'images']);
+
+        return view('devices.qr', compact('device'));
+    }
+
+    public function printLabel(Device $device)
+    {
+        $device->load(['company', 'images']);
+
+        return view('devices.print-label', compact('device'));
+    }
+
+    public function destroy(Device $device)
+    {
+        foreach ($device->images as $image) {
+            if (!empty($image->path)) {
+                Storage::disk('public')->delete($image->path);
+            }
+        }
+
+        $device->delete();
+
+        return redirect()->route('devices.index')->with('success', 'Device deleted successfully.');
+    }
+
+    public function destroyImage(Device $device, DeviceImage $image)
+    {
+        abort_unless($image->device_id === $device->id, 404);
+
+        if (!empty($image->path)) {
+            Storage::disk('public')->delete($image->path);
+        }
+
+        $image->delete();
+
+        return back()->with('success', 'Device image deleted successfully.');
+    }
+}

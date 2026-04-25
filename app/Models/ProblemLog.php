@@ -31,7 +31,8 @@ class ProblemLog extends Model
         'resolution_due_at',
         'response_sla_breached',
         'resolution_sla_breached',
-    ];
+            'device_id',
+];
 
     protected $casts = [
         'acknowledged_at' => 'datetime',
@@ -306,6 +307,12 @@ class ProblemLog extends Model
     public function aiSuggestions()
     {
         return $this->hasMany(\App\Models\ProblemLogAiSuggestion::class)->orderByDesc('similarity_score');
+    }
+
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
     }
 
 }

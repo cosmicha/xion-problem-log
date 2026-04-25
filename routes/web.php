@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProblemLogController;
 use App\Http\Controllers\ProblemLogExportController;
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\Admin\UserApprovalController;
 
 Route::get('/', function () {
@@ -67,4 +68,40 @@ Route::post('/problem-logs/{problemLog}/apply-resolution-template/{resolutionTem
 
 // ===== Vendor (ensure exists) =====
 Route::resource('vendors', \App\Http\Controllers\VendorController::class)->middleware(['auth']);
+
+
+Route::get('devices/bulk-label', [DeviceController::class, 'bulkLabel'])
+    ->middleware(['auth'])
+    ->name('devices.bulk-label');
+
+Route::get('devices/{device}/qr', [DeviceController::class, 'qr'])
+    ->middleware(['auth'])
+    ->whereNumber('device')
+    ->name('devices.qr');
+
+Route::get('devices/{device}/print-label', [DeviceController::class, 'printLabel'])
+    ->middleware(['auth'])
+    ->whereNumber('device')
+    ->name('devices.print-label');
+
+Route::get('devices/{device}/thermal-label', [DeviceController::class, 'thermalLabel'])
+    ->middleware(['auth'])
+    ->whereNumber('device')
+    ->name('devices.thermal-label');
+
+Route::delete('devices/{device}/images/{image}', [DeviceController::class, 'destroyImage'])
+    ->middleware(['auth'])
+    ->whereNumber('device')
+    ->name('devices.images.destroy');
+
+Route::resource('devices', DeviceController::class)
+    ->middleware(['auth'])
+    ->where(['device' => '[0-9]+']);
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/telegram/connect', [\App\Http\Controllers\TelegramConnectController::class, 'show'])->name('telegram.connect');
+    Route::post('/telegram/connect/sync', [\App\Http\Controllers\TelegramConnectController::class, 'sync'])->name('telegram.connect.sync');
+    Route::post('/telegram/connect/test', [\App\Http\Controllers\TelegramConnectController::class, 'test'])->name('telegram.connect.test');
+});
 

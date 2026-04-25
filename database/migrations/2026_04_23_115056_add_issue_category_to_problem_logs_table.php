@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (!Schema::hasColumn('problem_logs', 'issue_category')) {
+            Schema::table('problem_logs', function (Blueprint $table) {
+                $table->string('issue_category', 50)->nullable()->after('device_id');
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasColumn('problem_logs', 'issue_category')) {
+            Schema::table('problem_logs', function (Blueprint $table) {
+                $table->dropColumn('issue_category');
+            });
+        }
+    }
+};

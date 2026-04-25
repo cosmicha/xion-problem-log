@@ -298,15 +298,16 @@
                             <option value="closed" @selected($problemLog->status === 'closed')>Closed</option>
                         </select>
                     </div>
-
-                    
                             <div class="form-group">
                                 <label class="label">Company</label>
                                 @if((auth()->user()->role ?? '') === 'customer')
-                                    <input type="text" class="input" value="{{ optional(auth()->user()->company)->name ?? 'No Company' }}" disabled>
-                                    <input type="hidden" name="company_id" value="{{ auth()->user()->company_id }}">
+                                    <input type="hidden" id="company_id" name="company_id" value="{{ old('company_id', $problemLog->company_id ?? auth()->user()->company_id) }}">
+                                    <div class="input" style="display:flex; align-items:center; background:#f8fafc; color:#475569;">
+                                        {{ optional(auth()->user()->company)->name ?? optional($problemLog->company)->name ?? 'Company is determined automatically' }}
+                                    </div>
+                                    <div class="helper-text" style="margin-top:6px;">Company is determined automatically from your account or selected device.</div>
                                 @else
-                                    <select name="company_id" class="select" required>
+                                    <select id="company_id" name="company_id" class="select" required>
                                         <option value="">Select Company</option>
                                         @foreach(($companies ?? collect()) as $company)
                                             <option value="{{ $company->id }}" {{ old('company_id', $problemLog->company_id) == $company->id ? 'selected' : '' }}>
@@ -315,6 +316,71 @@
                                         @endforeach
                                     </select>
                                 @endif
+                            </div>
+
+<div class="form-group">
+                                <label class="label">Device</label>
+                                <select id="device_id" name="device_id" class="select">
+                                    <option value="">Select Device (Optional)</option>
+                                    @foreach(($devices ?? collect()) as $device)
+                                        <option value="{{ $device->id }}" data-company-id="{{ $device->company_id }}" data-photo="{{ $device->images->first() ? asset('storage/' . $device->images->first()->path) : '' }}" data-issue-category="{{ match($device->category){ 'display' => 'display_output', 'player' => 'software', 'kiosk' => 'hardware', 'cctv' => 'hardware', 'networking' => 'connectivity', default => 'other' } }}" data-device-category="{{ $device->category }}" data-issue-category="{{ match($device->category){ 'display' => 'display_output', 'player' => 'software', 'kiosk' => 'hardware', 'cctv' => 'hardware', 'networking' => 'connectivity', default => 'other' } }}" data-device-category="{{ $device->category }}" {{ old('device_id', $problemLog->device_id) == $device->id ? 'selected' : '' }}>
+                                            {{ $device->device_code }} - {{ $device->name }}
+                                            @if(optional($device->company)->name)
+                                                ({{ $device->company->name }})
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="helper-text" style="margin-top:6px;">Link this ticket to a registered device for better tracking.</div>
+                            </div>
+                                <div id="device_preview_wrap" style="display:none; margin-top:12px;">
+                                    <div style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid rgba(255,255,255,.10); border-radius:16px; background:rgba(255,255,255,.04);">
+                                        <img id="device_preview_img" src="" alt="Device Preview" style="width:64px; height:64px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,.12); display:block;">
+                                        <div class="helper-text" style="margin:0;">Selected device preview</div>
+                                    </div>
+                                </div>
+
+
+                            <div class="form-group">
+                                <label class="label">Issue Category</label>
+                                <select id="issue_category" name="issue_category" class="select">
+                                    <option value="">Select Issue Category</option>
+                                    @foreach(($issueCategories ?? []) as $issueCategory)
+                                        <option value="{{ $issueCategory }}" {{ (string)old('issue_category', $problemLog->issue_category) === (string)$issueCategory ? 'selected' : '' }}>
+                                            {{ ucwords(str_replace('_', ' ', $issueCategory)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="helper-text" style="margin-top:6px;">Suggested automatically from device type when available.</div>
+                            </div>
+
+
+                            <div class="form-group full">
+                                <div id="sla_suggestion_box" style="border:1px solid #dbeafe; background:linear-gradient(180deg,#eff6ff 0%, #dbeafe 100%); border-radius:18px; padding:14px 16px;">
+                                    <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#1d4ed8; margin-bottom:8px;">
+                                        SLA Suggestion
+                                    </div>
+                                    <div id="sla_profile_name" style="font-size:15px; font-weight:800; color:#0f172a;">
+                                        {{ $prefilledSla['profile'] ?? ($problemLog->sla_profile ?? 'Will be calculated from device and issue category') }}
+                                    </div>
+                                    <div style="margin-top:8px; font-size:13px; color:#334155;">
+                                        <span id="sla_response_text">
+                                            @if(!empty($prefilledSla))
+                                                Response: {{ $prefilledSla['response_minutes'] }} min
+                                            @else
+                                                Response: -
+                                            @endif
+                                        </span>
+                                        &nbsp;•&nbsp;
+                                        <span id="sla_resolution_text">
+                                            @if(!empty($prefilledSla))
+                                                Resolution: {{ $prefilledSla['resolution_minutes'] }} min
+                                            @else
+                                                Resolution: -
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -355,5 +421,151 @@
             </div>
         </div>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const companySelect = document.getElementById('company_id');
+    const deviceSelect = document.getElementById('device_id');
+    if (!companySelect || !deviceSelect) return;
+
+    const allOptions = Array.from(deviceSelect.querySelectorAll('option')).map(opt => ({
+        value: opt.value,
+        text: opt.textContent,
+        companyId: opt.getAttribute('data-company-id') || '',
+        selected: opt.selected
+    }));
+
+    function rebuildDevicesByCompany() {
+        const currentCompany = companySelect.value || '';
+        const currentValue = deviceSelect.value || '';
+
+        deviceSelect.innerHTML = '';
+
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = 'Select Device (Optional)';
+        deviceSelect.appendChild(emptyOpt);
+
+        allOptions.forEach(item => {
+            if (!item.value) return;
+            if (!currentCompany || item.companyId === currentCompany) {
+                const opt = document.createElement('option');
+                opt.value = item.value;
+                opt.textContent = item.text.trim();
+                opt.setAttribute('data-company-id', item.companyId);
+                if (currentValue && currentValue === item.value) opt.selected = true;
+                deviceSelect.appendChild(opt);
+            }
+        });
+    }
+
+    function updateSlaSuggestionEdit() {
+        const issueCategorySelect = document.getElementById('issue_category');
+        const profileName = document.getElementById('sla_profile_name');
+        const responseText = document.getElementById('sla_response_text');
+        const resolutionText = document.getElementById('sla_resolution_text');
+        const selected = deviceSelect.options[deviceSelect.selectedIndex];
+
+        if (!issueCategorySelect || !profileName || !responseText || !resolutionText || !selected || !selected.value) {
+            profileName.textContent = 'Will be calculated from device and issue category';
+            responseText.textContent = 'Response: -';
+            resolutionText.textContent = 'Resolution: -';
+            return;
+        }
+
+        const deviceCategory = selected.getAttribute('data-device-category') || 'other';
+        const issueCategory = issueCategorySelect.value || selected.getAttribute('data-issue-category') || 'other';
+
+        const rules = {
+            'networking:connectivity': ['Networking + Connectivity', 30, 120],
+            'kiosk:hardware': ['Kiosk + Hardware', 60, 240],
+            'display:display_output': ['Display + Display Output', 60, 240],
+            'player:software': ['Player + Software', 60, 180],
+            'player:hardware': ['Player + Hardware', 90, 300],
+            'cctv:hardware': ['CCTV + Hardware', 120, 480],
+            'display:power': ['Display + Power', 45, 180],
+        };
+
+        const fallbackByDevice = {
+            'display': ['Display Default', 90, 360],
+            'player': ['Player Default', 90, 360],
+            'kiosk': ['Kiosk Default', 90, 360],
+            'cctv': ['CCTV Default', 180, 720],
+            'networking': ['Networking Default', 60, 240],
+            'other': ['Default SLA', 240, 1440],
+        };
+
+        const key = `${deviceCategory}:${issueCategory}`;
+        const result = rules[key] || fallbackByDevice[deviceCategory] || fallbackByDevice['other'];
+
+        profileName.textContent = result[0];
+        responseText.textContent = `Response: ${result[1]} min`;
+        resolutionText.textContent = `Resolution: ${result[2]} min`;
+    }
+
+    function syncIssueCategoryEdit() {
+        const issueCategorySelect = document.getElementById('issue_category');
+        const selected = deviceSelect.options[deviceSelect.selectedIndex];
+        if (!issueCategorySelect || !selected) return;
+
+        const suggested = selected.getAttribute('data-issue-category') || '';
+        if (suggested && !issueCategorySelect.value) {
+            issueCategorySelect.value = suggested;
+        }
+    }
+
+    function updateDevicePreviewEdit() {
+        const wrap = document.getElementById('device_preview_wrap');
+        const img = document.getElementById('device_preview_img');
+        const selected = deviceSelect.options[deviceSelect.selectedIndex];
+        if (!wrap || !img || !selected) return;
+
+        const photo = selected.getAttribute('data-photo') || '';
+        if (selected.value && photo) {
+            img.src = photo;
+            wrap.style.display = 'block';
+        } else {
+            img.src = '';
+            wrap.style.display = 'none';
+        }
+    }
+
+    function syncDeviceCompanyEdit() {
+        const selected = deviceSelect.options[deviceSelect.selectedIndex];
+        if (!selected) return;
+        const companyId = selected.getAttribute('data-company-id');
+        if (companyId) {
+            companySelect.value = companyId;
+        }
+        rebuildDevicesByCompany();
+        if (selected.value) {
+            deviceSelect.value = selected.value;
+        }
+        syncIssueCategoryEdit();
+        updateSlaSuggestionEdit();
+        updateDevicePreviewEdit();
+    }
+
+    document.getElementById('issue_category')?.addEventListener('change', updateSlaSuggestionEdit);
+
+    companySelect.addEventListener('change', function () {
+        rebuildDevicesByCompany();
+        syncIssueCategoryEdit();
+        updateSlaSuggestionEdit();
+        updateDevicePreviewEdit();
+    });
+    deviceSelect.addEventListener('change', syncDeviceCompanyEdit);
+
+    rebuildDevicesByCompany();
+    if (deviceSelect.value) {
+        syncDeviceCompanyEdit();
+    } else {
+        syncIssueCategoryEdit();
+        updateSlaSuggestionEdit();
+        updateDevicePreviewEdit();
+    }
+});
+</script>
+
 </body>
 </html>

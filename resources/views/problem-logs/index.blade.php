@@ -631,6 +631,9 @@
                             <a href="/admin/users" class="btn btn-secondary">Users</a>
                         @endif
 
+                        <a href="{{ route('telegram.connect') }}" class="btn btn-secondary">
+                            {{ auth()->user()->telegram_chat_id ? 'Telegram Connected' : 'Connect Telegram' }}
+                        </a>
                         <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
 
                         @if(in_array(($user->role ?? ''), ['admin', 'engineer']))
@@ -639,6 +642,7 @@
 
                         <a href="/analytics" class="btn btn-secondary">Analytics</a>
                         <a href="/problem-logs/export" class="btn btn-secondary">Export Excel</a>
+                        <a href="/devices" class="btn btn-secondary">Devices</a>
                         <a href="/problem-logs" class="btn btn-secondary">Refresh</a>
                         <a href="/help" class="btn btn-secondary">Help</a>
 
@@ -756,7 +760,20 @@
                     </div>
 
                     <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                        <button type="submit" class="btn btn-primary">Apply Filter</button>
+                        
+                    <div class="form-group">
+                        <label class="label">Device</label>
+                        <select id="filter_device_id" name="device_id" class="select">
+                            <option value="">All Devices</option>
+                            @foreach(($devices ?? collect()) as $device)
+                                <option value="{{ $device->id }}" data-company-id="{{ $device->company_id }}" {{ (string)request('device_id') === (string)$device->id ? 'selected' : '' }}>
+                                    {{ $device->device_code }} - {{ $device->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+<button type="submit" class="btn btn-primary">Apply Filter</button>
                         <a href="{{ $allUrl }}" class="btn btn-ghost">Reset</a>
                     </div>
                 </form>
@@ -963,5 +980,52 @@
         }
 
     </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const companySelect = document.getElementById('filter_company_id');
+    const deviceSelect = document.getElementById('filter_device_id');
+    if (!companySelect || !deviceSelect) return;
+
+    const allOptions = Array.from(deviceSelect.querySelectorAll('option')).map(opt => ({
+        value: opt.value,
+        text: opt.textContent,
+        companyId: opt.getAttribute('data-company-id') || '',
+        selected: opt.selected
+    }));
+
+    function syncTicketFiltersByCompany() {
+        const companyId = companySelect.value || '';
+        const currentDevice = deviceSelect.value || '';
+
+        deviceSelect.innerHTML = '';
+
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = 'All Devices';
+        deviceSelect.appendChild(emptyOpt);
+
+        allOptions.forEach(item => {
+            if (!item.value) return;
+            if (!companyId || item.companyId === companyId) {
+                const opt = document.createElement('option');
+                opt.value = item.value;
+                opt.textContent = item.text.trim();
+                opt.setAttribute('data-company-id', item.companyId);
+                if (currentDevice && currentDevice === item.value) opt.selected = true;
+                deviceSelect.appendChild(opt);
+            }
+        });
+
+        if (currentDevice && !Array.from(deviceSelect.options).some(o => o.value === currentDevice)) {
+            deviceSelect.value = '';
+        }
+    }
+
+    companySelect.addEventListener('change', syncTicketFiltersByCompany);
+    syncTicketFiltersByCompany();
+});
+</script>
+
 </body>
 </html>

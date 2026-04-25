@@ -215,6 +215,44 @@
         </div>
 
         <div class="card">
+
+            @php
+                $sourceTicketId = null;
+                if (!empty($resolutionTemplate->notes) && preg_match('/closed ticket #(\d+)/i', $resolutionTemplate->notes, $m)) {
+                    $sourceTicketId = $m[1];
+                }
+            @endphp
+
+            @if(!empty($resolutionTemplate->notes) && str_contains(strtolower($resolutionTemplate->notes), 'auto-created from closed ticket'))
+                <div class="section-card" style="margin-bottom:18px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <div class="section-title" style="margin-bottom:6px;">Auto-created from ticket</div>
+                            <div class="muted">This knowledge base item was generated automatically from a closed ticket.</div>
+                        </div>
+
+                        @if($sourceTicketId)
+                            <a href="{{ url('/problem-logs/' . $sourceTicketId) }}" class="btn btn-primary">Open Source Ticket</a>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            @if(method_exists($resolutionTemplate, 'images') && $resolutionTemplate->images->count())
+                <div class="section-card" style="margin-bottom:18px;">
+                    <div class="section-title">Existing Resolution Images</div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px; margin-top:12px;">
+                        @foreach($resolutionTemplate->images as $image)
+                            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden;">
+                                <img src="{{ asset('storage/' . $image->path) }}"
+                                     alt="Resolution Image"
+                                     style="width:100%; height:180px; object-fit:cover; display:block;">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('resolution-library.update', $resolutionTemplate) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')

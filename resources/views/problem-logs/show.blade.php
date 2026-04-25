@@ -301,6 +301,349 @@
 }
 </style>
 
+
+<!-- XION_TICKET_PREMIUM_COMPACT_STYLE_START -->
+<style>
+    :root{
+        --xion-navy:#071737;
+        --xion-blue:#1d4ed8;
+        --xion-blue2:#3b82f6;
+        --xion-card:#ffffff;
+        --xion-soft:#f7faff;
+        --xion-line:#dbeafe;
+        --xion-text:#0f172a;
+        --xion-muted:#64748b;
+        --xion-green:#16a34a;
+        --xion-red:#dc2626;
+        --xion-shadow:0 18px 50px rgba(15,23,42,.10);
+        --xion-shadow-soft:0 10px 28px rgba(15,23,42,.07);
+    }
+
+    body{
+        background:
+            radial-gradient(circle at top left, rgba(59,130,246,.16), transparent 26%),
+            linear-gradient(180deg, #071737 0%, #071737 180px, #eef3fb 180px, #f7faff 100%) !important;
+        color:var(--xion-text);
+    }
+
+    .page,
+    .container,
+    main{
+        max-width:1280px !important;
+        margin-left:auto !important;
+        margin-right:auto !important;
+    }
+
+    .hero,
+    .ticket-hero,
+    .header-card{
+        border-radius:26px !important;
+        background:linear-gradient(135deg, #071737 0%, #0d2b71 58%, #3158e8 100%) !important;
+        box-shadow:0 24px 70px rgba(3,7,18,.25) !important;
+        padding:24px 28px !important;
+        min-height:auto !important;
+        margin-bottom:18px !important;
+    }
+
+    .hero h1,
+    .ticket-hero h1,
+    .header-card h1{
+        font-size:32px !important;
+        line-height:1.05 !important;
+        letter-spacing:-.035em !important;
+        margin-bottom:6px !important;
+    }
+
+    .hero p,
+    .ticket-hero p,
+    .header-card p{
+        font-size:14px !important;
+        opacity:.86 !important;
+        margin:0 !important;
+    }
+
+    .btn{
+        min-height:38px !important;
+        padding:0 14px !important;
+        border-radius:12px !important;
+        font-size:13px !important;
+        font-weight:800 !important;
+        box-shadow:none !important;
+    }
+
+    .btn-primary{
+        background:linear-gradient(90deg, var(--xion-blue2), var(--xion-blue)) !important;
+        border:0 !important;
+    }
+
+    .btn-secondary{
+        background:rgba(255,255,255,.10) !important;
+        border:1px solid rgba(255,255,255,.18) !important;
+        color:#fff !important;
+    }
+
+    .btn-success{
+        background:#16a34a !important;
+        color:#fff !important;
+        border:0 !important;
+    }
+
+    .btn-danger,
+    .delete-btn{
+        background:#dc2626 !important;
+        color:#fff !important;
+        border:0 !important;
+    }
+
+    .alert,
+    .success-message{
+        max-width:1280px !important;
+        margin:0 auto 16px !important;
+        border-radius:18px !important;
+        padding:14px 18px !important;
+        background:#ecfdf5 !important;
+        border:1px solid #bbf7d0 !important;
+        color:#166534 !important;
+        font-weight:800 !important;
+        box-shadow:var(--xion-shadow-soft) !important;
+    }
+
+    .content-grid,
+    .detail-grid,
+    .main-grid{
+        display:grid !important;
+        grid-template-columns:minmax(0,1.45fr) minmax(360px,.85fr) !important;
+        gap:18px !important;
+        align-items:start !important;
+    }
+
+    .card{
+        border-radius:22px !important;
+        background:#fff !important;
+        border:1px solid #dbeafe !important;
+        box-shadow:var(--xion-shadow-soft) !important;
+        padding:20px !important;
+        margin-bottom:18px !important;
+    }
+
+    .section-title{
+        font-size:20px !important;
+        line-height:1.15 !important;
+        letter-spacing:-.025em !important;
+        font-weight:900 !important;
+        margin:0 0 14px !important;
+        color:#0f172a !important;
+    }
+
+    .muted{
+        color:var(--xion-muted) !important;
+        font-size:13px !important;
+        line-height:1.45 !important;
+    }
+
+    .info-grid,
+    .stats-grid{
+        display:grid !important;
+        grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+        gap:10px !important;
+    }
+
+    .info-grid > div,
+    .stats-grid > div,
+    .card [style*="grid-template-columns"] > div{
+        border-radius:16px !important;
+        background:#f8fbff !important;
+        border:1px solid #dbeafe !important;
+        padding:12px 14px !important;
+        min-height:auto !important;
+    }
+
+    .card [style*="text-transform:uppercase"],
+    .card .label,
+    .info-label{
+        font-size:10.5px !important;
+        letter-spacing:.09em !important;
+        color:#64748b !important;
+        font-weight:900 !important;
+        text-transform:uppercase !important;
+        margin-bottom:5px !important;
+    }
+
+    .badge,
+    [class*="badge"],
+    .status-pill{
+        min-height:26px !important;
+        padding:0 10px !important;
+        border-radius:999px !important;
+        font-size:12px !important;
+        font-weight:900 !important;
+    }
+
+    .photo{
+        max-height:260px !important;
+        object-fit:cover !important;
+        border-radius:18px !important;
+        border:1px solid #dbeafe !important;
+    }
+
+    .empty-box{
+        border-radius:16px !important;
+        border:1px dashed #cbd5e1 !important;
+        background:#f8fafc !important;
+        padding:28px !important;
+        text-align:center !important;
+        color:#64748b !important;
+    }
+
+    /* SLA cards compact */
+    .card:has(.section-title):has([style*="Response SLA"]),
+    .card:has(.section-title):has([style*="Resolution SLA"]){
+        padding:18px !important;
+    }
+
+    /* Structured ticket summary compact rows */
+    .card:has(.section-title):has([style*="Reusable Resolution"]){
+        padding:18px !important;
+    }
+
+    /* Timeline compact */
+    .card:has(.section-title):has(+ .card),
+    .timeline,
+    .updates-list{
+        gap:8px !important;
+    }
+
+    .timeline-item,
+    .update-item,
+    .card [class*="timeline"] > div{
+        padding:12px 14px !important;
+        border-radius:16px !important;
+        background:#f8fbff !important;
+        border:1px solid #dbeafe !important;
+        margin-bottom:10px !important;
+    }
+
+    /* AI suggestions compact */
+    .suggestion-card{
+        border-radius:16px !important;
+        border:1px solid #dbeafe !important;
+        background:#f8fbff !important;
+        padding:14px !important;
+        min-height:auto !important;
+    }
+
+    .suggestion-card h3,
+    .suggestion-card .title{
+        font-size:14px !important;
+        line-height:1.25 !important;
+    }
+
+    /* Solution + device card right column look */
+    .card:has(.section-title):has(img[alt="Solution Photo"]),
+    .card:has(.section-title):has(a[href*="devices"]),
+    .card:has(.section-title):has(.photo){
+        overflow:hidden !important;
+    }
+
+    textarea.textarea,
+    input.input,
+    select.select{
+        border-radius:14px !important;
+        border:1px solid #cbd5e1 !important;
+        background:#fff !important;
+        font-size:14px !important;
+        padding:12px 14px !important;
+    }
+
+    textarea.textarea{
+        min-height:110px !important;
+    }
+
+    #close-ticket,
+    #close-ticket + .card,
+    .card:has(#selectedResolutionTemplateId){
+        border:1px solid #bbf7d0 !important;
+        background:linear-gradient(180deg,#ffffff,#f0fdf4) !important;
+    }
+
+    /* Make bottom operational area premium */
+    #close-ticket .section-title,
+    .card:has(textarea[name="message"]) .section-title{
+        display:flex !important;
+        align-items:center !important;
+        gap:8px !important;
+    }
+
+    #close-ticket .section-title::before{
+        content:"✓";
+        width:28px;
+        height:28px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        border-radius:10px;
+        background:#dcfce7;
+        color:#16a34a;
+        font-size:14px;
+    }
+
+    .card:has(textarea[name="message"]) .section-title::before{
+        content:"↻";
+        width:28px;
+        height:28px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        border-radius:10px;
+        background:#dbeafe;
+        color:#1d4ed8;
+        font-size:14px;
+    }
+
+    @media (max-width: 980px){
+        .content-grid,
+        .detail-grid,
+        .main-grid{
+            grid-template-columns:1fr !important;
+        }
+
+        .info-grid,
+        .stats-grid{
+            grid-template-columns:1fr 1fr !important;
+        }
+
+        .hero,
+        .ticket-hero,
+        .header-card{
+            padding:20px !important;
+            border-radius:22px !important;
+        }
+
+        .hero h1,
+        .ticket-hero h1,
+        .header-card h1{
+            font-size:26px !important;
+        }
+    }
+
+    @media (max-width: 640px){
+        .info-grid,
+        .stats-grid{
+            grid-template-columns:1fr !important;
+        }
+
+        .card{
+            padding:16px !important;
+            border-radius:18px !important;
+        }
+
+        .section-title{
+            font-size:18px !important;
+        }
+    }
+</style>
+<!-- XION_TICKET_PREMIUM_COMPACT_STYLE_END -->
+
 </head>
 <body>
     @php
@@ -789,6 +1132,38 @@
                     </div>
                 </div>
 
+
+                @if($problemLog->issue_category)
+                    <div class="card">
+                        <div class="section-title">Issue Category</div>
+                        <div style="margin-top:6px;">
+                            <span style="display:inline-flex; align-items:center; min-height:34px; padding:0 14px; border-radius:999px; background:#eef2ff; color:#3730a3; font-size:13px; font-weight:800;">
+                                {{ ucwords(str_replace('_', ' ', $problemLog->issue_category)) }}
+                            </span>
+                        </div>
+                    </div>
+                @endif
+
+                @if($problemLog->sla_profile)
+                    <div class="card">
+                        <div class="section-title">SLA Profile</div>
+                        <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; margin-top:8px;">
+                            <div style="padding:12px 14px; border-radius:16px; background:#eff6ff; border:1px solid #dbeafe;">
+                                <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#1d4ed8; margin-bottom:6px;">Profile</div>
+                                <div style="font-size:14px; font-weight:800; color:#0f172a;">{{ $problemLog->sla_profile }}</div>
+                            </div>
+                            <div style="padding:12px 14px; border-radius:16px; background:#f8fafc; border:1px solid #e2e8f0;">
+                                <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#64748b; margin-bottom:6px;">Response Due</div>
+                                <div style="font-size:14px; font-weight:800; color:#0f172a;">{{ $problemLog->response_due_at ? \Carbon\Carbon::parse($problemLog->response_due_at)->format('d M Y H:i') : '-' }}</div>
+                            </div>
+                            <div style="padding:12px 14px; border-radius:16px; background:#f8fafc; border:1px solid #e2e8f0;">
+                                <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#64748b; margin-bottom:6px;">Resolution Due</div>
+                                <div style="font-size:14px; font-weight:800; color:#0f172a;">{{ $problemLog->resolution_due_at ? \Carbon\Carbon::parse($problemLog->resolution_due_at)->format('d M Y H:i') : '-' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="card">
                     <div class="section-title">Problem Photo</div>
                     @if($problemLog->photo)
@@ -798,14 +1173,94 @@
                     @endif
                 </div>
 
-                <div class="card">
-                    <div class="section-title">Closed Photo</div>
-                    @if($problemLog->closed_photo)
-                        <img src="{{ url('/storage/' . $problemLog->closed_photo) }}" alt="Closed Photo" class="photo">
-                    @else
-                        <div class="empty-box">No closed photo uploaded.</div>
-                    @endif
-                </div>
+
+                @if($problemLog->device)
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                <div class="section-title" style="margin-bottom:0;">Device Information</div>
+                                @if(!empty($companyDerivedFromDevice))
+                                    <span style="display:inline-flex; align-items:center; min-height:28px; padding:0 10px; border-radius:999px; background:#dbeafe; color:#1d4ed8; font-size:12px; font-weight:800;">
+                                        Company from Device
+                                    </span>
+                                @endif
+                            </div>
+                            <a href="{{ route('devices.show', $problemLog->device) }}" class="btn btn-secondary">View Device Detail</a>
+                        </div>
+
+                        @if($problemLog->device->images->count())
+                            <div style="margin-bottom:14px;">
+                                <img src="{{ asset('storage/' . $problemLog->device->images->first()->path) }}"
+                                     alt="Device Photo"
+                                     style="width:100%; max-width:360px; height:220px; object-fit:cover; border-radius:18px; border:1px solid rgba(255,255,255,.12); display:block;">
+                            </div>
+                        @endif
+
+                        <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px;">
+                            <div>
+                                <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Device Code</div>
+                                <div style="font-weight:700;">{{ $problemLog->device->device_code }}</div>
+                            </div>
+
+                            <div>
+                                <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Device Name</div>
+                                <div style="font-weight:700;">{{ $problemLog->device->name }}</div>
+                            </div>
+
+                            <div>
+                                <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Category</div>
+                                <div style="font-weight:700;">{{ ucfirst($problemLog->device->category) }}</div>
+                            </div>
+
+                            <div>
+                                <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Status</div>
+                                <div style="font-weight:700;">{{ ucfirst($problemLog->device->status) }}</div>
+                            </div>
+
+                            <div>
+                                <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Site / Branch</div>
+                                <div style="font-weight:700;">{{ $problemLog->device->site ?: '-' }}</div>
+                            </div>
+
+                            <div>
+                                <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.06em;">Location</div>
+                                <div style="font-weight:700;">{{ $problemLog->device->location ?: '-' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+
+                @if(($problemLog->close_note ?? null) || ($problemLog->closed_photo ?? null))
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <div class="section-title">Solution Summary</div>
+
+            @php
+                $kbId = null;
+                if (!empty($problemLog->close_note) && preg_match('/KB#(\d+)/', $problemLog->close_note, $m)) {
+                    $kbId = $m[1];
+                }
+            @endphp
+
+            @if($kbId)
+                <a href="{{ url('/resolution-library/' . $kbId) }}" class="btn btn-secondary">
+                    View KB
+                </a>
+            @endif
+        </div>
+
+                        @if($problemLog->close_note)
+                            <div style="margin-top:10px; padding:14px 16px; border-radius:16px; background:#f8fafc; border:1px solid #e2e8f0; color:#0f172a; line-height:1.6; white-space:pre-wrap;">{{ $problemLog->close_note }}</div>
+                        @endif
+
+                        @if($problemLog->closed_photo)
+                            <div style="margin-top:14px;">
+                                <img src="{{ asset('storage/' . $problemLog->closed_photo) }}" alt="Solution Photo" class="photo">
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 @if($currentRole === 'admin' && $problemLog->status !== 'closed')
                     <div class="card">
@@ -837,8 +1292,6 @@
                             </form>
                         </div>
                     @endif
-                @endif
-
                 @if($currentRole === 'engineer' && $problemLog->status !== 'closed' && $isUnassignedOpen)
                     <div class="card">
                         <div class="section-title">Acknowledge Ticket</div>
@@ -848,8 +1301,6 @@
                             <button type="submit" class="btn btn-warning">Acknowledge & Claim</button>
                         </form>
                     </div>
-                @endif
-
                 @if($currentRole === 'engineer' && $problemLog->status !== 'closed' && $isAssignedOpenToCurrentEngineer)
                     <div class="card">
                         <div class="section-title">Take Ticket</div>
@@ -889,43 +1340,14 @@
         @endforeach
     </div>
 </div>
-<div class="card">
-                        <div class="section-title">Add Progress Update</div>
-                        <form method="POST" action="/problem-logs/{{ $problemLog->id }}/updates">
-                            @csrf
-                            <div class="form-group">
-                                <label class="label">Update Message</label>
-                                <textarea name="message" class="textarea" placeholder="Example: On site checking device, found unstable power connection, temporary fix applied." required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add Update</button>
-                        </form>
-                    </div>
+@endif
 
-                    <div class="card">
-                        <div id="close-ticket"></div>
-<div class="section-title">Close Ticket</div>
-                        <form method="POST" action="/problem-logs/{{ $problemLog->id }}/close" enctype="multipart/form-data">
-                            @csrf
-                            <div class="form-group">
-                                <label class="label">Resolution</label>
-                                                        <input type="hidden" name="selected_resolution_template_id" id="selectedResolutionTemplateId" value="{{ old('selected_resolution_template_id', session('prefill_template_id', '')) }}">
-<textarea name="close_note" class="textarea" placeholder="Describe the resolution taken.">{{ old('close_note', session('prefill_close_note', '')) }}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="label">Closed Photo</label>
-                                <input type="file" name="closed_photo" class="input" accept="image/*">
-                            </div>
-                            
-                        <div class="field-group" style="margin-top:18px;">
-<button type="submit" class="btn btn-success">Close Ticket</button>
-                        </form>
-                    </div>
+
                 @endif
             </div>
         </div>
     </div>
-
-    <script>
+<script>
         function formatDuration(totalMinutes) {
             const abs = Math.abs(totalMinutes);
             const h = Math.floor(abs / 60);
@@ -1024,5 +1446,50 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+<!-- XION_OPERATIONAL_ACTIONS_START -->
+<?php if (in_array(($currentUser->role ?? ''), ['admin','engineer']) && (($problemLog->status ?? 'open') !== 'closed')): ?>
+<div style="max-width:1200px; margin:24px auto; padding:0 24px;">
+    <div class="card">
+        <div class="section-title">Add Progress Update</div>
+        <form method="POST" action="/problem-logs/{{ $problemLog->id }}/updates">
+            @csrf
+            <div class="form-group">
+                <label class="label">Update Message</label>
+                <textarea name="message" class="textarea" placeholder="Example: Checking onsite, temporary fix applied, waiting final confirmation." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Update</button>
+        </form>
+    </div>
+
+    <div class="card" id="close-ticket">
+        <div class="section-title">Close Ticket</div>
+        <div class="muted" style="margin-bottom:14px;">
+            Resolution note is required. Optional solution photo will appear in Solution Summary and KB.
+        </div>
+
+        <form method="POST" action="/problem-logs/{{ $problemLog->id }}/close" enctype="multipart/form-data">
+            @csrf
+
+            <div class="form-group">
+                <label class="label">Resolution</label>
+                <input type="hidden" name="selected_resolution_template_id" id="selectedResolutionTemplateId" value="{{ old('selected_resolution_template_id', session('prefill_template_id', '')) }}">
+                <textarea name="close_note" class="textarea" placeholder="Describe the resolution taken." required>{{ old('close_note', session('prefill_close_note', '')) }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="label">Solution Photo</label>
+                <input type="file" name="closed_photo" class="input" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn btn-success">Close Ticket</button>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
+<!-- XION_OPERATIONAL_ACTIONS_END -->
+
 </body>
 </html>
+
+@endif
