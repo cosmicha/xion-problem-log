@@ -11,33 +11,13 @@ class UserTelegramNotificationService
         private TelegramAlertService $telegram
     ) {}
 
-    public function sendToUser(?User $user, string $message, array $buttons = []): void
+    public function sendToUser(?User $user, string $message): void
     {
         if (!$user || empty($user->telegram_chat_id)) {
             return;
         }
 
-        $this->telegram->send([$user->telegram_chat_id], $message, $buttons);
-    }
-
-
-    public function ticketButtons(ProblemLog $ticket): array
-    {
-        if (($ticket->status ?? '') === 'closed') {
-            return [[
-                ['text' => 'Open Ticket', 'url' => url('/problem-logs/' . $ticket->id)],
-            ]];
-        }
-
-        return [
-            [
-                ['text' => '✅ Acknowledge', 'callback_data' => 'ticket_ack:' . $ticket->id],
-                ['text' => '🔧 Close', 'callback_data' => 'ticket_close:' . $ticket->id],
-            ],
-            [
-                ['text' => 'Open Ticket', 'url' => url('/problem-logs/' . $ticket->id)],
-            ],
-        ];
+        $this->telegram->send([$user->telegram_chat_id], $message);
     }
 
     public function ticketMessage(ProblemLog $ticket, string $title, string $message, ?string $activity = null): string

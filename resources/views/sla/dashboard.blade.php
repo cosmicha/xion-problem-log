@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SLA Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="30">
+    <style>
+        body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(135deg,#071737,#173a88);color:#0f172a;}
+        .page{max-width:1280px;margin:0 auto;padding:26px;}
+        .hero{color:white;display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:18px;}
+        h1{margin:0;font-size:34px;letter-spacing:-.04em;}
+        .hero p{margin:8px 0 0;color:rgba(255,255,255,.78);}
+        .btn{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:12px;background:white;color:#0f172a;text-decoration:none;font-weight:800;}
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+        .stat{background:white;border-radius:22px;padding:18px;box-shadow:0 16px 40px rgba(0,0,0,.14);}
+        .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;font-weight:900;}
+        .value{font-size:34px;font-weight:900;margin-top:8px;}
+        .panel{background:white;border-radius:24px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.16);}
+        table{width:100%;border-collapse:collapse;}
+        th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;padding:12px;border-bottom:1px solid #e2e8f0;}
+        td{padding:13px 12px;border-bottom:1px solid #eef2f7;font-size:14px;vertical-align:top;}
+        .pill{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:900;}
+        .red{background:#fee2e2;color:#991b1b;}
+        .yellow{background:#fef3c7;color:#92400e;}
+        .green{background:#dcfce7;color:#166534;}
+        .blue{background:#dbeafe;color:#1d4ed8;}
+        @media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.table-wrap{overflow:auto}}
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="hero">
+        <div>
+            <h1>SLA Monitoring Dashboard</h1>
+            <p>Real-time SLA control tower. Auto-refresh every 30 seconds.</p>
+        </div>
+        <a class="btn" href="/problem-logs">Back to Tickets</a>
+    </div>
+
+    <div class="stats">
+        <div class="stat"><div class="label">Open Tickets</div><div class="value">{{ $stats['open'] }}</div></div>
+        <div class="stat"><div class="label">Near Breach</div><div class="value">{{ $stats['near_breach'] }}</div></div>
+        <div class="stat"><div class="label">Response Breach</div><div class="value">{{ $stats['response_breached'] }}</div></div>
+        <div class="stat"><div class="label">Resolution Breach</div><div class="value">{{ $stats['resolution_breached'] }}</div></div>
+    </div>
+
+    <div class="panel table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>Ticket</th>
+                <th>Company</th>
+                <th>Device / Location</th>
+                <th>Status</th>
+                <th>Response SLA</th>
+                <th>Resolution SLA</th>
+                <th>Engineer</th>
+            </tr>
+            </thead>
+            <tbody>
+            @forelse($tickets as $ticket)
+                @php
+                    $responseClass = $ticket->response_due_at && $ticket->response_due_at->lt($now) ? 'red' : 'green';
+                    $resolutionClass = $ticket->resolution_due_at && $ticket->resolution_due_at->lt($now)
+                        ? 'red'
+                        : (($ticket->resolution_due_at && $ticket->resolution_due_at->between($now, $now->copy()->addMinutes(60))) ? 'yellow' : 'green');
+                @endphp
+                <tr>
+                    <td>
+                        <a href="/problem-logs/{{ $ticket->id }}" style="font-weight:900;color:#1d4ed8;text-decoration:none;">{{ $ticket->ticket_number }}</a><br>
+                        {{ $ticket->title }}
+                    </td>
+                    <td>{{ optional($ticket->company)->name ?: '-' }}</td>
+                    <td>
+                        {{ optional($ticket->device)->device_code ?: '-' }} — {{ optional($ticket->device)->name ?: '-' }}<br>
+                        <span style="color:#64748b;">{{ optional($ticket->device)->site ?: '-' }} / {{ optional($ticket->device)->location ?: '-' }}</span>
+                    </td>
+                    <td><span class="pill blue">{{ strtoupper($ticket->status) }}</span></td>
+                    <td><span class="pill {{ $responseClass }}">{{ $ticket->response_due_at ? $ticket->response_due_at->format('d M H:i') : '-' }}</span></td>
+                    <td><span class="pill {{ $resolutionClass }}">{{ $ticket->resolution_due_at ? $ticket->resolution_due_at->format('d M H:i') : '-' }}</span></td>
+                    <td>{{ optional($ticket->assignedEngineer)->name ?: '-' }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="7" style="text-align:center;color:#64748b;padding:30px;">No active tickets.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    setInterval(() => {
+        window.location.reload();
+    }, 15000); // 15 detik
+</script>
+
+</body>
+</html>

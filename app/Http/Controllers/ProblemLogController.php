@@ -40,7 +40,7 @@ class ProblemLogController extends Controller
                 }
 
                 $sentUserIds[] = $recipient->id;
-                $direct->sendToUser($recipient, $telegramMessage);
+                $direct->sendToUser($recipient, $telegramMessage, $direct->ticketButtons($problemLog));
             }
         } catch (\Throwable $e) {
             \Log::error('Direct Telegram ticket alert failed', [

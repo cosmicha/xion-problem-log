@@ -630,13 +630,15 @@
                         @if(($user->role ?? '') === 'admin')
                             <a href="/admin/users" class="btn btn-secondary">Users</a>
                         @endif
+
+                        <a href="{{ route('sla.dashboard') }}" class="btn btn-secondary">SLA Dashboard</a>
                         <a href="{{ route('telegram.connect') }}" class="btn btn-secondary">
                             {{ auth()->user()->telegram_chat_id ? 'Telegram Connected' : 'Connect Telegram' }}
                         </a>
-                        <a href="{{ route('sla.dashboard') }}" class="btn btn-secondary">SLA Dashboard</a>
                         <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
 
                         @if(in_array(($user->role ?? ''), ['admin', 'engineer']))
+                            <a href="/sla-dashboard" class="btn btn-secondary">SLA Dashboard</a>
                         @endif
 
                         <a href="/analytics" class="btn btn-secondary">Analytics</a>
