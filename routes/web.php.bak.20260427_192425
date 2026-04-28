@@ -105,13 +105,4 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/telegram/connect/test', [\App\Http\Controllers\TelegramConnectController::class, 'test'])->name('telegram.connect.test');
 });
 
-
-Route::post('/telegram/webhook', [\App\Http\Controllers\TelegramWebhookController::class, 'handle'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class])
-    ->name('telegram.webhook');
-
-
-
-Route::get('/reports/device-health', [\App\Http\Controllers\ReportController::class, 'deviceHealth'])
-    ->middleware(['auth'])
-    ->name('reports.device.health');
+Route::post('/telegram/webhook', [\App\Http\Controllers\TelegramWebhookController::class, 'handle'])->name('telegram.webhook');

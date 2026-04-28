@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ProblemLog;
+use Illuminate\Support\Facades\DB;
+
+class ReportController extends Controller
+{
+    public function deviceHealth()
+    {
+        $devices = DB::table('problem_logs')
+            ->select(
+                'device_id',
+                DB::raw('COUNT(*) as total_tickets'),
+                DB::raw("SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END) as closed"),
+                DB::raw("SUM(CASE WHEN status != 'closed' THEN 1 ELSE 0 END) as open"),
+                DB::raw('MAX(created_at) as last_issue')
+            )
+            ->groupBy('device_id')
+            ->orderByDesc('total_tickets')
+            ->get();
+
+        return view('reports.device-health', compact('devices'));
+    }
+}
