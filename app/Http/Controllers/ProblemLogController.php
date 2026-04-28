@@ -396,14 +396,8 @@ public function analytics()
         ]);
 
         if (method_exists($problemLog, 'updates')) {
-            try {
-                $problemLog->updates()->create([
-                    'user_id' => $user->id,
-                    'action' => 'Ticket Created',
-                    'message' => 'Ticket created successfully.',
-                ]);
-            } catch (\Throwable $e) {
-            }
+            // disabled old duplicate Ticket Created telegram block
+
         }
 
         $this->sendTicketEmail(
@@ -413,27 +407,17 @@ public function analytics()
         );
 
         try {
-            app(EscalationAlertService::class)->sendForEvent($problemLog, 'create');
+            // disabled duplicate create telegram without buttons
+            // // disabled duplicate create telegram sender
+            // app(EscalationAlertService::class)->sendForEvent($problemLog, 'create');
         } catch (\Throwable $e) {
             \Log::error('Escalation alert failed on create', [
                 'problem_log_id' => $problemLog->id,
                 'error' => $e->getMessage(),
             ]);
         }
+            // disabled old duplicate Ticket Created telegram block
 
-        try {
-            $problemLog->loadMissing(['createdByUser', 'company']);
-            $direct = app(UserTelegramNotificationService::class);
-            $direct->sendToUser(
-                $problemLog->createdByUser ?: $user,
-                $direct->ticketMessage($problemLog, 'Ticket Created', 'Your ticket has been created successfully.')
-            );
-        } catch (\Throwable $e) {
-            \Log::error('Direct Telegram alert failed on create', [
-                'problem_log_id' => $problemLog->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
 
         try {
             app(\App\Services\OpenAiResolutionSuggestionService::class)->process($problemLog);
@@ -446,32 +430,8 @@ public function analytics()
 
 
         // Direct Telegram alert to ticket creator, but avoid duplicate if creator is already in admin escalation list
-        try {
-            $telegramUser = auth()->user()?->fresh();
-            $problemLog->loadMissing(['company']);
+            // disabled old duplicate Ticket Created telegram block
 
-            if ($telegramUser && !empty($telegramUser->telegram_chat_id)) {
-                $adminChatIds = [];
-
-                if ($problemLog->company && !empty($problemLog->company->alert_admin_telegram_chat_ids)) {
-                    $adminChatIds = preg_split('/[,\n\r]+/', $problemLog->company->alert_admin_telegram_chat_ids) ?: [];
-                    $adminChatIds = array_values(array_filter(array_map('trim', $adminChatIds)));
-                }
-
-                if (!in_array((string) $telegramUser->telegram_chat_id, array_map('strval', $adminChatIds), true)) {
-                    $direct = app(UserTelegramNotificationService::class);
-                    $direct->sendToUser(
-                        $telegramUser,
-                        $direct->ticketMessage($problemLog, 'Ticket Created', 'Your ticket has been created successfully.')
-                    );
-                }
-            }
-        } catch (\Throwable $e) {
-            \Log::error('Direct Telegram create final fallback failed', [
-                'problem_log_id' => $problemLog->id ?? null,
-                'error' => $e->getMessage(),
-            ]);
-        }
 
         $this->sendDirectTelegramToTicketUsers($problemLog, 'Ticket Created', 'Your ticket has been created successfully.');
 

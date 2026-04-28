@@ -8,6 +8,8 @@ use App\Services\TelegramAlertService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class TelegramWebhookController extends Controller
 {
@@ -30,23 +32,58 @@ class TelegramWebhookController extends Controller
         $chatId = (string) data_get($message, 'chat.id');
         $text = trim((string) data_get($message, 'text', ''));
 
+        Log::info('TELEGRAM_INCOMING', ['chat_id' => $chatId, 'text' => $text]);
+
         if (!$chatId || !$text) {
+            return response()->json(['ok' => true]);
+        }
+
+        if (preg_match('/^\/myid/i', $text)) {
+            $telegram->send([$chatId], "Your Telegram Chat ID is:\n\n<code>{$chatId}</code>\n\nCopy this number into the web Telegram Connect page.");
+            return response()->json(['ok' => true]);
+        }
+
+
+        // Connect Telegram: /start CODE
+        if (preg_match('/^\/start\s+([A-Z0-9]{6,30})/i', $text, $m)) {
+            $code = strtoupper(trim($m[1]));
+
+            $user = User::where('telegram_link_code', $code)->first();
+
+            if (!$user && Schema::hasColumn('users', 'telegram_connect_code')) {
+                $user = User::where('telegram_connect_code', $code)->first();
+            }
+
+            if ($user) {
+                $user->telegram_chat_id = $chatId;
+                if (Schema::hasColumn('users', 'telegram_linked_at')) {
+                    $user->telegram_linked_at = now();
+                }
+                $user->save();
+
+                $telegram->send([$chatId], "Telegram connected successfully ✅\n\nUser: " . ($user->name ?: $user->email));
+            } else {
+                $telegram->send([$chatId], "Invalid Telegram connect code. Please generate a new code from the web.");
+            }
+
             return response()->json(['ok' => true]);
         }
 
         $user = User::where('telegram_chat_id', $chatId)->first();
 
         if (!$user) {
-            $telegram->send([$chatId], "Telegram account belum terhubung ke user system.\n\nBuka web → Connect Telegram dulu.");
+            $telegram->send([$chatId], "Telegram account belum terhubung.\n\nBuka web → Connect Telegram dulu.");
             return response()->json(['ok' => true]);
         }
 
+        // Clear context
         if (preg_match('/^\/clear/i', $text)) {
             Cache::forget("tg_ticket_context_{$chatId}");
             $telegram->send([$chatId], "Context ticket sudah dibersihkan.");
             return response()->json(['ok' => true]);
         }
 
+        // Select ticket context
         if (preg_match('/^\/ticket\s+(.+)/i', $text, $m)) {
             $ticketNumber = trim($m[1]);
 
@@ -60,13 +97,14 @@ class TelegramWebhookController extends Controller
                 return response()->json(['ok' => true]);
             }
 
-            Cache::put("tg_ticket_context_{$chatId}", $ticket->id, now()->addHours(2));
+            Cache::put("tg_ticket_context_{$chatId}", $ticket->id, now()->addHours(6));
 
-            $telegram->send([$chatId], $this->ticketContextMessage($ticket, "Ticket context aktif.\nSekarang kamu bisa tanya apa saja tentang ticket ini."));
+            $telegram->send([$chatId], $this->ticketContextMessage($ticket));
 
             return response()->json(['ok' => true]);
         }
 
+        // Normal chat forwarding
         $ticketId = Cache::get("tg_ticket_context_{$chatId}");
 
         if (!$ticketId) {
@@ -84,9 +122,7 @@ class TelegramWebhookController extends Controller
 
         $isEngineer = $ticket->assigned_engineer_id && $user->id === $ticket->assigned_engineer_id;
 
-        $recipient = $isEngineer
-            ? $ticket->createdByUser
-            : $ticket->assignedEngineer;
+        $recipient = $isEngineer ? $ticket->createdByUser : $ticket->assignedEngineer;
 
         if (!$recipient || !$recipient->telegram_chat_id) {
             $telegram->send([$chatId], $isEngineer
@@ -96,15 +132,13 @@ class TelegramWebhookController extends Controller
             return response()->json(['ok' => true]);
         }
 
-        Cache::put("tg_ticket_context_{$recipient->telegram_chat_id}", $ticket->id, now()->addHours(2));
+        Cache::put("tg_ticket_context_{$recipient->telegram_chat_id}", $ticket->id, now()->addHours(6));
 
         $senderRole = $isEngineer ? "Engineer" : "User";
         $recipientRole = $isEngineer ? "User" : "Engineer";
 
-        $forwardMessage = $this->chatForwardMessage($ticket, $user, $senderRole, $text);
-
-        $telegram->send([$recipient->telegram_chat_id], $forwardMessage);
-        $telegram->send([$chatId], "Pesan sudah dikirim ke {$recipientRole}.");
+        $telegram->send([$recipient->telegram_chat_id], $this->chatForwardMessage($ticket, $user, $senderRole, $text));
+        $telegram->send([$chatId], "Pesan sudah dikirim ke {$recipientRole} ✅");
 
         DB::table('problem_log_updates')->insert([
             'problem_log_id' => $ticket->id,
@@ -127,7 +161,15 @@ class TelegramWebhookController extends Controller
     private function handleCallback(Request $request, TelegramAlertService $telegram)
     {
         $callback = $request->input('callback_query');
+        $callbackId = (string) data_get($callback, 'id');
 
+        // 🔥 Anti duplicate (Telegram retry protection)
+        if (\Illuminate\Support\Facades\Cache::has('tg_cb_'.$callbackId)) {
+            return response()->json(['ok' => true]);
+        }
+        \Illuminate\Support\Facades\Cache::put('tg_cb_'.$callbackId, true, now()->addMinutes(5));
+
+        $callback = $request->input('callback_query');
         $callbackId = (string) data_get($callback, 'id');
         $chatId = (string) data_get($callback, 'message.chat.id');
         $data = (string) data_get($callback, 'data');
@@ -135,25 +177,20 @@ class TelegramWebhookController extends Controller
         $user = User::where('telegram_chat_id', $chatId)->first();
 
         if (!$user) {
-            $telegram->answerCallback($callbackId, 'Telegram account belum terhubung.');
+            $telegram->answerCallback($callbackId, 'Telegram belum connect.');
             return response()->json(['ok' => true]);
         }
 
         [$action, $ticketId] = array_pad(explode(':', $data, 2), 2, null);
 
-        $ticket = ProblemLog::with(['company', 'device', 'createdByUser', 'assignedEngineer'])->find($ticketId);
+        $ticket = ProblemLog::find($ticketId);
 
         if (!$ticket) {
-            $telegram->answerCallback($callbackId, 'Ticket not found.');
+            $telegram->answerCallback($callbackId, 'Ticket tidak ditemukan.');
             return response()->json(['ok' => true]);
         }
 
-        if ($action === 'ticket_ack') {
-            if ($ticket->status === 'closed') {
-                $telegram->answerCallback($callbackId, 'Ticket already closed.');
-                return response()->json(['ok' => true]);
-            }
-
+        if ($action === 'ticket_ack' && $ticket->status !== 'closed') {
             $oldStatus = $ticket->status;
 
             $ticket->status = 'in_progress';
@@ -174,20 +211,13 @@ class TelegramWebhookController extends Controller
                 'updated_at' => now(),
             ]);
 
-            Cache::put("tg_ticket_context_{$chatId}", $ticket->id, now()->addHours(2));
+            Cache::put("tg_ticket_context_{$chatId}", $ticket->id, now()->addHours(6));
 
             $telegram->answerCallback($callbackId, 'Ticket acknowledged.');
-            $telegram->send([$chatId], "Ticket acknowledged via Telegram.\n" . url('/problem-logs/' . $ticket->id));
-
-            return response()->json(['ok' => true]);
+            $telegram->send([$chatId], "Ticket acknowledged via Telegram ✅\n" . url('/problem-logs/' . $ticket->id));
         }
 
-        if ($action === 'ticket_close') {
-            if ($ticket->status === 'closed') {
-                $telegram->answerCallback($callbackId, 'Ticket already closed.');
-                return response()->json(['ok' => true]);
-            }
-
+        if ($action === 'ticket_close' && $ticket->status !== 'closed') {
             $oldStatus = $ticket->status;
 
             $ticket->status = 'closed';
@@ -211,22 +241,19 @@ class TelegramWebhookController extends Controller
             Cache::forget("tg_ticket_context_{$chatId}");
 
             $telegram->answerCallback($callbackId, 'Ticket closed.');
-            $telegram->send([$chatId], "Ticket closed via Telegram.\n" . url('/problem-logs/' . $ticket->id));
-
-            return response()->json(['ok' => true]);
+            $telegram->send([$chatId], "Ticket closed via Telegram ✅\n" . url('/problem-logs/' . $ticket->id));
         }
 
-        $telegram->answerCallback($callbackId, 'Unknown action.');
         return response()->json(['ok' => true]);
     }
 
-    private function ticketContextMessage(ProblemLog $ticket, string $intro): string
+    private function ticketContextMessage(ProblemLog $ticket): string
     {
         $device = $ticket->device;
         $location = $device ? implode(' / ', array_filter([$device->site, $device->location])) : '-';
 
         return implode("\n", [
-            "<b>{$intro}</b>",
+            "<b>Ticket chat aktif ✅</b>",
             "",
             "<b>Ticket:</b> " . ($ticket->ticket_number ?: '#' . $ticket->id),
             "<b>Judul:</b> " . e($ticket->title ?: '-'),
@@ -236,10 +263,10 @@ class TelegramWebhookController extends Controller
             "<b>Lokasi:</b> " . e($location ?: '-'),
             "<b>Engineer:</b> " . e(optional($ticket->assignedEngineer)->name ?: '-'),
             "",
-            "<b>Link:</b> " . url('/problem-logs/' . $ticket->id),
-            "",
             "Ketik pesan biasa untuk chat dengan engineer/user terkait.",
-            "Ketik /clear untuk keluar dari context ticket ini.",
+            "Ketik /clear untuk keluar dari ticket ini.",
+            "",
+            "<b>Link:</b> " . url('/problem-logs/' . $ticket->id),
         ]);
     }
 

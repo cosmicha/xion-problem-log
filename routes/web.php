@@ -115,3 +115,13 @@ Route::post('/telegram/webhook', [\App\Http\Controllers\TelegramWebhookControlle
 Route::get('/reports/device-health', [\App\Http\Controllers\ReportController::class, 'deviceHealth'])
     ->middleware(['auth'])
     ->name('reports.device.health');
+
+
+Route::post('/telegram/connect/manual', [\App\Http\Controllers\TelegramConnectController::class, 'manual'])
+    ->middleware(['auth'])
+    ->name('telegram.connect.manual');
+
+Route::post('/telegram/connect/disconnect', [\App\Http\Controllers\TelegramConnectController::class, 'disconnect'])
+    ->middleware(['auth'])
+    ->name('telegram.connect.disconnect');
+
