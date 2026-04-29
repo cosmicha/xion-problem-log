@@ -125,3 +125,8 @@ Route::post('/telegram/connect/disconnect', [\App\Http\Controllers\TelegramConne
     ->middleware(['auth'])
     ->name('telegram.connect.disconnect');
 
+
+Route::post('/admin/users/{user}/telegram-test', [\App\Http\Controllers\Admin\UserApprovalController::class, 'testTelegram'])
+    ->middleware(['auth', 'admin'])
+    ->name('admin.users.telegram-test');
+

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\UserTelegramNotificationService;
+use App\Services\EscalationAlertService;
 
 use App\Models\Company;
 use App\Models\Device;

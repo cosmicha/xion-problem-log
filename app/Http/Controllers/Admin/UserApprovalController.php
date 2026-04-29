@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class UserApprovalController extends Controller
 {
@@ -18,6 +18,21 @@ class UserApprovalController extends Controller
 
         return view('admin.users.index', compact('users', 'companies'));
     }
+
+
+    public function testTelegram(User $user)
+    {
+        if (empty($user->telegram_chat_id)) {
+            return back()->with('error', 'User Telegram is not connected.');
+        }
+
+        app(\App\Services\TelegramAlertService::class)->send([
+            $user->telegram_chat_id
+        ], "Test Telegram from Admin ✅\n\nUser: " . ($user->name ?: $user->email));
+
+        return back()->with('success', 'Telegram test message sent to ' . ($user->name ?: $user->email));
+    }
+
 
     public function approve(User $user)
     {
@@ -79,7 +94,7 @@ class UserApprovalController extends Controller
 
         Company::create([
             'name' => $request->name,
-            'code' => strtoupper(Str::random(6)),
+            'code' => $request->code ?: Str::upper(Str::random(6)),
             'sla_response_minutes' => $request->sla_response_minutes ?: 2,
             'sla_resolution_minutes' => $request->sla_resolution_minutes ?: 8,
             'sla_active' => $request->has('sla_active'),

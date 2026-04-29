@@ -1,25 +1,20 @@
 /vendor
 /node_modules
-/public/build
 /.env
-/.env.*
-!.env.example
-/database/*.sqlite
+
+# Laravel
 /storage/*.key
-/storage/app/public
-/bootstrap/cache/*.php
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
-.DS_Store
-*.bak
-*.bak_*
-*.safe_*
-*.tar.gz
-*.zip
-/storage/framework/views/*
-/storage/framework/cache/*
 /storage/logs/*
-storage/framework/sessions/*
+/storage/framework/sessions/*
+/storage/framework/cache/*
+/storage/framework/views/*
+
+# Backup & temp
 *.bak.*
+*.tmp
+
+# OS
+.DS_Store
+
+# Public storage (symlink)
+public/storage

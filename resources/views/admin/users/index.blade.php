@@ -575,7 +575,15 @@
 
                         <div>
                             <div class="user-name">{{ $user->name }}</div>
-                            <div class="user-email">{{ $user->email }}</div>
+                            <div class="user-email">{{ $user->email }}</td>
+<td>{{ $user->telegram_chat_id ?? '-' }}</td>
+<td>
+    @if($user->telegram_chat_id)
+        <span style="color:green;font-weight:bold;">Connected</span>
+    @else
+        <span style="color:red;font-weight:bold;">Not Connected</span>
+    @endif
+</div>
 
                             <div class="badge-row">
                                 @if($role === 'admin')
@@ -650,6 +658,12 @@
                             <div class="action-right">
                                 <button type="submit" class="btn btn-success">Update User</button>
                     </form>
+<form method="POST" action="{{ route('admin.users.telegram-test', $user) }}" style="display:inline;">
+    @csrf
+    <button type="submit" class="btn btn-sm" style="background:#229ED9;color:white;border:0;border-radius:8px;padding:6px 10px;">
+        Test Telegram
+    </button>
+</form>
 
                                 <form method="POST" action="/admin/users/{{ $user->id }}" onsubmit="return confirm('Delete this user?');">
                                     @csrf
