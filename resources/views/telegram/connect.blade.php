@@ -49,7 +49,7 @@
         <div class="grid">
             <div class="mini">
                 <div class="label">Option A — Auto connect</div>
-                <div class="muted">Send this command to the Telegram bot:</div>
+                <div class="muted">Open Telegram, search <strong>@xion1bot</strong>, then send this command:</div>
                 <div class="box"><div class="cmd">/start {{ $code }}</div></div>
                 <form method="POST" action="{{ route('telegram.connect.sync') }}">
                     @csrf
@@ -59,7 +59,7 @@
 
             <div class="mini">
                 <div class="label">Option B — Manual Chat ID</div>
-                <div class="muted">If auto connect does not work, send this to the bot:</div>
+                <div class="muted">If auto connect does not work, open <strong>@xion1bot</strong> and send this command:</div>
                 <div class="box"><div class="cmd">/myid</div></div>
 
                 <form method="POST" action="{{ route('telegram.connect.manual') }}">
