@@ -8,7 +8,10 @@ use Illuminate\Support\Carbon;
 class ProblemLog extends Model
 {
     protected $fillable = [
-        'company_id',
+        
+        'vendor_id',
+        'is_escalated',
+        'escalated_at','company_id',
         'created_by_user_id',
         'assigned_by_user_id',
         'acknowledged_by_user_id',
@@ -314,5 +317,12 @@ class ProblemLog extends Model
     {
         return $this->belongsTo(Device::class);
     }
+
+
+    public function vendor()
+    {
+        return $this->belongsTo(\App\Models\Vendor::class);
+    }
+
 
 }

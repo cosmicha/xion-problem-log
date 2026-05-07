@@ -1366,4 +1366,52 @@ public function analytics()
         return 'Hardware';
     }
 
+
+    public function escalate(\App\Models\ProblemLog $problemLog)
+    {
+        $problemLog->loadMissing(['device.vendor', 'vendor']);
+
+        $vendorId = $problemLog->vendor_id ?: optional($problemLog->device)->vendor_id;
+
+        if (!$vendorId) {
+            return back()->with('error', 'Device belum memiliki vendor. Pilih vendor di device terlebih dahulu.');
+        }
+
+        $problemLog->update([
+            'vendor_id' => $vendorId,
+            'is_escalated' => true,
+            'escalated_at' => now(),
+            'status' => 'in_progress',
+        ]);
+
+        $problemLog->loadMissing(['vendor', 'device', 'company']);
+
+        if ($problemLog->vendor && $problemLog->vendor->telegram_chat_id) {
+            app(\App\Services\TelegramAlertService::class)->send(
+                [$problemLog->vendor->telegram_chat_id],
+                "🚨 <b>Vendor Escalation</b>\n\n" .
+                "<b>Ticket:</b> " . ($problemLog->ticket_number ?: '#' . $problemLog->id) . "\n" .
+                "<b>Company:</b> " . e(optional($problemLog->company)->name ?: '-') . "\n" .
+                "<b>Device:</b> " . e(optional($problemLog->device)->name ?: '-') . "\n" .
+                "<b>Issue:</b> " . e($problemLog->title ?: '-') . "\n\n" .
+                "Open: " . url('/problem-logs/' . $problemLog->id)
+            );
+        }
+
+        
+        // VENDOR_TELEGRAM_ALERT
+        if ($problemLog->vendor && $problemLog->vendor->telegram_chat_id) {
+            app(\App\Services\TelegramAlertService::class)->send(
+                [$problemLog->vendor->telegram_chat_id],
+                "<b>🚨 NEW ESCALATED TICKET</b>\n\n"
+                . "<b>Device:</b> " . e(optional($problemLog->device)->name) . "\n"
+                . "<b>Issue:</b> " . e($problemLog->title) . "\n\n"
+                . "Open: " . url('/problem-logs/' . $problemLog->id)
+            );
+        }
+
+        return back()->with('success', 'Ticket escalated to vendor.');
+    }
+
+
 }

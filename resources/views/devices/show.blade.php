@@ -497,7 +497,13 @@
         <div class="pagination-wrap">
             {{ $relatedTickets->links() }}
         </div>
-    </div>
+    
+<div style="margin-top:10px;">
+    <strong>Vendor:</strong>
+    {{ $device->vendor?->name ?? '-' }}
+</div>
+
+</div>
 </div>
 </body>
 </html>

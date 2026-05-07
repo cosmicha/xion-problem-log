@@ -130,3 +130,24 @@ Route::post('/admin/users/{user}/telegram-test', [\App\Http\Controllers\Admin\Us
     ->middleware(['auth', 'admin'])
     ->name('admin.users.telegram-test');
 
+
+
+Route::get('/devices/{device}/label-png', function (\App\Models\Device $device) {
+    $qrValue = url('/problem-logs/create?device_id=' . $device->id);
+    $qr = 'https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=0&data=' . urlencode($qrValue);
+
+    $html = '
+    <html><body style="margin:0;padding:0;width:62mm;height:62mm;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial;">
+        <img src="'.$qr.'" style="width:42mm;height:42mm;">
+        <div style="font-size:10px;font-weight:bold;margin-top:4px;">'.$device->device_code.'</div>
+        <div style="font-size:9px;">'.$device->category.'</div>
+    </body></html>';
+
+    return response($html);
+})->name('devices.label.png');
+
+
+Route::post('/problem-logs/{problemLog}/escalate', [\App\Http\Controllers\ProblemLogController::class, 'escalate'])
+    ->middleware(['auth'])
+    ->name('problem-logs.escalate');
+

@@ -682,7 +682,19 @@
                     <a href="/problem-logs" class="btn btn-secondary">Back to Dashboard</a>
 
                     @if($problemLog->status !== 'closed' || ($currentUser->role ?? '') === 'admin')
-                        <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-secondary">Edit Ticket</a>
+                        <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-secondary">
+@if(!$problemLog->is_escalated)
+<form method="POST" action="{{ route('problem-logs.escalate', $problemLog) }}" style="display:inline;">
+    @csrf
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Escalate ticket ini ke vendor?')">
+        🚨 Escalate to Vendor
+    </button>
+</form>
+@else
+    <span class="badge bg-warning text-dark">Escalated to Vendor</span>
+@endif
+
+Edit Ticket</a>
                     @endif
 
                     @if(($currentUser->role ?? '') === 'admin')

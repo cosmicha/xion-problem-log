@@ -373,6 +373,7 @@
                 <a href="/problem-logs" class="btn btn-secondary">Back to Tickets</a>
                 <a href="{{ route('devices.bulk-label') }}" class="btn btn-secondary" target="_blank">Bulk Print Labels</a>
                 <a href="{{ route('reports.device.health') }}" class="btn btn-secondary">Device Health Report</a>
+                        <a href="{{ route('vendors.index') }}" class="btn btn-secondary">Vendors</a>
                         <a href="{{ route('devices.create') }}" class="btn btn-primary">+ Add Device</a>
             </div>
         </div>

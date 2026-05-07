@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -13,10 +14,11 @@ class UserApprovalController extends Controller
 {
     public function index()
     {
-        $users = User::with('company')->orderBy('name')->get();
+        $users = User::with(['company','vendor'])->orderBy('name')->get();
         $companies = Company::orderBy('name')->get();
+        $vendors = Vendor::orderBy('name')->get();
 
-        return view('admin.users.index', compact('users', 'companies'));
+        return view('admin.users.index', compact('users', 'companies', 'vendors'));
     }
 
 
@@ -50,6 +52,7 @@ class UserApprovalController extends Controller
             'email' => $request->filled('email') ? $request->email : $user->email,
             'role' => $request->filled('role') ? $request->role : $user->role,
             'company_id' => $request->filled('company_id') ? $request->company_id : null,
+            'vendor_id' => $request->filled('vendor_id') ? $request->vendor_id : null,
             'is_approved' => $request->has('is_approved'),
         ];
 

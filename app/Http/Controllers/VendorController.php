@@ -2,84 +2,112 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Vendor;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class VendorController extends Controller
 {
     public function index()
     {
-        $vendors = Vendor::orderBy('name')->get();
+        $vendors = Vendor::withCount(['devices', 'problemLogs', 'issueCategories'])
+            ->latest()
+            ->get();
+
         return view('vendors.index', compact('vendors'));
     }
 
     public function create()
     {
-        if ((auth()->user()->role ?? null) !== 'admin') {
-            abort(403);
-        }
-
-        return view('vendors.create');
+        return view('vendors.create', [
+            'vendor' => new Vendor(),
+            'title' => 'Add Vendor',
+            'action' => route('vendors.store'),
+            'method' => 'POST',
+        ]);
     }
 
     public function store(Request $request)
     {
-        if ((auth()->user()->role ?? null) !== 'admin') {
-            abort(403);
-        }
+        $data = $this->validatedData($request);
+        $data['code'] = $data['code'] ?: Str::upper(Str::random(6));
+        $data['status'] = $data['status'] ?: 'active';
 
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact' => 'nullable|string|max:255',
-            'support_phone' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-        ]);
+        $vendor = Vendor::create($data);
+        $this->syncCategories($vendor, $request->input('categories', []));
 
-        Vendor::create($data);
-
-        return redirect()->route('vendors.index')->with('success', 'Vendor created.');
+        return redirect()->route('vendors.index')->with('success', 'Vendor created successfully.');
     }
 
     public function show(Vendor $vendor)
     {
+        $vendor->load(['issueCategories', 'devices', 'problemLogs']);
+
         return view('vendors.show', compact('vendor'));
     }
 
     public function edit(Vendor $vendor)
     {
-        if ((auth()->user()->role ?? null) !== 'admin') {
-            abort(403);
-        }
+        $vendor->load('issueCategories');
 
-        return view('vendors.edit', compact('vendor'));
+        return view('vendors.edit', [
+            'vendor' => $vendor,
+            'title' => 'Edit Vendor',
+            'action' => route('vendors.update', $vendor),
+            'method' => 'PUT',
+        ]);
     }
 
     public function update(Request $request, Vendor $vendor)
     {
-        if ((auth()->user()->role ?? null) !== 'admin') {
-            abort(403);
-        }
-
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact' => 'nullable|string|max:255',
-            'support_phone' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-        ]);
+        $data = $this->validatedData($request, $vendor->id);
+        $data['code'] = $data['code'] ?: $vendor->code;
+        $data['status'] = $data['status'] ?: 'active';
 
         $vendor->update($data);
+        $this->syncCategories($vendor, $request->input('categories', []));
 
-        return redirect()->route('vendors.index')->with('success', 'Updated.');
+        return redirect()->route('vendors.index')->with('success', 'Vendor updated successfully.');
     }
 
     public function destroy(Vendor $vendor)
     {
-        if ((auth()->user()->role ?? null) !== 'admin') {
-            abort(403);
-        }
-
         $vendor->delete();
 
-        return redirect()->route('vendors.index')->with('success', 'Deleted.');
+        return redirect()->route('vendors.index')->with('success', 'Vendor deleted successfully.');
+    }
+
+    private function validatedData(Request $request, ?int $ignoreId = null): array
+    {
+        return $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:50', 'unique:vendors,code' . ($ignoreId ? ',' . $ignoreId : '')],
+            'contact_person' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:100'],
+            'address' => ['nullable', 'string'],
+            'category' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'string', 'max:50'],
+            'notes' => ['nullable', 'string'],
+            'scope_of_work' => ['nullable', 'string'],
+            'sow' => ['nullable', 'string'],
+            'coverage_type' => ['nullable', 'string', 'max:100'],
+            'telegram_chat_id' => ['nullable', 'string', 'max:100'],
+        ]);
+    }
+
+    private function syncCategories(Vendor $vendor, array $categories): void
+    {
+        $vendor->issueCategories()->delete();
+
+        foreach ($categories as $category) {
+            $category = trim((string) $category);
+
+            if ($category !== '') {
+                $vendor->issueCategories()->create([
+                    'name' => $category,
+                ]);
+            }
+        }
     }
 }

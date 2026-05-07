@@ -395,7 +395,21 @@
                 <button type="submit" class="btn btn-primary">Update Device</button>
                 <a href="{{ route('devices.show', $device) }}" class="btn">Cancel</a>
             </div>
-        </form>
+        
+<div style="margin-top:12px;">
+    <label style="font-weight:800;">Vendor</label>
+    <select name="vendor_id" style="width:100%;height:42px;border-radius:10px;border:1px solid #ccc;padding:0 10px;">
+        <option value="">-- Select Vendor --</option>
+        @foreach(\App\Models\Vendor::all() as $v)
+            <option value="{{ $v->id }}"
+                {{ old('vendor_id', $device->vendor_id ?? '') == $v->id ? 'selected' : '' }}>
+                {{ $v->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+</form>
     </div>
 
         @if($device->images->count())
@@ -412,7 +426,21 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger" style="width:100%;">Delete Photo</button>
-                                </form>
+                                
+<div style="margin-top:12px;">
+    <label style="font-weight:800;">Vendor</label>
+    <select name="vendor_id" style="width:100%;height:42px;border-radius:10px;border:1px solid #ccc;padding:0 10px;">
+        <option value="">-- Select Vendor --</option>
+        @foreach(\App\Models\Vendor::all() as $v)
+            <option value="{{ $v->id }}"
+                {{ old('vendor_id', $device->vendor_id ?? '') == $v->id ? 'selected' : '' }}>
+                {{ $v->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+</form>
                             </div>
                         </div>
                     @endforeach

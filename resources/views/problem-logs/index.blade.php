@@ -1,3 +1,4 @@
+<a href="{{ route('vendors.index') }}" class="btn btn-secondary">Vendors</a>
 
 <div style="margin-bottom: 15px;">
 </div>

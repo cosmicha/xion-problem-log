@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
-        'is_approved',
+        'vendor_id',
         'company_id',
+        'telegram_linked_at',
+        'telegram_link_code',
+        'telegram_chat_id',
+        'is_approved',
     ];
 
     protected $hidden = [
@@ -24,17 +24,19 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_approved' => 'boolean',
-        ];
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(\App\Models\Company::class);
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(\App\Models\Vendor::class);
     }
 }

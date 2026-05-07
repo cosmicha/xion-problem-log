@@ -8,6 +8,7 @@ class Device extends Model
 {
     protected $fillable = [
         'company_id',
+        'vendor_id',
         'device_code',
         'name',
         'category',
@@ -17,36 +18,41 @@ class Device extends Model
         'site',
         'location',
         'status',
+        'installation_date',
         'notes',
     ];
 
+    protected $casts = [
+        'installation_date' => 'date',
+    ];
+
+    // ✅ EXISTING RELATIONS (WAJIB ADA)
     public function company()
     {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function problemLogs()
-    {
-        return $this->hasMany(ProblemLog::class);
+        return $this->belongsTo(\App\Models\Company::class);
     }
 
     public function images()
     {
-        return $this->hasMany(DeviceImage::class)->orderBy('sort_order')->orderBy('id');
+        return $this->hasMany(\App\Models\DeviceImage::class);
     }
 
-    public function coverImage()
+    public function problemLogs()
     {
-        return $this->images()->first();
+        return $this->hasMany(\App\Models\ProblemLog::class);
     }
 
-    public function ticketCreateUrl(): string
+    // ✅ NEW RELATION (VENDOR)
+    public function vendor()
     {
-        return url('/problem-logs/create?device_id=' . $this->id);
+        return $this->belongsTo(\App\Models\Vendor::class);
     }
 
-    public function qrImageUrl(): string
+    public function qrImageUrl()
     {
-        return 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=' . urlencode($this->ticketCreateUrl());
+        $qrValue = url('/problem-logs/create?device_id=' . $this->id);
+
+        return 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=0&data=' . urlencode($qrValue);
     }
+
 }

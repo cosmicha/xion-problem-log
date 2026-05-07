@@ -529,9 +529,9 @@
                     <select id="filterRole" class="select">
                         <option value="">All Roles</option>
                         <option value="admin">Admin</option>
-                        <option value="engineer">Engineer</option>
-                        <option value="customer">Customer</option>
-                        <option value="user">User</option>
+<option value="engineer">Engineer</option>
+<option value="customer">Customer</option>
+<option value="vendor">Vendor</option>
                     </select>
                     <select id="filterApproval" class="select">
                         <option value="">All Status</option>
@@ -628,12 +628,12 @@
                         <div class="edit-grid">
                             <input class="input" type="text" name="name" value="{{ $user->name }}" placeholder="Full name" required>
 
-                            <select class="select" name="role">
-                                <option value="admin" {{ $role === 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="engineer" {{ $role === 'engineer' ? 'selected' : '' }}>Engineer</option>
-                                <option value="customer" {{ $role === 'customer' ? 'selected' : '' }}>Customer</option>
-                                <option value="user" {{ $role === 'user' ? 'selected' : '' }}>User</option>
-                            </select>
+                            <select name="role" class="select">
+    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+    <option value="engineer" {{ $user->role === 'engineer' ? 'selected' : '' }}>Engineer</option>
+    <option value="customer" {{ $user->role === 'customer' ? 'selected' : '' }}>Customer</option>
+    <option value="vendor" {{ $user->role === 'vendor' ? 'selected' : '' }}>Vendor</option>
+</select>
 
                             <select class="select" name="company_id">
                                 <option value="">No Company</option>
@@ -643,6 +643,14 @@
                                     </option>
                                 @endforeach
                             </select>
+<select name="vendor_id" class="select">
+    <option value="">No Vendor</option>
+    @foreach(($vendors ?? \App\Models\Vendor::orderBy('name')->get()) as $vendor)
+        <option value="{{ $vendor->id }}" {{ ($user->vendor_id ?? null) == $vendor->id ? 'selected' : '' }}>
+            {{ $vendor->name }}
+        </option>
+    @endforeach
+</select>
 
                             <input class="input" type="password" name="password" placeholder="Reset password (optional)">
                         </div>
