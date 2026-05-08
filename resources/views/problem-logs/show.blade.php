@@ -678,39 +678,37 @@
                     <p>{{ $problemLog->description ?: 'No description provided.' }}</p>
                 </div>
 
-                <div class="hero-actions">
-                    <a href="/problem-logs" class="btn btn-secondary">Back to Dashboard</a>
+                
+<div class="hero-actions" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+    <a href="/problem-logs" class="btn btn-secondary">Back to Dashboard</a>
 
-                    @if($problemLog->status !== 'closed' || ($currentUser->role ?? '') === 'admin')
-                        <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-secondary">
-@if(!$problemLog->is_escalated)
-<form method="POST" action="{{ route('problem-logs.escalate', $problemLog) }}" style="display:inline;">
-    @csrf
-    <button type="submit" class="btn btn-danger" onclick="return confirm('Escalate ticket ini ke vendor?')">
-        🚨 Escalate to Vendor
+    @php
+        $deviceVendor = $problemLog->device?->vendor;
+        $activeVendor = $problemLog->vendor ?: $deviceVendor;
+    @endphp
+
+    <button type="button"
+            onclick="openVendorModal(); return false;"
+            class="btn btn-danger"
+            style="border:none;cursor:pointer;">
+        🚨 {{ $problemLog->is_escalated ? 'Escalated to' : 'Escalate to' }}
+        {{ $activeVendor?->name ?? 'Select Vendor' }}
     </button>
-</form>
-@else
-    <span class="badge bg-warning text-dark">Escalated to Vendor</span>
-@endif
 
-Edit Ticket</a>
-                    @endif
+    @if($problemLog->status !== 'closed' || ($currentUser->role ?? '') === 'admin')
+        <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-primary">Edit Ticket</a>
+    @endif
 
-                    @if(($currentUser->role ?? '') === 'admin')
-                        <form method="POST"
-                              action="/problem-logs/delete/{{ $problemLog->id }}"
-                              onsubmit="return confirm('Delete this ticket permanently? This action cannot be undone.');"
-                              style="display:inline-flex; margin:0;">
-                            @csrf
-                            <button type="submit" class="btn btn-danger" style="border:none; cursor:pointer;">Delete Ticket</button>
-                        
-
-
-
-</form>
-                    @endif
-                </div>
+    @if(($currentUser->role ?? '') === 'admin')
+        <form method="POST"
+              action="/problem-logs/delete/{{ $problemLog->id }}"
+              onsubmit="return confirm('Delete this ticket permanently? This action cannot be undone.');"
+              style="display:inline-flex;margin:0;">
+            @csrf
+            <button type="submit" class="btn btn-danger" style="border:none;cursor:pointer;">Delete Ticket</button>
+        </form>
+    @endif
+</div>
             </div>
         </div>
 
@@ -1501,7 +1499,193 @@ document.addEventListener('DOMContentLoaded', function () {
 <?php endif; ?>
 <!-- XION_OPERATIONAL_ACTIONS_END -->
 
+
+
+
+
+{{-- Vendor Escalation Modal --}}
+@php
+    $vendorsForEscalation = \App\Models\Vendor::with('issueCategories')->orderBy('name')->get();
+@endphp
+
+<div id="vendorEscalationModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+    <div style="width:100%;max-width:760px;background:#fff;border-radius:28px;box-shadow:0 28px 80px rgba(0,0,0,.28);overflow:hidden;">
+        <div style="padding:26px 30px;background:linear-gradient(135deg,#0f1f55,#3158d4);color:white;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;opacity:.75;">Vendor Workflow</div>
+                <h2 style="margin:6px 0 0;font-size:30px;font-weight:950;">🚨 Vendor Escalation</h2>
+            </div>
+
+            <button type="button" onclick="closeVendorModal()" style="border:none;background:rgba(255,255,255,.15);color:white;width:44px;height:44px;border-radius:14px;font-size:28px;cursor:pointer;">×</button>
+        </div>
+
+        <form method="POST" action="{{ route('problem-logs.escalate-vendor', $problemLog) }}" style="padding:28px 30px;">
+            @csrf
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Vendor</label>
+                <select id="vendorSelect" name="vendor_id" required style="width:100%;height:52px;border-radius:14px;border:1px solid #cbd5e1;padding:0 14px;font-size:16px;">
+                    <option value="">Select Vendor</option>
+                    @foreach($vendorsForEscalation as $vendor)
+                        <option value="{{ $vendor->id }}"
+                            {{ old('vendor_id', $problemLog->vendor_id ?? $problemLog->device?->vendor_id) == $vendor->id ? 'selected' : '' }}>
+                            {{ $vendor->name }}{{ $vendor->coverage_type ? ' — '.$vendor->coverage_type : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Action / SOW Category</label>
+                <select id="vendorCategorySelect" name="vendor_issue_category_id" required style="width:100%;height:52px;border-radius:14px;border:1px solid #cbd5e1;padding:0 14px;font-size:16px;">
+                    <option value="">Select Category</option>
+                </select>
+
+                <div id="noCategoryHint" style="display:none;margin-top:8px;color:#b45309;font-weight:800;font-size:13px;">
+                    This vendor has no category configured. Add categories in Vendor Management first.
+                </div>
+            </div>
+
+            <div style="margin-bottom:22px;">
+                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Escalation Note</label>
+                <textarea name="vendor_action_note" rows="4" style="width:100%;border-radius:14px;border:1px solid #cbd5e1;padding:14px;font-size:16px;" placeholder="Describe the specific issue for the vendor...">{{ old('vendor_action_note', $problemLog->vendor_action_note) }}</textarea>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:12px;">
+                <button type="button" onclick="closeVendorModal()" style="height:48px;padding:0 20px;border:none;border-radius:14px;background:#e2e8f0;color:#334155;font-weight:950;cursor:pointer;">Cancel</button>
+                <button type="submit" style="height:48px;padding:0 24px;border:none;border-radius:14px;background:#dc2626;color:white;font-weight:950;cursor:pointer;">🚨 Escalate Ticket</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const vendorCategories = @json($vendorsForEscalation->mapWithKeys(fn($vendor) => [
+    $vendor->id => $vendor->issueCategories->map(fn($cat) => [
+        'id' => $cat->id,
+        'name' => $cat->name,
+    ])->values()
+]));
+
+function openVendorModal() {
+    const modal = document.getElementById('vendorEscalationModal');
+    modal.style.display = 'flex';
+    loadVendorCategories();
+}
+
+function closeVendorModal() {
+    document.getElementById('vendorEscalationModal').style.display = 'none';
+}
+
+function loadVendorCategories() {
+    const vendorSelect = document.getElementById('vendorSelect');
+    const categorySelect = document.getElementById('vendorCategorySelect');
+    const hint = document.getElementById('noCategoryHint');
+
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    hint.style.display = 'none';
+
+    const vendorId = vendorSelect.value;
+    const categories = vendorCategories[vendorId] || [];
+
+    if (!vendorId) return;
+
+    if (!categories.length) {
+        hint.style.display = 'block';
+        return;
+    }
+
+    categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = cat.name;
+        categorySelect.appendChild(opt);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const vendorSelect = document.getElementById('vendorSelect');
+    if (vendorSelect) {
+        vendorSelect.addEventListener('change', loadVendorCategories);
+        loadVendorCategories();
+    }
+});
+</script>
+
 </body>
 </html>
 
 @endif
+
+
+<div class="card" style="margin-top:24px;padding:22px;border-radius:20px;background:#fff;border:1px solid #e5e7eb;">
+    <h3 style="margin:0 0 16px;">Vendor Escalation Timeline</h3>
+
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px;">
+        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
+            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Vendor</div>
+            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendor?->name ?? $problemLog->device?->vendor?->name ?? 'Not escalated yet' }}</div>
+        </div>
+
+        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
+            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Coverage</div>
+            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendor?->coverage_type ?? $problemLog->device?->vendor?->coverage_type ?? '-' }}</div>
+        </div>
+
+        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
+            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Action Category</div>
+            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendorIssueCategory?->name ?? '-' }}</div>
+        </div>
+
+        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
+            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Vendor Status</div>
+            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendor_status ?? ($problemLog->is_escalated ? 'Waiting Response' : 'Not Escalated') }}</div>
+        </div>
+    </div>
+
+    @if($problemLog->is_escalated || $problemLog->vendor_id)
+        <form method="POST" action="{{ route('problem-logs.vendor-action', $problemLog) }}" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+            @csrf
+
+            <select name="action" required style="height:46px;padding:0 12px;border-radius:12px;border:1px solid #cbd5e1;">
+                <option value="">Select Action</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+                <option value="need_sparepart">Need Sparepart</option>
+                <option value="completed">Completed</option>
+            </select>
+
+            <input type="text" name="note" placeholder="Action note..." style="flex:1;height:46px;padding:0 14px;border-radius:12px;border:1px solid #cbd5e1;">
+
+            <button type="submit" style="height:46px;padding:0 20px;border:none;border-radius:12px;background:#111827;color:white;font-weight:900;">
+                Submit
+            </button>
+        </form>
+    @else
+        <div style="padding:14px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;margin-bottom:18px;font-weight:800;">
+            Ticket ini belum dieskalasi ke vendor. Klik tombol Escalate di atas untuk memilih vendor dan action category.
+        </div>
+    @endif
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+        @forelse($problemLog->vendorActions as $action)
+            <div style="padding:14px;border-radius:12px;background:#f8fafc;border:1px solid #e5e7eb;">
+                <div style="font-weight:900;text-transform:capitalize;">
+                    {{ str_replace('_', ' ', $action->action) }}
+                </div>
+
+                <div style="font-size:13px;color:#6b7280;margin-top:4px;">
+                    {{ $action->created_at?->format('d M Y H:i') }}
+                    —
+                    {{ $action->user?->name ?? '-' }}
+                </div>
+
+                @if($action->note)
+                    <div style="margin-top:8px;">{{ $action->note }}</div>
+                @endif
+            </div>
+        @empty
+            <div style="color:#6b7280;">No vendor escalation activity yet.</div>
+        @endforelse
+    </div>
+</div>

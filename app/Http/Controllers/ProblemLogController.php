@@ -56,7 +56,7 @@ class ProblemLogController extends Controller
     {
         $user = auth()->user();
 
-        $baseQuery = \App\Models\ProblemLog::with(['company', 'assignedEngineer', 'createdByUser'])
+        $baseQuery = \App\Models\ProblemLog::with(['vendor','vendorIssueCategory','vendorActions','company', 'assignedEngineer', 'createdByUser'])
             ->orderByDesc('created_at');
 
         // Role scoping
@@ -97,6 +97,11 @@ class ProblemLogController extends Controller
         }
 
         // Summary data ignores STATUS, but respects all other active filters
+        // VENDOR_ONLY_PORTAL_ENFORCED
+        if (auth()->check() && auth()->user()->role === 'vendor') {
+            $baseQuery->where('vendor_id', auth()->user()->vendor_id);
+        }
+
         $summaryLogs = $baseQuery->get();
 
         if ($request->filled('response_sla')) {
@@ -136,7 +141,7 @@ class ProblemLogController extends Controller
 
 public function analytics()
     {
-        $logs = \App\Models\ProblemLog::with(['company', 'assignedEngineer'])->get();
+        $logs = \App\Models\ProblemLog::with(['vendor','vendorIssueCategory','vendorActions','company', 'assignedEngineer'])->get();
 
         $total = $logs->count();
         $open = $logs->where('status', 'open')->count();
@@ -1042,12 +1047,12 @@ public function analytics()
             abort(403);
         }
 
-        $assigned = ProblemLog::with(['company', 'assignedEngineer'])
+        $assigned = ProblemLog::with(['vendor','vendorIssueCategory','vendorActions','company', 'assignedEngineer'])
             ->where('assigned_engineer_id', $user->id)
             ->latest()
             ->get();
 
-        $available = ProblemLog::with(['company', 'assignedEngineer'])
+        $available = ProblemLog::with(['vendor','vendorIssueCategory','vendorActions','company', 'assignedEngineer'])
             ->where('status', 'open')
             ->whereNull('acknowledged_at')
             ->latest()
@@ -1414,4 +1419,85 @@ public function analytics()
     }
 
 
+
+
+
+
+    public function escalateVendor(\Illuminate\Http\Request $request, \App\Models\ProblemLog $problem_log)
+    {
+        $request->validate([
+            'vendor_id' => ['required', 'exists:vendors,id'],
+            'vendor_issue_category_id' => ['nullable', 'exists:vendor_issue_categories,id'],
+            'vendor_action_note' => ['nullable', 'string'],
+        ]);
+
+        $problem_log->update([
+            'vendor_id' => $request->vendor_id,
+            'vendor_issue_category_id' => $request->vendor_issue_category_id,
+            'vendor_action_note' => $request->vendor_action_note,
+            'is_escalated' => true,
+            'escalated_at' => now(),
+            'vendor_status' => 'waiting_response',
+        ]);
+
+        \App\Models\VendorTicketAction::create([
+            'problem_log_id' => $problem_log->id,
+            'user_id' => auth()->id(),
+            'action' => 'escalated',
+            'note' => $request->vendor_action_note,
+        ]);
+
+        if ($problem_log->vendor && $problem_log->vendor->telegram_chat_id) {
+            app(\App\Services\TelegramAlertService::class)->send(
+                [$problem_log->vendor->telegram_chat_id],
+                "<b>🚨 NEW ESCALATED TICKET</b>\n\n"
+                . "<b>Ticket:</b> #" . $problem_log->id . "\n"
+                . "<b>Device:</b> " . e(optional($problem_log->device)->name ?: '-') . "\n"
+                . "<b>Issue:</b> " . e($problem_log->title ?: '-') . "\n"
+                . "<b>Category:</b> " . e(optional($problem_log->vendorIssueCategory)->name ?: '-') . "\n\n"
+                . "Open Ticket:\n" . url('/problem-logs/' . $problem_log->id)
+            );
+        }
+
+        return back()->with('success', 'Ticket escalated to vendor successfully.');
+    }
+
+
+
+    public function vendorEscalationAction(\Illuminate\Http\Request $request, \App\Models\ProblemLog $problemLog)
+    {
+        $request->validate([
+            'action' => ['required', 'in:accepted,rejected,need_sparepart,completed'],
+            'note' => ['nullable', 'string'],
+        ]);
+
+        $problemLog->update([
+            'vendor_status' => $request->action,
+        ]);
+
+        \App\Models\VendorTicketAction::create([
+            'problem_log_id' => $problemLog->id,
+            'vendor_id' => $problemLog->vendor_id,
+            'user_id' => auth()->id(),
+            'action' => $request->action,
+            'note' => $request->note,
+        ]);
+
+        if ($problemLog->vendor && $problemLog->vendor->telegram_chat_id) {
+            app(\App\Services\TelegramAlertService::class)->send(
+                [$problemLog->vendor->telegram_chat_id],
+                "<b>📌 VENDOR STATUS UPDATE</b>\n\n"
+                . "<b>Ticket:</b> #" . $problemLog->id . "\n"
+                . "<b>Status:</b> " . strtoupper(str_replace('_', ' ', $request->action)) . "\n"
+                . "<b>Issue:</b> " . e($problemLog->title ?: '-') . "\n\n"
+                . "<b>Note:</b> " . e($request->note ?: '-') . "\n\n"
+                . "Open Ticket:\n" . url('/problem-logs/' . $problemLog->id)
+            );
+        }
+
+        return back()->with('success', 'Vendor action updated successfully.');
+    }
+
+
 }
+

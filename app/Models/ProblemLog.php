@@ -325,4 +325,16 @@ class ProblemLog extends Model
     }
 
 
+
+    public function vendorActions()
+    {
+        return $this->hasMany(\App\Models\VendorTicketAction::class)->latest();
+    }
+
+
+    public function vendorIssueCategory()
+    {
+        return $this->belongsTo(\App\Models\VendorIssueCategory::class, 'vendor_issue_category_id');
+    }
+
 }

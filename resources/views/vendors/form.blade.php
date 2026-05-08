@@ -36,13 +36,14 @@
         </select>
     </div>
 
-    <div class="section-title">Coverage & Scope</div>
+    <div class="section-title">SOW / Escalation Scope</div>
 
     <div class="full">
-        <label>Coverage Type List</label>
+        <label>SOW / Action List</label>
+
         <div class="inline">
-            <select id="coverageSelect">
-                <option value="">Select Coverage</option>
+            <select id="presetScope">
+                <option value="">Select Scope</option>
                 <option>Screen & Panel</option>
                 <option>Electrical</option>
                 <option>Network</option>
@@ -50,40 +51,54 @@
                 <option>Maintenance</option>
                 <option>Sparepart Replacement</option>
                 <option>Onsite Support</option>
-                <option>Custom</option>
+                <option>Screen Replacement</option>
+                <option>PSU Replacement</option>
+                <option>No Display / Blank Screen</option>
+                <option>Power Failure / Unit Not Turning On</option>
+                <option>HDMI / Port Issue</option>
+                <option>Network Issue</option>
+                <option>Onsite Troubleshooting</option>
             </select>
-            <input id="customCoverage" type="text" placeholder="Custom coverage...">
-            <button type="button" class="btn btn-primary" onclick="addCoverageType()">Add</button>
+
+            <input id="customScope" type="text" placeholder="Custom SOW/action...">
+
+            <button type="button" class="btn btn-primary" onclick="addScopeItem()">Add</button>
         </div>
 
         <input type="hidden" name="coverage_type" id="coverageTypeInput" value="{{ old('coverage_type', $vendor->coverage_type) }}">
-        <div id="coverageList" class="chip-wrap"></div>
-        <div class="hint">Coverage Type adalah grup besar vendor, misalnya Screen & Panel atau Network.</div>
-    </div>
+        <input type="hidden" name="scope_of_work" id="scopeOfWorkInput" value="{{ old('scope_of_work', $vendor->scope_of_work) }}">
 
-    <div class="full">
-        <label>Scope of Work (SOW)</label>
-        <textarea name="scope_of_work" rows="6" placeholder="Tuliskan scope vendor ini...">{{ old('scope_of_work', $vendor->scope_of_work) }}</textarea>
-    </div>
+        <div id="scopeList" class="chip-wrap">
+            @php
+                $items = old('categories');
 
-    <div class="full">
-        <label>Issue / Action Category</label>
-        <div class="inline">
-            <input type="text" id="newCategory" placeholder="Contoh: Screen replacement, PSU replacement, No display">
-            <button type="button" class="btn btn-primary" onclick="addCategory()">Add</button>
-        </div>
+                if (!$items && $vendor->exists) {
+                    $items = $vendor->issueCategories->pluck('name')->toArray();
 
-        <div id="categoryList" class="chip-wrap">
-            @foreach(old('categories', $vendor->exists ? $vendor->issueCategories->pluck('name')->toArray() : []) as $cat)
-                <div class="chip cat-item">
-                    <input type="hidden" name="categories[]" value="{{ $cat }}">
-                    <span>{{ $cat }}</span>
-                    <button type="button" onclick="this.closest('.cat-item').remove()">x</button>
+                    if (empty($items) && $vendor->coverage_type) {
+                        $items = collect(explode(',', $vendor->coverage_type))
+                            ->map(fn($v) => trim($v))
+                            ->filter()
+                            ->values()
+                            ->toArray();
+                    }
+                }
+
+                $items = $items ?? [];
+            @endphp
+
+            @foreach($items as $item)
+                <div class="chip scope-item">
+                    <input type="hidden" name="categories[]" value="{{ $item }}">
+                    <span>{{ $item }}</span>
+                    <button type="button" onclick="removeScopeItem(this)">x</button>
                 </div>
             @endforeach
         </div>
 
-        <div class="hint">Kategori ini akan muncul sebagai pilihan engineer saat escalate ticket ke vendor.</div>
+        <div class="hint">
+            This list is the single source for vendor SOW and engineer escalation dropdown.
+        </div>
     </div>
 
     <div class="section-title">Communication</div>
@@ -116,68 +131,61 @@ function escapeHtml(value) {
     });
 }
 
-function renderCoverageList() {
-    const hidden = document.getElementById('coverageTypeInput');
-    const list = document.getElementById('coverageList');
-    if (!hidden || !list) return;
-
-    list.innerHTML = '';
-
-    const items = hidden.value.split(',').map(v => v.trim()).filter(Boolean);
-
-    items.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'chip';
-        div.innerHTML = `<span>${escapeHtml(item)}</span><button type="button" onclick="removeCoverageType(${index})">x</button>`;
-        list.appendChild(div);
-    });
+function getScopeItems() {
+    return [...document.querySelectorAll('input[name="categories[]"]')]
+        .map(input => input.value.trim())
+        .filter(Boolean);
 }
 
-function addCoverageType() {
-    const select = document.getElementById('coverageSelect');
-    const custom = document.getElementById('customCoverage');
-    const hidden = document.getElementById('coverageTypeInput');
+function syncScopeFields() {
+    const items = getScopeItems();
 
-    const value = (custom.value || select.value || '').trim();
+    document.getElementById('coverageTypeInput').value = items.join(', ');
+    document.getElementById('scopeOfWorkInput').value = items.join("\n");
+}
+
+function addScopeItem() {
+    const preset = document.getElementById('presetScope');
+    const custom = document.getElementById('customScope');
+
+    const value = (custom.value || preset.value || '').trim();
     if (!value) return;
 
-    let items = hidden.value.split(',').map(v => v.trim()).filter(Boolean);
+    const existing = getScopeItems();
 
-    if (!items.includes(value)) {
-        items.push(value);
+    if (existing.includes(value)) {
+        preset.value = '';
+        custom.value = '';
+        return;
     }
 
-    hidden.value = items.join(', ');
-    select.value = '';
-    custom.value = '';
-
-    renderCoverageList();
-}
-
-function removeCoverageType(index) {
-    const hidden = document.getElementById('coverageTypeInput');
-    let items = hidden.value.split(',').map(v => v.trim()).filter(Boolean);
-    items.splice(index, 1);
-    hidden.value = items.join(', ');
-    renderCoverageList();
-}
-
-function addCategory() {
-    const input = document.getElementById('newCategory');
-    const value = input.value.trim();
-    if (!value) return;
-
     const div = document.createElement('div');
-    div.className = 'chip cat-item';
+    div.className = 'chip scope-item';
     div.innerHTML = `
         <input type="hidden" name="categories[]" value="${escapeHtml(value)}">
         <span>${escapeHtml(value)}</span>
-        <button type="button" onclick="this.closest('.cat-item').remove()">x</button>
+        <button type="button" onclick="removeScopeItem(this)">x</button>
     `;
 
-    document.getElementById('categoryList').appendChild(div);
-    input.value = '';
+    document.getElementById('scopeList').appendChild(div);
+
+    preset.value = '';
+    custom.value = '';
+
+    syncScopeFields();
 }
 
-document.addEventListener('DOMContentLoaded', renderCoverageList);
+function removeScopeItem(button) {
+    button.closest('.scope-item').remove();
+    syncScopeFields();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    syncScopeFields();
+
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', syncScopeFields);
+    }
+});
 </script>

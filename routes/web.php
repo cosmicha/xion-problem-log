@@ -151,3 +151,15 @@ Route::post('/problem-logs/{problemLog}/escalate', [\App\Http\Controllers\Proble
     ->middleware(['auth'])
     ->name('problem-logs.escalate');
 
+
+
+Route::post('/problem-logs/{problemLog}/vendor-action',
+    [\App\Http\Controllers\ProblemLogController::class, 'vendorEscalationAction']
+)->name('problem-logs.vendor-action');
+
+
+
+Route::post('/problem-logs/{problem_log}/escalate-vendor',
+    [\App\Http\Controllers\ProblemLogController::class, 'escalateVendor'])
+    ->name('problem-logs.escalate-vendor');
+
