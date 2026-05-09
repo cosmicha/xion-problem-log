@@ -614,9 +614,6 @@ public function analytics()
 
         $problemLog->save();
 
-        // SAVE_ATTACHMENTS_AFTER_CLOSE
-        $this->saveProblemLogAttachments($request, $problemLog);
-
         if (method_exists($problemLog, 'updates')) {
             try {
                 $message = 'Ticket acknowledged.';

@@ -1144,7 +1144,69 @@ document.addEventListener('DOMContentLoaded', function () {
             Resolution note is required. Optional solution photo will appear in Solution Summary and KB.
         </div>
 
-        <form method="POST" action="/problem-logs/{{ $problemLog->id }}/close" enctype="multipart/form-data">
+        
+<form method="POST" action="/problem-logs/{{ $problemLog->id }}/close" enctype="multipart/form-data">
+        @csrf
+
+        <div style="margin:18px 0;padding:18px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;">
+            <h3 style="margin:0 0 14px;font-size:20px;font-weight:950;">Root Cause & SLA Classification</h3>
+
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+                <div>
+                    <label class="label">Root Cause Category *</label>
+                    <select name="root_cause_category" class="input" required>
+                        <option value="">Select Root Cause</option>
+                        <option value="user_related">User Related</option>
+                        <option value="hardware_related">Hardware Related</option>
+                        <option value="software_related">Software Related</option>
+                        <option value="external">External</option>
+                        <option value="others">Others</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="label">SLA Responsibility *</label>
+                    <select name="sla_responsibility" class="input" required>
+                        <option value="">Select SLA Responsibility</option>
+                        <option value="included">Included in SLA</option>
+                        <option value="excluded">Excluded from SLA</option>
+                        <option value="customer_responsibility">Customer Responsibility</option>
+                        <option value="vendor_responsibility">Vendor Responsibility</option>
+                        <option value="pending_investigation">Pending Investigation</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="label">Cost Responsibility *</label>
+                    <select name="cost_responsibility" class="input" required>
+                        <option value="">Select Cost Responsibility</option>
+                        <option value="internal_support">Internal Support</option>
+                        <option value="customer">Customer</option>
+                        <option value="vendor_warranty">Vendor Warranty</option>
+                        <option value="insurance">Insurance</option>
+                        <option value="shared">Shared</option>
+                    </select>
+                </div>
+            </div>
+
+            <label style="display:flex;align-items:center;gap:10px;font-weight:900;color:#334155;margin-top:14px;">
+                <input type="checkbox" name="customer_misuse" value="1">
+                Mark as Customer/User Misuse
+            </label>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+                <div>
+                    <label class="label">Root Cause Detail</label>
+                    <textarea name="root_cause_note" class="textarea" rows="3"></textarea>
+                </div>
+
+                <div>
+                    <label class="label">Preventive Action</label>
+                    <textarea name="preventive_action" class="textarea" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+
             @csrf
 
             <div class="form-group">

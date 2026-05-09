@@ -635,6 +635,7 @@
                             {{ auth()->user()->telegram_chat_id ? 'Telegram Connected' : 'Connect Telegram' }}
                         </a>
                         <a href="{{ route('sla.dashboard') }}" class="btn btn-secondary">SLA Dashboard</a>
+<a href="{{ route('reports.sla') }}" class="btn btn-secondary">SLA Report</a>
                         <a href="/problem-logs/create" class="btn btn-primary">+ Add New Log</a>
 
                         @if(in_array(($user->role ?? ''), ['admin', 'engineer']))

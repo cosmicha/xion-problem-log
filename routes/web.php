@@ -173,3 +173,13 @@ Route::delete('/attachments/{attachment}', [\App\Http\Controllers\AttachmentCont
     ->middleware(['auth'])
     ->name('attachments.destroy');
 
+
+
+Route::get('/reports/sla', [\App\Http\Controllers\SlaReportController::class, 'index'])
+    ->middleware(['auth', 'approved'])
+    ->name('reports.sla');
+
+Route::get('/reports/sla/export', [\App\Http\Controllers\SlaReportController::class, 'export'])
+    ->middleware(['auth', 'approved'])
+    ->name('reports.sla.export');
+
