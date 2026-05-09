@@ -505,5 +505,12 @@
 
 </div>
 </div>
+
+@include('partials.attachments-gallery', [
+    'uploadType' => 'device',
+    'attachableType' => \App\Models\Device::class,
+    'attachableId' => $device->id,
+])
+
 </body>
 </html>

@@ -301,349 +301,6 @@
 }
 </style>
 
-
-<!-- XION_TICKET_PREMIUM_COMPACT_STYLE_START -->
-<style>
-    :root{
-        --xion-navy:#071737;
-        --xion-blue:#1d4ed8;
-        --xion-blue2:#3b82f6;
-        --xion-card:#ffffff;
-        --xion-soft:#f7faff;
-        --xion-line:#dbeafe;
-        --xion-text:#0f172a;
-        --xion-muted:#64748b;
-        --xion-green:#16a34a;
-        --xion-red:#dc2626;
-        --xion-shadow:0 18px 50px rgba(15,23,42,.10);
-        --xion-shadow-soft:0 10px 28px rgba(15,23,42,.07);
-    }
-
-    body{
-        background:
-            radial-gradient(circle at top left, rgba(59,130,246,.16), transparent 26%),
-            linear-gradient(180deg, #071737 0%, #071737 180px, #eef3fb 180px, #f7faff 100%) !important;
-        color:var(--xion-text);
-    }
-
-    .page,
-    .container,
-    main{
-        max-width:1280px !important;
-        margin-left:auto !important;
-        margin-right:auto !important;
-    }
-
-    .hero,
-    .ticket-hero,
-    .header-card{
-        border-radius:26px !important;
-        background:linear-gradient(135deg, #071737 0%, #0d2b71 58%, #3158e8 100%) !important;
-        box-shadow:0 24px 70px rgba(3,7,18,.25) !important;
-        padding:24px 28px !important;
-        min-height:auto !important;
-        margin-bottom:18px !important;
-    }
-
-    .hero h1,
-    .ticket-hero h1,
-    .header-card h1{
-        font-size:32px !important;
-        line-height:1.05 !important;
-        letter-spacing:-.035em !important;
-        margin-bottom:6px !important;
-    }
-
-    .hero p,
-    .ticket-hero p,
-    .header-card p{
-        font-size:14px !important;
-        opacity:.86 !important;
-        margin:0 !important;
-    }
-
-    .btn{
-        min-height:38px !important;
-        padding:0 14px !important;
-        border-radius:12px !important;
-        font-size:13px !important;
-        font-weight:800 !important;
-        box-shadow:none !important;
-    }
-
-    .btn-primary{
-        background:linear-gradient(90deg, var(--xion-blue2), var(--xion-blue)) !important;
-        border:0 !important;
-    }
-
-    .btn-secondary{
-        background:rgba(255,255,255,.10) !important;
-        border:1px solid rgba(255,255,255,.18) !important;
-        color:#fff !important;
-    }
-
-    .btn-success{
-        background:#16a34a !important;
-        color:#fff !important;
-        border:0 !important;
-    }
-
-    .btn-danger,
-    .delete-btn{
-        background:#dc2626 !important;
-        color:#fff !important;
-        border:0 !important;
-    }
-
-    .alert,
-    .success-message{
-        max-width:1280px !important;
-        margin:0 auto 16px !important;
-        border-radius:18px !important;
-        padding:14px 18px !important;
-        background:#ecfdf5 !important;
-        border:1px solid #bbf7d0 !important;
-        color:#166534 !important;
-        font-weight:800 !important;
-        box-shadow:var(--xion-shadow-soft) !important;
-    }
-
-    .content-grid,
-    .detail-grid,
-    .main-grid{
-        display:grid !important;
-        grid-template-columns:minmax(0,1.45fr) minmax(360px,.85fr) !important;
-        gap:18px !important;
-        align-items:start !important;
-    }
-
-    .card{
-        border-radius:22px !important;
-        background:#fff !important;
-        border:1px solid #dbeafe !important;
-        box-shadow:var(--xion-shadow-soft) !important;
-        padding:20px !important;
-        margin-bottom:18px !important;
-    }
-
-    .section-title{
-        font-size:20px !important;
-        line-height:1.15 !important;
-        letter-spacing:-.025em !important;
-        font-weight:900 !important;
-        margin:0 0 14px !important;
-        color:#0f172a !important;
-    }
-
-    .muted{
-        color:var(--xion-muted) !important;
-        font-size:13px !important;
-        line-height:1.45 !important;
-    }
-
-    .info-grid,
-    .stats-grid{
-        display:grid !important;
-        grid-template-columns:repeat(3, minmax(0,1fr)) !important;
-        gap:10px !important;
-    }
-
-    .info-grid > div,
-    .stats-grid > div,
-    .card [style*="grid-template-columns"] > div{
-        border-radius:16px !important;
-        background:#f8fbff !important;
-        border:1px solid #dbeafe !important;
-        padding:12px 14px !important;
-        min-height:auto !important;
-    }
-
-    .card [style*="text-transform:uppercase"],
-    .card .label,
-    .info-label{
-        font-size:10.5px !important;
-        letter-spacing:.09em !important;
-        color:#64748b !important;
-        font-weight:900 !important;
-        text-transform:uppercase !important;
-        margin-bottom:5px !important;
-    }
-
-    .badge,
-    [class*="badge"],
-    .status-pill{
-        min-height:26px !important;
-        padding:0 10px !important;
-        border-radius:999px !important;
-        font-size:12px !important;
-        font-weight:900 !important;
-    }
-
-    .photo{
-        max-height:260px !important;
-        object-fit:cover !important;
-        border-radius:18px !important;
-        border:1px solid #dbeafe !important;
-    }
-
-    .empty-box{
-        border-radius:16px !important;
-        border:1px dashed #cbd5e1 !important;
-        background:#f8fafc !important;
-        padding:28px !important;
-        text-align:center !important;
-        color:#64748b !important;
-    }
-
-    /* SLA cards compact */
-    .card:has(.section-title):has([style*="Response SLA"]),
-    .card:has(.section-title):has([style*="Resolution SLA"]){
-        padding:18px !important;
-    }
-
-    /* Structured ticket summary compact rows */
-    .card:has(.section-title):has([style*="Reusable Resolution"]){
-        padding:18px !important;
-    }
-
-    /* Timeline compact */
-    .card:has(.section-title):has(+ .card),
-    .timeline,
-    .updates-list{
-        gap:8px !important;
-    }
-
-    .timeline-item,
-    .update-item,
-    .card [class*="timeline"] > div{
-        padding:12px 14px !important;
-        border-radius:16px !important;
-        background:#f8fbff !important;
-        border:1px solid #dbeafe !important;
-        margin-bottom:10px !important;
-    }
-
-    /* AI suggestions compact */
-    .suggestion-card{
-        border-radius:16px !important;
-        border:1px solid #dbeafe !important;
-        background:#f8fbff !important;
-        padding:14px !important;
-        min-height:auto !important;
-    }
-
-    .suggestion-card h3,
-    .suggestion-card .title{
-        font-size:14px !important;
-        line-height:1.25 !important;
-    }
-
-    /* Solution + device card right column look */
-    .card:has(.section-title):has(img[alt="Solution Photo"]),
-    .card:has(.section-title):has(a[href*="devices"]),
-    .card:has(.section-title):has(.photo){
-        overflow:hidden !important;
-    }
-
-    textarea.textarea,
-    input.input,
-    select.select{
-        border-radius:14px !important;
-        border:1px solid #cbd5e1 !important;
-        background:#fff !important;
-        font-size:14px !important;
-        padding:12px 14px !important;
-    }
-
-    textarea.textarea{
-        min-height:110px !important;
-    }
-
-    #close-ticket,
-    #close-ticket + .card,
-    .card:has(#selectedResolutionTemplateId){
-        border:1px solid #bbf7d0 !important;
-        background:linear-gradient(180deg,#ffffff,#f0fdf4) !important;
-    }
-
-    /* Make bottom operational area premium */
-    #close-ticket .section-title,
-    .card:has(textarea[name="message"]) .section-title{
-        display:flex !important;
-        align-items:center !important;
-        gap:8px !important;
-    }
-
-    #close-ticket .section-title::before{
-        content:"✓";
-        width:28px;
-        height:28px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        border-radius:10px;
-        background:#dcfce7;
-        color:#16a34a;
-        font-size:14px;
-    }
-
-    .card:has(textarea[name="message"]) .section-title::before{
-        content:"↻";
-        width:28px;
-        height:28px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        border-radius:10px;
-        background:#dbeafe;
-        color:#1d4ed8;
-        font-size:14px;
-    }
-
-    @media (max-width: 980px){
-        .content-grid,
-        .detail-grid,
-        .main-grid{
-            grid-template-columns:1fr !important;
-        }
-
-        .info-grid,
-        .stats-grid{
-            grid-template-columns:1fr 1fr !important;
-        }
-
-        .hero,
-        .ticket-hero,
-        .header-card{
-            padding:20px !important;
-            border-radius:22px !important;
-        }
-
-        .hero h1,
-        .ticket-hero h1,
-        .header-card h1{
-            font-size:26px !important;
-        }
-    }
-
-    @media (max-width: 640px){
-        .info-grid,
-        .stats-grid{
-            grid-template-columns:1fr !important;
-        }
-
-        .card{
-            padding:16px !important;
-            border-radius:18px !important;
-        }
-
-        .section-title{
-            font-size:18px !important;
-        }
-    }
-</style>
-<!-- XION_TICKET_PREMIUM_COMPACT_STYLE_END -->
-
 </head>
 <body>
     @php
@@ -678,37 +335,27 @@
                     <p>{{ $problemLog->description ?: 'No description provided.' }}</p>
                 </div>
 
-                
-<div class="hero-actions" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-    <a href="/problem-logs" class="btn btn-secondary">Back to Dashboard</a>
+                <div class="hero-actions">
+                    <a href="/problem-logs" class="btn btn-secondary">Back to Dashboard</a>
 
-    @php
-        $deviceVendor = $problemLog->device?->vendor;
-        $activeVendor = $problemLog->vendor ?: $deviceVendor;
-    @endphp
+                    @if($problemLog->status !== 'closed' || ($currentUser->role ?? '') === 'admin')
+                        <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-secondary">Edit Ticket</a>
+                    @endif
 
-    <button type="button"
-            onclick="openVendorModal(); return false;"
-            class="btn btn-danger"
-            style="border:none;cursor:pointer;">
-        🚨 {{ $problemLog->is_escalated ? 'Escalated to' : 'Escalate to' }}
-        {{ $activeVendor?->name ?? 'Select Vendor' }}
-    </button>
+                    @if(($currentUser->role ?? '') === 'admin')
+                        <form method="POST"
+                              action="/problem-logs/delete/{{ $problemLog->id }}"
+                              onsubmit="return confirm('Delete this ticket permanently? This action cannot be undone.');"
+                              style="display:inline-flex; margin:0;">
+                            @csrf
+                            <button type="submit" class="btn btn-danger" style="border:none; cursor:pointer;">Delete Ticket</button>
+                        
 
-    @if($problemLog->status !== 'closed' || ($currentUser->role ?? '') === 'admin')
-        <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-primary">Edit Ticket</a>
-    @endif
 
-    @if(($currentUser->role ?? '') === 'admin')
-        <form method="POST"
-              action="/problem-logs/delete/{{ $problemLog->id }}"
-              onsubmit="return confirm('Delete this ticket permanently? This action cannot be undone.');"
-              style="display:inline-flex;margin:0;">
-            @csrf
-            <button type="submit" class="btn btn-danger" style="border:none;cursor:pointer;">Delete Ticket</button>
-        </form>
-    @endif
-</div>
+
+</form>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -1176,7 +823,26 @@
 
                 <div class="card">
                     <div class="section-title">Problem Photo</div>
-                    @if($problemLog->photo)
+                    @php
+                        $problemPhotos = \App\Models\Attachment::where('attachable_type', \App\Models\ProblemLog::class)
+                            ->where('attachable_id', $problemLog->id)
+                            ->where('attachment_group', 'problem')
+                            ->latest()
+                            ->get();
+                    @endphp
+
+                    @if($problemPhotos->count())
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;">
+                            @foreach($problemPhotos as $photo)
+                                <a href="{{ asset('storage/'.$photo->file_path) }}" target="_blank">
+                                    <img src="{{ asset('storage/'.$photo->file_path) }}"
+                                         alt="Problem Photo"
+                                         class="photo"
+                                         style="width:100%;height:140px;object-fit:cover;border-radius:16px;">
+                                </a>
+                            @endforeach
+                        </div>
+                    @elseif($problemLog->photo)
                         <img src="{{ url('/storage/' . $problemLog->photo) }}" alt="Problem Photo" class="photo">
                     @else
                         <div class="empty-box">No photo uploaded.</div>
@@ -1489,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             <div class="form-group">
                 <label class="label">Solution Photo</label>
-                <input type="file" name="closed_photo" class="input" accept="image/*">
+                <input type="file" name="solution_photos[]" class="input" multiple accept="image/*">
             </div>
 
             <button type="submit" class="btn btn-success">Close Ticket</button>
@@ -1499,193 +1165,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <?php endif; ?>
 <!-- XION_OPERATIONAL_ACTIONS_END -->
 
-
-
-
-
-{{-- Vendor Escalation Modal --}}
-@php
-    $vendorsForEscalation = \App\Models\Vendor::with('issueCategories')->orderBy('name')->get();
-@endphp
-
-<div id="vendorEscalationModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:9999;align-items:center;justify-content:center;padding:24px;">
-    <div style="width:100%;max-width:760px;background:#fff;border-radius:28px;box-shadow:0 28px 80px rgba(0,0,0,.28);overflow:hidden;">
-        <div style="padding:26px 30px;background:linear-gradient(135deg,#0f1f55,#3158d4);color:white;display:flex;align-items:center;justify-content:space-between;">
-            <div>
-                <div style="font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;opacity:.75;">Vendor Workflow</div>
-                <h2 style="margin:6px 0 0;font-size:30px;font-weight:950;">🚨 Vendor Escalation</h2>
-            </div>
-
-            <button type="button" onclick="closeVendorModal()" style="border:none;background:rgba(255,255,255,.15);color:white;width:44px;height:44px;border-radius:14px;font-size:28px;cursor:pointer;">×</button>
-        </div>
-
-        <form method="POST" action="{{ route('problem-logs.escalate-vendor', $problemLog) }}" style="padding:28px 30px;">
-            @csrf
-
-            <div style="margin-bottom:18px;">
-                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Vendor</label>
-                <select id="vendorSelect" name="vendor_id" required style="width:100%;height:52px;border-radius:14px;border:1px solid #cbd5e1;padding:0 14px;font-size:16px;">
-                    <option value="">Select Vendor</option>
-                    @foreach($vendorsForEscalation as $vendor)
-                        <option value="{{ $vendor->id }}"
-                            {{ old('vendor_id', $problemLog->vendor_id ?? $problemLog->device?->vendor_id) == $vendor->id ? 'selected' : '' }}>
-                            {{ $vendor->name }}{{ $vendor->coverage_type ? ' — '.$vendor->coverage_type : '' }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div style="margin-bottom:18px;">
-                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Action / SOW Category</label>
-                <select id="vendorCategorySelect" name="vendor_issue_category_id" required style="width:100%;height:52px;border-radius:14px;border:1px solid #cbd5e1;padding:0 14px;font-size:16px;">
-                    <option value="">Select Category</option>
-                </select>
-
-                <div id="noCategoryHint" style="display:none;margin-top:8px;color:#b45309;font-weight:800;font-size:13px;">
-                    This vendor has no category configured. Add categories in Vendor Management first.
-                </div>
-            </div>
-
-            <div style="margin-bottom:22px;">
-                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Escalation Note</label>
-                <textarea name="vendor_action_note" rows="4" style="width:100%;border-radius:14px;border:1px solid #cbd5e1;padding:14px;font-size:16px;" placeholder="Describe the specific issue for the vendor...">{{ old('vendor_action_note', $problemLog->vendor_action_note) }}</textarea>
-            </div>
-
-            <div style="display:flex;justify-content:flex-end;gap:12px;">
-                <button type="button" onclick="closeVendorModal()" style="height:48px;padding:0 20px;border:none;border-radius:14px;background:#e2e8f0;color:#334155;font-weight:950;cursor:pointer;">Cancel</button>
-                <button type="submit" style="height:48px;padding:0 24px;border:none;border-radius:14px;background:#dc2626;color:white;font-weight:950;cursor:pointer;">🚨 Escalate Ticket</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-const vendorCategories = @json($vendorsForEscalation->mapWithKeys(fn($vendor) => [
-    $vendor->id => $vendor->issueCategories->map(fn($cat) => [
-        'id' => $cat->id,
-        'name' => $cat->name,
-    ])->values()
-]));
-
-function openVendorModal() {
-    const modal = document.getElementById('vendorEscalationModal');
-    modal.style.display = 'flex';
-    loadVendorCategories();
-}
-
-function closeVendorModal() {
-    document.getElementById('vendorEscalationModal').style.display = 'none';
-}
-
-function loadVendorCategories() {
-    const vendorSelect = document.getElementById('vendorSelect');
-    const categorySelect = document.getElementById('vendorCategorySelect');
-    const hint = document.getElementById('noCategoryHint');
-
-    categorySelect.innerHTML = '<option value="">Select Category</option>';
-    hint.style.display = 'none';
-
-    const vendorId = vendorSelect.value;
-    const categories = vendorCategories[vendorId] || [];
-
-    if (!vendorId) return;
-
-    if (!categories.length) {
-        hint.style.display = 'block';
-        return;
-    }
-
-    categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat.id;
-        opt.textContent = cat.name;
-        categorySelect.appendChild(opt);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const vendorSelect = document.getElementById('vendorSelect');
-    if (vendorSelect) {
-        vendorSelect.addEventListener('change', loadVendorCategories);
-        loadVendorCategories();
-    }
-});
-</script>
-
 </body>
 </html>
 
 @endif
-
-
-<div class="card" style="margin-top:24px;padding:22px;border-radius:20px;background:#fff;border:1px solid #e5e7eb;">
-    <h3 style="margin:0 0 16px;">Vendor Escalation Timeline</h3>
-
-    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px;">
-        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
-            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Vendor</div>
-            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendor?->name ?? $problemLog->device?->vendor?->name ?? 'Not escalated yet' }}</div>
-        </div>
-
-        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
-            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Coverage</div>
-            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendor?->coverage_type ?? $problemLog->device?->vendor?->coverage_type ?? '-' }}</div>
-        </div>
-
-        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
-            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Action Category</div>
-            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendorIssueCategory?->name ?? '-' }}</div>
-        </div>
-
-        <div style="padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;">
-            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;">Vendor Status</div>
-            <div style="font-weight:900;margin-top:4px;">{{ $problemLog->vendor_status ?? ($problemLog->is_escalated ? 'Waiting Response' : 'Not Escalated') }}</div>
-        </div>
-    </div>
-
-    @if($problemLog->is_escalated || $problemLog->vendor_id)
-        <form method="POST" action="{{ route('problem-logs.vendor-action', $problemLog) }}" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
-            @csrf
-
-            <select name="action" required style="height:46px;padding:0 12px;border-radius:12px;border:1px solid #cbd5e1;">
-                <option value="">Select Action</option>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
-                <option value="need_sparepart">Need Sparepart</option>
-                <option value="completed">Completed</option>
-            </select>
-
-            <input type="text" name="note" placeholder="Action note..." style="flex:1;height:46px;padding:0 14px;border-radius:12px;border:1px solid #cbd5e1;">
-
-            <button type="submit" style="height:46px;padding:0 20px;border:none;border-radius:12px;background:#111827;color:white;font-weight:900;">
-                Submit
-            </button>
-        </form>
-    @else
-        <div style="padding:14px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;margin-bottom:18px;font-weight:800;">
-            Ticket ini belum dieskalasi ke vendor. Klik tombol Escalate di atas untuk memilih vendor dan action category.
-        </div>
-    @endif
-
-    <div style="display:flex;flex-direction:column;gap:12px;">
-        @forelse($problemLog->vendorActions as $action)
-            <div style="padding:14px;border-radius:12px;background:#f8fafc;border:1px solid #e5e7eb;">
-                <div style="font-weight:900;text-transform:capitalize;">
-                    {{ str_replace('_', ' ', $action->action) }}
-                </div>
-
-                <div style="font-size:13px;color:#6b7280;margin-top:4px;">
-                    {{ $action->created_at?->format('d M Y H:i') }}
-                    —
-                    {{ $action->user?->name ?? '-' }}
-                </div>
-
-                @if($action->note)
-                    <div style="margin-top:8px;">{{ $action->note }}</div>
-                @endif
-            </div>
-        @empty
-            <div style="color:#6b7280;">No vendor escalation activity yet.</div>
-        @endforelse
-    </div>
-</div>

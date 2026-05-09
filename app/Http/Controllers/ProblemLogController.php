@@ -356,7 +356,7 @@ public function analytics()
             'company_id' => [$isCustomer ? 'nullable' : 'required', 'exists:companies,id'],
             'device_id' => ['nullable', 'exists:devices,id'],
             'issue_category' => ['nullable', 'in:power,connectivity,display_output,hardware,software,physical_damage,other'],
-            'photo' => ['nullable', 'image', 'max:8192'],
+            'photos.*' => ['nullable', 'image', 'max:10240'],
         ]);
 
         $selectedDevice = $request->filled('device_id') ? Device::find($request->device_id) : null;
@@ -373,10 +373,6 @@ public function analytics()
                 ? ($user->company_id ?: $this->fallbackCompanyId())
                 : $request->company_id);
 
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('photos', 'public');
-        }
 
         $cleanTitle = preg_replace('/^\s*title\s*:\s*/i', '', (string) $request->title);
         $cleanDescription = preg_replace('/^\s*description\s*:\s*/i', '', (string) $request->description);
@@ -389,7 +385,7 @@ public function analytics()
             'description' => trim($cleanDescription),
             'status' => 'open',
             'priority' => $request->priority,
-            'photo' => $photoPath,
+            
             'opened_at' => now(),
             'ticket_number' => 'TKT' . strtoupper(substr(md5(uniqid('', true)), 0, 12)),
             'company_id' => $resolvedCompanyId,
@@ -400,6 +396,10 @@ public function analytics()
             'resolution_due_at' => $slaFields['resolution_due_at'],
             'created_by_user_id' => $user->id,
         ]);
+
+        // SAVE_ATTACHMENTS_AFTER_CREATE
+        $this->saveProblemLogAttachments($request, $problemLog);
+
 
         if (method_exists($problemLog, 'updates')) {
             // disabled old duplicate Ticket Created telegram block
@@ -522,7 +522,7 @@ public function analytics()
             'company_id' => [$isCustomer ? 'nullable' : 'required', 'exists:companies,id'],
             'device_id' => ['nullable', 'exists:devices,id'],
             'issue_category' => ['nullable', 'in:power,connectivity,display_output,hardware,software,physical_damage,other'],
-            'photo' => ['nullable', 'image', 'max:8192'],
+            'photos.*' => ['nullable', 'image', 'max:10240'],
         ]);
 
         $selectedDevice = $request->filled('device_id') ? Device::find($request->device_id) : null;
@@ -549,11 +549,11 @@ public function analytics()
             'company_id' => $resolvedCompanyId,
         ];
 
-        if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('photos', 'public');
-        }
 
         $problemLog->update($data);
+
+        // SAVE_ATTACHMENTS_AFTER_UPDATE
+        $this->saveProblemLogAttachments($request, $problemLog);
 
         return redirect('/problem-logs/' . $problemLog->id)->with('success', 'Problem log updated successfully.');
     }
@@ -613,6 +613,9 @@ public function analytics()
         }
 
         $problemLog->save();
+
+        // SAVE_ATTACHMENTS_AFTER_CLOSE
+        $this->saveProblemLogAttachments($request, $problemLog);
 
         if (method_exists($problemLog, 'updates')) {
             try {
@@ -803,14 +806,11 @@ public function analytics()
     {
         $request->validate([
             'close_note' => 'required|string|max:5000',
-            'closed_photo' => 'nullable|image|max:5120',
+            'solution_photos.*' => 'nullable|image|max:10240',
         ]);
 
         $path = null;
 
-        if ($request->hasFile('closed_photo')) {
-            $path = $request->file('closed_photo')->store('photos', 'public');
-        }
 
         $oldStatus = $problemLog->status;
         $resolutionText = trim((string) $request->close_note);
@@ -820,7 +820,7 @@ public function analytics()
             'closed_by_user_id' => auth()->id(),
             'closed_at' => now(),
             'close_note' => $resolutionText,
-            'closed_photo' => $path,
+            
             'resolution_sla_breached' => $problemLog->resolution_due_at ? now()->gt($problemLog->resolution_due_at) : false,
         ]);
 
@@ -1495,7 +1495,100 @@ public function analytics()
             );
         }
 
-        return back()->with('success', 'Vendor action updated successfully.');
+        
+
+        // MULTIPLE PROBLEM PHOTOS
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+
+                $path = $file->store('attachments/problem', 'public');
+
+                \App\Models\Attachment::create([
+                    'attachable_type' => \App\Models\ProblemLog::class,
+                    'attachable_id' => $problemLog->id,
+                    'attachment_group' => 'problem',
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'file_size' => $file->getSize(),
+                    'uploaded_by_user_id' => auth()->id(),
+                ]);
+            }
+        }
+
+        // MULTIPLE SOLUTION PHOTOS
+        if ($request->hasFile('solution_photos')) {
+            foreach ($request->file('solution_photos') as $file) {
+
+                $path = $file->store('attachments/solution', 'public');
+
+                \App\Models\Attachment::create([
+                    'attachable_type' => \App\Models\ProblemLog::class,
+                    'attachable_id' => $problemLog->id,
+                    'attachment_group' => 'solution',
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'file_size' => $file->getSize(),
+                    'uploaded_by_user_id' => auth()->id(),
+                ]);
+            }
+        }
+
+
+return back()->with('success', 'Vendor action updated successfully.');
+    }
+
+
+
+
+    private function debugUploadRequest(\Illuminate\Http\Request $request, string $context): void
+    {
+        \Log::info('UPLOAD DEBUG '.$context, [
+            'has_photos' => $request->hasFile('photos'),
+            'photos_count' => is_array($request->file('photos')) ? count($request->file('photos')) : 0,
+            'has_solution_photos' => $request->hasFile('solution_photos'),
+            'solution_count' => is_array($request->file('solution_photos')) ? count($request->file('solution_photos')) : 0,
+            'all_file_keys' => array_keys($request->allFiles()),
+        ]);
+    }
+
+    private function saveProblemLogAttachments(\Illuminate\Http\Request $request, \App\Models\ProblemLog $problemLog): void
+    {
+        $this->debugUploadRequest($request, 'save attachments');
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+                $path = $file->store('attachments/problem-logs/'.$problemLog->id.'/problem', 'public');
+
+                \App\Models\Attachment::create([
+                    'attachable_type' => \App\Models\ProblemLog::class,
+                    'attachable_id' => $problemLog->id,
+                    'attachment_group' => 'problem',
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'file_size' => $file->getSize(),
+                    'uploaded_by_user_id' => auth()->id(),
+                ]);
+            }
+        }
+
+        if ($request->hasFile('solution_photos')) {
+            foreach ($request->file('solution_photos') as $file) {
+                $path = $file->store('attachments/problem-logs/'.$problemLog->id.'/solution', 'public');
+
+                \App\Models\Attachment::create([
+                    'attachable_type' => \App\Models\ProblemLog::class,
+                    'attachable_id' => $problemLog->id,
+                    'attachment_group' => 'solution',
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'file_size' => $file->getSize(),
+                    'uploaded_by_user_id' => auth()->id(),
+                ]);
+            }
+        }
     }
 
 

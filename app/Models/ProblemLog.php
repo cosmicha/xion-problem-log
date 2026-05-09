@@ -337,4 +337,10 @@ class ProblemLog extends Model
         return $this->belongsTo(\App\Models\VendorIssueCategory::class, 'vendor_issue_category_id');
     }
 
+
+    public function attachments()
+    {
+        return $this->morphMany(\App\Models\Attachment::class, 'attachable');
+    }
+
 }

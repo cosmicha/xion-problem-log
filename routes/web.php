@@ -163,3 +163,13 @@ Route::post('/problem-logs/{problem_log}/escalate-vendor',
     [\App\Http\Controllers\ProblemLogController::class, 'escalateVendor'])
     ->name('problem-logs.escalate-vendor');
 
+
+
+Route::post('/attachments/{type}/{id}', [\App\Http\Controllers\AttachmentController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('attachments.store');
+
+Route::delete('/attachments/{attachment}', [\App\Http\Controllers\AttachmentController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('attachments.destroy');
+

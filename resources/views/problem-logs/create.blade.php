@@ -286,7 +286,7 @@
             <h2 class="section-title">New Ticket Form</h2>
             <div class="muted">Fill in the issue details below.</div>
 
-            <form method="POST" action="/problem-logs" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" action="/problem-logs">
                 @csrf
 
                 <div class="grid">
@@ -404,7 +404,26 @@
 
                     <div class="form-group full">
                         <label class="label">Photo</label>
-                        <input type="file" name="photo" class="file">
+                        
+
+<div style="margin-top:12px;">
+    <input type="file"
+           name="photos[]"
+           multiple
+           accept="image/*"
+           style="
+                width:100%;
+                border:2px dashed #94a3b8;
+                border-radius:16px;
+                padding:18px;
+                background:#f8fafc;
+           ">
+    <div style="margin-top:8px;font-size:13px;color:#64748b;font-weight:700;">
+        You can select multiple photos.
+    </div>
+</div>
+
+
                     </div>
                 </div>
 

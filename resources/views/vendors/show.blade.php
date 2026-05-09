@@ -50,5 +50,12 @@
         <a class="btn gray" href="{{ route('vendors.index') }}">Back</a>
     </div>
 </div>
+
+@include('partials.attachments-gallery', [
+    'uploadType' => 'vendor',
+    'attachableType' => \App\Models\Vendor::class,
+    'attachableId' => $vendor->id,
+])
+
 </body>
 </html>
