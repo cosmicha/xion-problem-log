@@ -183,3 +183,9 @@ Route::get('/reports/sla/export', [\App\Http\Controllers\SlaReportController::cl
     ->middleware(['auth', 'approved'])
     ->name('reports.sla.export');
 
+
+
+Route::delete('/vendors/{vendor}', [\App\Http\Controllers\VendorController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('vendors.destroy');
+

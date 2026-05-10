@@ -189,3 +189,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const scopeInput = document.getElementById('scopeOfWorkInput');
+    const coverageInput = document.getElementById('coverageTypeInput');
+
+    function syncVendorChips() {
+        const chips = Array.from(document.querySelectorAll('[data-scope-chip], .scope-chip, .sow-chip, .coverage-chip'))
+            .map(el => el.textContent.replace('×', '').trim())
+            .filter(Boolean);
+
+        if (scopeInput && chips.length) {
+            scopeInput.value = chips.join(', ');
+        }
+
+        if (coverageInput && chips.length) {
+            coverageInput.value = chips.join(', ');
+        }
+    }
+
+    if (form) {
+        form.addEventListener('submit', function () {
+            syncVendorChips();
+        });
+    }
+});
+</script>

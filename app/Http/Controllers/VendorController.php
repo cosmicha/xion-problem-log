@@ -89,9 +89,9 @@ class VendorController extends Controller
             'category' => ['nullable', 'string', 'max:100'],
             'status' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string'],
-            'scope_of_work' => ['nullable', 'string'],
+            'scope_of_work' => ['nullable', 'string', 'max:5000'],
             'sow' => ['nullable', 'string'],
-            'coverage_type' => ['nullable', 'string', 'max:100'],
+            'coverage_type' => ['nullable', 'string', 'max:5000'],
             'telegram_chat_id' => ['nullable', 'string', 'max:100'],
         ]);
     }

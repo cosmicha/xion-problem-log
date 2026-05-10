@@ -187,6 +187,13 @@
 
                         @if((auth()->user()->role ?? null) === 'admin')
                             <a href="{{ route('vendors.edit', $vendor) }}" class="link-btn">Edit</a>
+
+<form method="POST" action="{{ route('vendors.destroy', $vendor) }}" style="display:inline;" onsubmit="return confirm('Delete this vendor? This can only be done if the vendor is not linked to tickets or devices.');">
+    @csrf
+    @method('DELETE')
+    <button type="submit" style="border:0;background:transparent;color:#dc2626;font-weight:900;cursor:pointer;font-size:inherit;">Delete</button>
+</form>
+
                         @endif
                     </td>
                 </tr>
