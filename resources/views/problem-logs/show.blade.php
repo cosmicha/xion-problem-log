@@ -340,6 +340,11 @@
 
                     @if($problemLog->status !== 'closed' || ($currentUser->role ?? '') === 'admin')
                         <a href="/problem-logs/{{ $problemLog->id }}/edit" class="btn btn-secondary">Edit Ticket</a>
+                        <a href="javascript:void(0)"
+                           onclick="document.getElementById('vendorEscalationModal').style.display='flex'"
+                           class="btn btn-danger">
+                            🚨 Escalate to Vendor
+                        </a>
                     @endif
 
                     @if(($currentUser->role ?? '') === 'admin')
@@ -1226,6 +1231,89 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 <?php endif; ?>
 <!-- XION_OPERATIONAL_ACTIONS_END -->
+
+
+@php
+    $vendorsForEscalation = \App\Models\Vendor::with('issueCategories')->orderBy('name')->get();
+@endphp
+
+<div id="vendorEscalationModal"
+     style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+    <div style="width:100%;max-width:720px;background:white;border-radius:28px;overflow:hidden;box-shadow:0 28px 80px rgba(0,0,0,.28);">
+        <div style="padding:26px 30px;background:linear-gradient(135deg,#0f1f55,#3158d4);color:white;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;opacity:.75;">Vendor Workflow</div>
+                <h2 style="margin:6px 0 0;font-size:30px;font-weight:950;">🚨 Vendor Escalation</h2>
+            </div>
+            <button type="button" onclick="document.getElementById('vendorEscalationModal').style.display='none'"
+                    style="border:none;background:rgba(255,255,255,.15);color:white;width:44px;height:44px;border-radius:14px;font-size:28px;cursor:pointer;">×</button>
+        </div>
+
+        <form method="POST" action="{{ route('problem-logs.escalate-vendor', $problemLog) }}" style="padding:28px 30px;">
+            @csrf
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Vendor</label>
+                <select id="vendorSelect" name="vendor_id" required style="width:100%;height:52px;border-radius:14px;border:1px solid #cbd5e1;padding:0 14px;font-size:16px;">
+                    <option value="">Select Vendor</option>
+                    @foreach($vendorsForEscalation as $vendor)
+                        <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Vendor Scope / Action Category</label>
+                <select id="vendorCategorySelect" name="vendor_issue_category_id" required style="width:100%;height:52px;border-radius:14px;border:1px solid #cbd5e1;padding:0 14px;font-size:16px;">
+                    <option value="">Select Scope</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block;font-weight:900;margin-bottom:8px;color:#334155;">Escalation Note</label>
+                <textarea name="vendor_action_note" rows="4" style="width:100%;border-radius:14px;border:1px solid #cbd5e1;padding:14px;font-size:16px;" placeholder="Describe the specific issue for vendor handling..."></textarea>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:12px;">
+                <button type="button" onclick="document.getElementById('vendorEscalationModal').style.display='none'"
+                        style="height:48px;padding:0 20px;border:none;border-radius:14px;background:#e2e8f0;color:#334155;font-weight:950;cursor:pointer;">Cancel</button>
+                <button type="submit"
+                        style="height:48px;padding:0 24px;border:none;border-radius:14px;background:#dc2626;color:white;font-weight:950;cursor:pointer;">🚨 Escalate Ticket</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const vendorCategories = @json(
+    $vendorsForEscalation->mapWithKeys(fn($vendor) => [
+        $vendor->id => $vendor->issueCategories->map(fn($cat) => [
+            'id' => $cat->id,
+            'name' => $cat->name,
+        ])->values()
+    ])
+);
+
+document.addEventListener('DOMContentLoaded', function () {
+    const vendorSelect = document.getElementById('vendorSelect');
+    const categorySelect = document.getElementById('vendorCategorySelect');
+
+    if (!vendorSelect || !categorySelect) return;
+
+    vendorSelect.addEventListener('change', function () {
+        categorySelect.innerHTML = '<option value="">Select Scope</option>';
+
+        const categories = vendorCategories[this.value] || [];
+
+        categories.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat.id;
+            opt.textContent = cat.name;
+            categorySelect.appendChild(opt);
+        });
+    });
+});
+</script>
 
 </body>
 </html>
