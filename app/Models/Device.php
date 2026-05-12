@@ -55,4 +55,14 @@ class Device extends Model
         return 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=0&data=' . urlencode($qrValue);
     }
 
+
+    public function currentLocation()
+    {
+        return $this->belongsTo(\App\Models\InventoryLocation::class, 'current_location_id');
+    }
+
+    public function movements()
+    {
+        return $this->hasMany(\App\Models\DeviceMovement::class);
+    }
 }

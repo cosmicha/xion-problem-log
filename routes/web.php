@@ -189,3 +189,37 @@ Route::delete('/vendors/{vendor}', [\App\Http\Controllers\VendorController::clas
     ->middleware(['auth'])
     ->name('vendors.destroy');
 
+
+Route::middleware(['auth', 'approved'])->group(function () {
+    Route::get('/inventory', [\App\Http\Controllers\InventoryController::class, 'index'])
+        ->name('inventory.index');
+
+    Route::post('/inventory/locations', [\App\Http\Controllers\InventoryController::class, 'storeLocation'])
+        ->name('inventory.locations.store');
+
+    Route::post('/inventory/spare-parts', [\App\Http\Controllers\InventoryController::class, 'storeSparePart'])
+        ->name('inventory.spare-parts.store');
+
+    Route::post('/inventory/devices/move', [\App\Http\Controllers\InventoryController::class, 'moveDevice'])
+        ->name('inventory.devices.move');
+});
+
+Route::middleware(['auth', 'approved'])->group(function () {
+    Route::put('/inventory/locations/{location}', [\App\Http\Controllers\InventoryController::class, 'updateLocation'])
+        ->name('inventory.locations.update');
+
+    Route::delete('/inventory/locations/{location}', [\App\Http\Controllers\InventoryController::class, 'deleteLocation'])
+        ->name('inventory.locations.delete');
+
+    Route::put('/inventory/spare-parts/{sparePart}', [\App\Http\Controllers\InventoryController::class, 'updateSparePart'])
+        ->name('inventory.spare-parts.update');
+
+    Route::delete('/inventory/spare-parts/{sparePart}', [\App\Http\Controllers\InventoryController::class, 'deleteSparePart'])
+        ->name('inventory.spare-parts.delete');
+
+    Route::post('/inventory/spare-parts/move', [\App\Http\Controllers\InventoryController::class, 'moveSparePart'])
+        ->name('inventory.spare-parts.move');
+
+    Route::get('/inventory/export', [\App\Http\Controllers\InventoryController::class, 'export'])
+        ->name('inventory.export');
+});
